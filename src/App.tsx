@@ -1,28 +1,25 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import PlayerForm from "./components/PlayerForm";
-import TeamDraw from "./components/TeamDraw";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Login from './components/pages/Login'; 
+import Dashboard from './components/pages/Dashboard';
+import PlayerForm from './components/PlayerForm';
+import { PlayerList } from './components/PlayerList';
+import TeamDraw from './components/TeamDraw';
+import PresenceList from './components/PresenceList';
+import Statistics  from './components/Statistics';
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/player/new" element={<PlayerForm />} />
-          <Route path="/teams/draw" element={<TeamDraw />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/player/new" element={<PlayerForm />} />
+      <Route path="/players" element={<PlayerList />} />
+      <Route path="/teams/draw" element={<TeamDraw />} />
+      <Route path="/presence" element={<PresenceList />} />
+      <Route path="/statistics" element={<Statistics />} />
+    </Routes>
+  );
+};
 
 export default App;
