@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
-import { Shuffle, Users } from "lucide-react";
-import { useToast } from "./ui/use-toast";
+import { Shuffle, Users, AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Player {
   id: number;
   name: string;
   rating: number;
   selected: boolean;
+  position: string;
 }
 
 const TeamDraw = () => {
@@ -20,60 +21,111 @@ const TeamDraw = () => {
   // Simula os dados dos jogadores selecionados
   useEffect(() => {
     const selectedPlayers = [
-      { id: 1, name: "Bale", rating: 4, selected: true },
-      { id: 2, name: "Betinho", rating: 1, selected: true },
-      { id: 3, name: "Buffon", rating: 5, selected: true },
-      { id: 4, name: "Coutinho", rating: 4, selected: true },
-      { id: 5, name: "Cristiano Ronaldo", rating: 5, selected: true },
-      { id: 7, name: "Egídio", rating: 1, selected: true },
-      { id: 8, name: "Messi", rating: 5, selected: true },
-      { id: 9, name: "Navas", rating: 3, selected: true },
-      { id: 10, name: "Neymar", rating: 5, selected: true },
-      { id: 11, name: "Pogba", rating: 4, selected: true },
-      { id: 12, name: "Reinaldo", rating: 1, selected: true },
+      { id: 1, name: "Bale", rating: 4, selected: true, position: "atacante" },
+      { id: 2, name: "Betinho", rating: 1, selected: true, position: "meio" },
+      { id: 3, name: "Buffon", rating: 5, selected: true, position: "goleiro" },
+      { id: 4, name: "Coutinho", rating: 4, selected: true, position: "meio" },
+      { id: 5, name: "Cristiano", rating: 5, selected: true, position: "atacante" },
+      { id: 7, name: "Egídio", rating: 1, selected: true, position: "defensor" },
+      { id: 8, name: "Messi", rating: 5, selected: true, position: "atacante" },
+      { id: 9, name: "Navas", rating: 3, selected: true, position: "goleiro" },
+      { id: 10, name: "Neymar", rating: 5, selected: true, position: "atacante" },
+      { id: 11, name: "Pogba", rating: 4, selected: true, position: "meio" },
+      { id: 12, name: "Reinaldo", rating: 1, selected: true, position: "defensor" },
     ];
-    setPlayers(selectedPlayers);
+    setPlayers(selectedPlayers.filter(player => player.position !== "goleiro"));
   }, []);
 
   const calculateTeamStrength = (team: Player[]): number => {
     return team.reduce((sum, player) => sum + player.rating, 0);
   };
 
+  const getPositionDistribution = (numPlayers: number) => {
+    const distribution = {
+      defensor: Math.floor(numPlayers * 0.3),
+      meio: Math.floor(numPlayers * 0.4),
+      atacante: Math.floor(numPlayers * 0.3)
+    };
+
+    // Adjust for rounding errors
+    const total = distribution.defensor + distribution.meio + distribution.atacante;
+    if (total < numPlayers) {
+      distribution.meio += numPlayers - total;
+    }
+
+    return distribution;
+  };
+
   const drawTeams = () => {
-    if (players.length < playersPerTeam * 2) {
+    const nonGoalkeepers = players.filter(p => p.position !== "goleiro");
+    
+    if (nonGoalkeepers.length < playersPerTeam) {
       toast({
         title: "Erro no sorteio",
-        description: `São necessários pelo menos ${
-          playersPerTeam * 2
-        } jogadores selecionados.`,
+        description: `São necessários pelo menos ${playersPerTeam} jogadores de linha.`,
         variant: "destructive",
       });
       return;
     }
 
-    // Ordena jogadores por rating (do maior para o menor)
-    const sortedPlayers = [...players].sort((a, b) => b.rating - a.rating);
-    const numberOfTeams = Math.floor(players.length / playersPerTeam);
-    const newTeams: Player[][] = Array.from({ length: numberOfTeams }, () => []);
+    const distribution = getPositionDistribution(playersPerTeam);
+    const numberOfCompleteTeams = Math.floor(nonGoalkeepers.length / playersPerTeam);
+    const remainingPlayers = nonGoalkeepers.length % playersPerTeam;
+    
+    // Sort players by position and rating
+    const playersByPosition = {
+      defensor: nonGoalkeepers.filter(p => p.position === "defensor").sort((a, b) => b.rating - a.rating),
+      meio: nonGoalkeepers.filter(p => p.position === "meio").sort((a, b) => b.rating - a.rating),
+      atacante: nonGoalkeepers.filter(p => p.position === "atacante").sort((a, b) => b.rating - a.rating)
+    };
 
-    // Distribui os melhores jogadores primeiro
-    sortedPlayers.forEach((player, index) => {
-      const teamIndex = index % numberOfTeams;
-      newTeams[teamIndex].push(player);
-    });
+    const newTeams: Player[][] = Array.from({ length: numberOfCompleteTeams + (remainingPlayers > 0 ? 1 : 0) }, () => []);
 
-    // Verifica se os times estão equilibrados
+    // Distribute players by position for complete teams
+    for (let i = 0; i < numberOfCompleteTeams; i++) {
+      // Add defenders
+      for (let j = 0; j < distribution.defensor; j++) {
+        if (playersByPosition.defensor.length > 0) {
+          newTeams[i].push(playersByPosition.defensor.shift()!);
+        }
+      }
+      // Add midfielders
+      for (let j = 0; j < distribution.meio; j++) {
+        if (playersByPosition.meio.length > 0) {
+          newTeams[i].push(playersByPosition.meio.shift()!);
+        }
+      }
+      // Add forwards
+      for (let j = 0; j < distribution.atacante; j++) {
+        if (playersByPosition.atacante.length > 0) {
+          newTeams[i].push(playersByPosition.atacante.shift()!);
+        }
+      }
+    }
+
+    // Handle remaining players
+    if (remainingPlayers > 0) {
+      const remainingTeamIndex = numberOfCompleteTeams;
+      const remainingPlayersList = [
+        ...playersByPosition.defensor,
+        ...playersByPosition.meio,
+        ...playersByPosition.atacante
+      ];
+      newTeams[remainingTeamIndex] = remainingPlayersList;
+    }
+
+    // Verify team balance
     const teamStrengths = newTeams.map(calculateTeamStrength);
     const maxStrength = Math.max(...teamStrengths);
     const minStrength = Math.min(...teamStrengths);
 
-    if (maxStrength - minStrength > 2) {
+    if (maxStrength - minStrength > 1) {
       toast({
         title: "Times desbalanceados",
         description: "Tentando novo sorteio...",
         variant: "destructive",
       });
-      drawTeams(); // Tenta novamente
+      drawTeams();
       return;
     }
 
@@ -122,12 +174,22 @@ const TeamDraw = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: teamIndex * 0.1 }}
-            className="bg-white rounded-lg shadow-lg p-4"
+            className={`bg-white rounded-lg shadow-lg p-4 ${
+              team.length < playersPerTeam ? "border-2 border-yellow-400" : ""
+            }`}
           >
             <div className="bg-primary/10 rounded-t-lg p-3">
-              <h2 className="text-lg font-semibold text-primary">
-                Time {teamIndex + 1}
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-primary">
+                  Time {teamIndex + 1}
+                </h2>
+                {team.length < playersPerTeam && (
+                  <div className="flex items-center text-yellow-600 text-sm">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    Time Incompleto
+                  </div>
+                )}
+              </div>
               <div className="text-sm text-gray-600">
                 Força total: {calculateTeamStrength(team)}
               </div>
@@ -139,15 +201,18 @@ const TeamDraw = () => {
                   className="flex items-center justify-between p-2 bg-gray-50 rounded"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <span>{player.name}</span>
+                  <div className="flex flex-col">
+                    <span>{player.name}</span>
+                    <span className="text-xs text-gray-500 capitalize">
+                      {player.position}
+                    </span>
+                  </div>
                   <div className="flex">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <span
                         key={i}
                         className={`text-sm ${
-                          i < player.rating
-                            ? "text-primary"
-                            : "text-gray-300"
+                          i < player.rating ? "text-primary" : "text-gray-300"
                         }`}
                       >
                         ★
