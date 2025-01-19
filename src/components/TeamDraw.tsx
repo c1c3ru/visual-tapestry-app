@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
 import { motion } from "framer-motion";
+import { BackToDashboard } from "./BackToDashboard";
+import { Button } from "./ui/button";
 import { Shuffle, Users, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { BackToDashboard } from "./BackToDashboard";
-import { DynamicTitle } from "@/components/DynamicTitle";
+import TeamNameSelector from "./TeamNameSelector"; // Componente para selecionar nomenclatura
+import GenerateMatchupsButton from "./GenerateMatchupsButton"; // Componente para gerar confrontos
+import MatchupTable from "./MatchupTable"; // Componente para mostrar confrontos
+import ShareButtons from "./ShareButtons"; // Para compartilhar os confrontos
 
 
 interface Player {
   id: number;
   name: string;
   rating: number;
-  selected: boolean;
   position: string;
 }
 
@@ -19,9 +21,10 @@ const TeamDraw = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [teams, setTeams] = useState<Player[][]>([]);
   const [playersPerTeam, setPlayersPerTeam] = useState(5);
+  const [namingOption, setNamingOption] = useState("numeric"); // Nomenclatura dos times
+  const [matchups, setMatchups] = useState<string[]>([]); // Confrontos gerados
   const { toast } = useToast();
 
-  // Simula os dados dos jogadores selecionados
   useEffect(() => {
     const selectedPlayers = [
       { id: 1, name: "Bale", rating: 4, selected: true, position: "atacante" },
@@ -34,109 +37,68 @@ const TeamDraw = () => {
       { id: 9, name: "Navas", rating: 3, selected: true, position: "goleiro" },
       { id: 10, name: "Neymar", rating: 5, selected: true, position: "atacante" },
       { id: 11, name: "Pogba", rating: 4, selected: true, position: "meio" },
-      { id: 12, name: "Reinaldo", rating: 1, selected: true, position: "defensor" },
+      { id: 12, name: "Reinaldo", rating: 1, selected: true, position: "defensor"},
+      { id: 13, name: "Ronaldo", rating: 5, selected: true, position: "atacante" },
+      { id: 14, name: "Salah", rating: 4, selected: true, position: "atacante" },
+      { id: 15, name: "Sergio Ramos", rating: 5, selected: true, position: "defensor" },
+      { id: 16, name: "Thiago Silva", rating: 4, selected: true, position: "defensor" },
+      { id: 17, name: "Van Dijk", rating: 5, selected: true, position: "defensor" },
+      { id: 18, name: "Mbappé", rating: 5, selected: true, position: "atacante" },
+      { id: 19, name: "Haaland", rating: 5, selected: true, position: "atacante" },
+      { id: 20, name: "Kante", rating: 4, selected: true, position: "meio" },
+      { id: 21, name: "De Bruyne", rating: 5, selected: true, position: "meio" },
+      { id: 22, name: "Modric", rating: 5, selected: true, position: "meio" },
+      { id: 23, name: "Kimmich", rating: 4, selected: true, position: "meio" },
+      { id: 24, name: "Alisson", rating: 5, selected: true, position: "goleiro" },
+      { id: 25, name: "Ederson", rating: 4, selected: true, position: "goleiro" },
+      { id: 26, name: "Courtois", rating: 5, selected: true, position: "goleiro" },
+      { id: 27, name: "Lewandowski", rating: 5, selected: true, position: "atacante" },
+      { id: 28, name: "Benzema", rating: 4, selected: true, position: "atacante" },
+      { id: 29, name: "Griezmann", rating: 4, selected: true, position: "atacante" },
+      { id: 30, name: "Pique", rating: 4, selected: true, position: "defensor" },
+      { id: 31, name: "Ramos", rating: 5, selected: true, position: "defensor" },
+      { id: 32, name: "Busquets", rating: 4, selected: true, position: "meio" },
+      { id: 33, name: "Jordi Alba", rating: 4, selected: true, position: "defensor" },
+      { id: 34, name: "Gareth Bale", rating: 4, selected: true, position: "atacante" },
+      { id: 35, name: "Lukaku", rating: 4, selected: true, position: "atacante" },
+      { id: 36, name: "Son", rating: 4, selected: true, position: "atacante" },
+      { id: 37, name: "Hakimi", rating: 4, selected: true, position: "defensor" },
+      { id: 38, name: "Rashford", rating: 4, selected: true, position: "atacante" },
+      { id: 39, name: "Verratti", rating: 4, selected: true, position: "meio" },
+      { id: 40, name: "Rakitic", rating: 4, selected: true, position: "meio" },
+      { id: 41, name: "Toni Kroos", rating: 5, selected: true, position: "meio" },
+      { id: 42, name: "Pepe", rating: 4, selected: true, position: "defensor" },
+      { id: 43, name: "Chiellini", rating: 5, selected: true, position: "defensor" },
+      { id: 44, name: "Neymar Jr", rating: 5, selected: true, position: "atacante" },
+      { id: 45, name: "Timo Werner", rating: 4, selected: true, position: "atacante" },
+      { id: 46, name: "Sergio Busquets", rating: 4, selected: true, position: "meio" },
+      { id: 47, name: "Pogba", rating: 5, selected: true, position: "meio" },
+      { id: 48, name: "Marcelo", rating: 4, selected: true, position: "defensor" }
     ];
-    setPlayers(selectedPlayers.filter(player => player.position !== "goleiro"));
+  
+    // Filtra jogadores selecionados e remove goleiros
+    const filteredPlayers = selectedPlayers.filter(player => player.selected && player.position !== "goleiro");
+  
+    setPlayers(filteredPlayers);
   }, []);
-
-  const calculateTeamStrength = (team: Player[]): number => {
-    return team.reduce((sum, player) => sum + player.rating, 0);
-  };
-
-  const getPositionDistribution = (numPlayers: number) => {
-    const distribution = {
-      defensor: Math.floor(numPlayers * 0.3),
-      meio: Math.floor(numPlayers * 0.4),
-      atacante: Math.floor(numPlayers * 0.3),
-    };
-
-    // Ajustar para erros de arredondamento
-    const total = distribution.defensor + distribution.meio + distribution.atacante;
-    if (total < numPlayers) {
-      distribution.meio += numPlayers - total;
-    }
-
-    return distribution;
-  };
-
+  
   const drawTeams = () => {
-    const nonGoalkeepers = players.filter(p => p.position !== "goleiro");
-    
-    if (nonGoalkeepers.length < playersPerTeam) {
-      toast({
-        title: "Erro no sorteio",
-        description: `São necessários pelo menos ${playersPerTeam} jogadores de linha.`,
-        variant: "destructive",
-      });
-      return;
+    const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+    const newTeams = [];
+    for (let i = 0; i < shuffledPlayers.length; i += playersPerTeam) {
+      newTeams.push(shuffledPlayers.slice(i, i + playersPerTeam));
     }
-
-    const distribution = getPositionDistribution(playersPerTeam);
-    const numberOfCompleteTeams = Math.floor(nonGoalkeepers.length / playersPerTeam);
-    const remainingPlayers = nonGoalkeepers.length % playersPerTeam;
-    
-    // Classificar os jogadores por posição e rating
-    const playersByPosition = {
-      defensor: nonGoalkeepers.filter(p => p.position === "defensor").sort((a, b) => b.rating - a.rating),
-      meio: nonGoalkeepers.filter(p => p.position === "meio").sort((a, b) => b.rating - a.rating),
-      atacante: nonGoalkeepers.filter(p => p.position === "atacante").sort((a, b) => b.rating - a.rating),
-    };
-
-    const newTeams: Player[][] = Array.from({ length: numberOfCompleteTeams + (remainingPlayers > 0 ? 1 : 0) }, () => []);
-
-    // Distribuir jogadores por posição para times completos
-    for (let i = 0; i < numberOfCompleteTeams; i++) {
-      // Adicionar defensores
-      for (let j = 0; j < distribution.defensor; j++) {
-        if (playersByPosition.defensor.length > 0) {
-          newTeams[i].push(playersByPosition.defensor.shift()!);
-        }
-      }
-      // Adicionar meio-campistas
-      for (let j = 0; j < distribution.meio; j++) {
-        if (playersByPosition.meio.length > 0) {
-          newTeams[i].push(playersByPosition.meio.shift()!);
-        }
-      }
-      // Adicionar atacantes
-      for (let j = 0; j < distribution.atacante; j++) {
-        if (playersByPosition.atacante.length > 0) {
-          newTeams[i].push(playersByPosition.atacante.shift()!);
-        }
-      }
-    }
-
-    // Gerenciar jogadores restantes
-    if (remainingPlayers > 0) {
-      const remainingTeamIndex = numberOfCompleteTeams;
-      const remainingPlayersList = [
-        ...playersByPosition.defensor,
-        ...playersByPosition.meio,
-        ...playersByPosition.atacante,
-      ];
-      newTeams[remainingTeamIndex] = remainingPlayersList;
-    }
-
-    // Verificar balanceamento de times
-    const teamStrengths = newTeams.map(calculateTeamStrength);
-    const maxStrength = Math.max(...teamStrengths);
-    const minStrength = Math.min(...teamStrengths);
-
-    if (maxStrength - minStrength > 1) {
-      toast({
-        title: "Times desbalanceados",
-        description: "Tentando novo sorteio...",
-        variant: "destructive",
-      });
-      drawTeams(); // Tentar novamente se os times não forem balanceados
-      return;
-    }
-
     setTeams(newTeams);
-    toast({
-      title: "Times sorteados!",
-      description: "Os times foram divididos de forma equilibrada.",
-    });
+  };
+
+  const generateMatchups = () => {
+    const newMatchups = [];
+    for (let i = 0; i < teams.length; i += 2) {
+      const teamA = `Time ${namingOption === "numeric" ? `0${i + 1}` : String.fromCharCode(65 + i)}`;
+      const teamB = `Time ${namingOption === "numeric" ? `0${i + 2}` : String.fromCharCode(65 + i + 1)}`;
+      newMatchups.push(`${teamA} vs ${teamB}`);
+    }
+    setMatchups(newMatchups);
   };
 
   return (
@@ -144,7 +106,7 @@ const TeamDraw = () => {
       <BackToDashboard />
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <DynamicTitle />
+          <h1 className="text-2xl font-bold">Sorteio de Times</h1>
           <Users className="h-6 w-6 text-primary" />
         </div>
         <div className="flex items-center gap-4">
@@ -168,6 +130,7 @@ const TeamDraw = () => {
           </Button>
         </div>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {teams.map((team, teamIndex) => (
           <motion.div
@@ -182,7 +145,7 @@ const TeamDraw = () => {
             <div className="bg-primary/10 rounded-t-lg p-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-primary">
-                  Time {teamIndex + 1}
+                  {namingOption === "numeric" ? `Time ${teamIndex + 1}` : `Time ${String.fromCharCode(65 + teamIndex)}`}
                 </h2>
                 {team.length < playersPerTeam && (
                   <div className="flex items-center text-yellow-600 text-sm">
@@ -192,7 +155,7 @@ const TeamDraw = () => {
                 )}
               </div>
               <div className="text-sm text-gray-600">
-                Força total: {calculateTeamStrength(team)}
+                Força total: {team.reduce((sum, player) => sum + player.rating, 0)}
               </div>
             </div>
             <ul className="space-y-2 mt-3">
@@ -204,17 +167,13 @@ const TeamDraw = () => {
                 >
                   <div className="flex flex-col">
                     <span>{player.name}</span>
-                    <span className="text-xs text-gray-500 capitalize">
-                      {player.position}
-                    </span>
+                    <span className="text-xs text-gray-500 capitalize">{player.position}</span>
                   </div>
                   <div className="flex">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <span
                         key={i}
-                        className={`text-sm ${
-                          i < player.rating ? "text-primary" : "text-gray-300"
-                        }`}
+                        className={`text-sm ${i < player.rating ? "text-primary" : "text-gray-300"}`}
                       >
                         ★
                       </span>
@@ -226,6 +185,18 @@ const TeamDraw = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* Componente para escolher a nomenclatura dos times */}
+      {teams.length > 0 && <TeamNameSelector onNameFormatChange={setNamingOption} />}
+      
+      {/* Botão para gerar confrontos */}
+      {teams.length > 0 && <GenerateMatchupsButton onGenerate={generateMatchups} />}
+
+      {/* Exibição da tabela de confrontos */}
+      {matchups.length > 0 && <MatchupTable matchups={matchups} />}
+      
+      {/* Botões para compartilhar */}
+      {matchups.length > 0 && <ShareButtons />}
     </div>
   );
 };
