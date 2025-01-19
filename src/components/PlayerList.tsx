@@ -5,10 +5,13 @@ import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+type Rating = 1 | 2 | 3 | 4 | 5;
+
+
 interface Player {
   id: number;
   name: string;
-  rating: number;
+  rating: Rating;
   selected: boolean;
 }
 
@@ -30,7 +33,8 @@ const initialPlayers: Player[] = [
 export const PlayerList = () => {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [searchTerm, setSearchTerm] = useState("");
-  const [ratingFilter, setRatingFilter] = useState<string>("all");
+  const [ratingFilter, setRatingFilter] = useState<"all" | Rating>("all");
+
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
   const filteredPlayers = players
@@ -38,29 +42,31 @@ export const PlayerList = () => {
       player.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .filter((player) =>
-      ratingFilter === "all" ? true : player.rating === Number(ratingFilter)
+      ratingFilter === "all" ? true : player.rating === ratingFilter
     )
     .sort((a, b) => {
       if (!sortOrder) return 0;
-      return sortOrder === "asc" 
-        ? a.rating - b.rating 
-        : b.rating - a.rating;
+      return sortOrder === "asc" ? a.rating - b.rating : b.rating - a.rating;
+
     });
 
   const selectedCount = players.filter((player) => player.selected).length;
 
   const togglePlayer = (id: number) => {
-    setPlayers(
-      players.map((player) =>
+    setPlayers((prevPlayers) =>
+      prevPlayers.map((player) =>
         player.id === id ? { ...player, selected: !player.selected } : player
       )
     );
   };
 
   const toggleSort = () => {
-    const orders: ("asc" | "desc" | null)[] = [null, "asc", "desc"];
-    const currentIndex = orders.indexOf(sortOrder);
-    setSortOrder(orders[(currentIndex + 1) % orders.length]);
+    setSortOrder((prevSortOrder) => {
+      const orders: ("asc" | "desc" | null)[] = [null, "asc", "desc"];
+      const currentIndex = orders.indexOf(prevSortOrder);
+      return orders[(currentIndex + 1) % orders.length];
+    });
+
   };
 
   return (

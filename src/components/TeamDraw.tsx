@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Shuffle, Users, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BackToDashboard } from "./BackToDashboard";
-import { DynamicTitle } from "./DynamicTitle";
+import { DynamicTitle } from "@/components/DynamicTitle";
+
 
 interface Player {
   id: number;
@@ -46,10 +47,10 @@ const TeamDraw = () => {
     const distribution = {
       defensor: Math.floor(numPlayers * 0.3),
       meio: Math.floor(numPlayers * 0.4),
-      atacante: Math.floor(numPlayers * 0.3)
+      atacante: Math.floor(numPlayers * 0.3),
     };
 
-    // Adjust for rounding errors
+    // Ajustar para erros de arredondamento
     const total = distribution.defensor + distribution.meio + distribution.atacante;
     if (total < numPlayers) {
       distribution.meio += numPlayers - total;
@@ -74,30 +75,30 @@ const TeamDraw = () => {
     const numberOfCompleteTeams = Math.floor(nonGoalkeepers.length / playersPerTeam);
     const remainingPlayers = nonGoalkeepers.length % playersPerTeam;
     
-    // Sort players by position and rating
+    // Classificar os jogadores por posição e rating
     const playersByPosition = {
       defensor: nonGoalkeepers.filter(p => p.position === "defensor").sort((a, b) => b.rating - a.rating),
       meio: nonGoalkeepers.filter(p => p.position === "meio").sort((a, b) => b.rating - a.rating),
-      atacante: nonGoalkeepers.filter(p => p.position === "atacante").sort((a, b) => b.rating - a.rating)
+      atacante: nonGoalkeepers.filter(p => p.position === "atacante").sort((a, b) => b.rating - a.rating),
     };
 
     const newTeams: Player[][] = Array.from({ length: numberOfCompleteTeams + (remainingPlayers > 0 ? 1 : 0) }, () => []);
 
-    // Distribute players by position for complete teams
+    // Distribuir jogadores por posição para times completos
     for (let i = 0; i < numberOfCompleteTeams; i++) {
-      // Add defenders
+      // Adicionar defensores
       for (let j = 0; j < distribution.defensor; j++) {
         if (playersByPosition.defensor.length > 0) {
           newTeams[i].push(playersByPosition.defensor.shift()!);
         }
       }
-      // Add midfielders
+      // Adicionar meio-campistas
       for (let j = 0; j < distribution.meio; j++) {
         if (playersByPosition.meio.length > 0) {
           newTeams[i].push(playersByPosition.meio.shift()!);
         }
       }
-      // Add forwards
+      // Adicionar atacantes
       for (let j = 0; j < distribution.atacante; j++) {
         if (playersByPosition.atacante.length > 0) {
           newTeams[i].push(playersByPosition.atacante.shift()!);
@@ -105,18 +106,18 @@ const TeamDraw = () => {
       }
     }
 
-    // Handle remaining players
+    // Gerenciar jogadores restantes
     if (remainingPlayers > 0) {
       const remainingTeamIndex = numberOfCompleteTeams;
       const remainingPlayersList = [
         ...playersByPosition.defensor,
         ...playersByPosition.meio,
-        ...playersByPosition.atacante
+        ...playersByPosition.atacante,
       ];
       newTeams[remainingTeamIndex] = remainingPlayersList;
     }
 
-    // Verify team balance
+    // Verificar balanceamento de times
     const teamStrengths = newTeams.map(calculateTeamStrength);
     const maxStrength = Math.max(...teamStrengths);
     const minStrength = Math.min(...teamStrengths);
@@ -127,7 +128,7 @@ const TeamDraw = () => {
         description: "Tentando novo sorteio...",
         variant: "destructive",
       });
-      drawTeams();
+      drawTeams(); // Tentar novamente se os times não forem balanceados
       return;
     }
 
