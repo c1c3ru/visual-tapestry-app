@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "@/components/DynamicTitle";
 
-
 interface Player {
   id: number;
   name: string;
@@ -20,8 +19,8 @@ const TeamDraw = () => {
   const [teams, setTeams] = useState<Player[][]>([]);
   const [playersPerTeam, setPlayersPerTeam] = useState(5);
   const { toast } = useToast();
+  const MAX_ATTEMPTS = 10;
 
-  // Simula os dados dos jogadores selecionados
   useEffect(() => {
     const selectedPlayers = [
       { id: 1, name: "Bale", rating: 4, selected: true, position: "atacante" },
@@ -50,7 +49,7 @@ const TeamDraw = () => {
       atacante: Math.floor(numPlayers * 0.3),
     };
 
-    // Ajustar para erros de arredondamento
+    // Adjust for rounding errors
     const total = distribution.defensor + distribution.meio + distribution.atacante;
     if (total < numPlayers) {
       distribution.meio += numPlayers - total;
@@ -59,7 +58,7 @@ const TeamDraw = () => {
     return distribution;
   };
 
-  const drawTeams = () => {
+  const attemptDrawTeams = () => {
     const nonGoalkeepers = players.filter(p => p.position !== "goleiro");
     
     if (nonGoalkeepers.length < playersPerTeam) {
@@ -68,37 +67,37 @@ const TeamDraw = () => {
         description: `São necessários pelo menos ${playersPerTeam} jogadores de linha.`,
         variant: "destructive",
       });
-      return;
+      return null;
     }
 
     const distribution = getPositionDistribution(playersPerTeam);
     const numberOfCompleteTeams = Math.floor(nonGoalkeepers.length / playersPerTeam);
     const remainingPlayers = nonGoalkeepers.length % playersPerTeam;
     
-    // Classificar os jogadores por posição e rating
+    // Sort players by position and rating
     const playersByPosition = {
-      defensor: nonGoalkeepers.filter(p => p.position === "defensor").sort((a, b) => b.rating - a.rating),
-      meio: nonGoalkeepers.filter(p => p.position === "meio").sort((a, b) => b.rating - a.rating),
-      atacante: nonGoalkeepers.filter(p => p.position === "atacante").sort((a, b) => b.rating - a.rating),
+      defensor: [...nonGoalkeepers.filter(p => p.position === "defensor")].sort((a, b) => b.rating - a.rating),
+      meio: [...nonGoalkeepers.filter(p => p.position === "meio")].sort((a, b) => b.rating - a.rating),
+      atacante: [...nonGoalkeepers.filter(p => p.position === "atacante")].sort((a, b) => b.rating - a.rating),
     };
 
     const newTeams: Player[][] = Array.from({ length: numberOfCompleteTeams + (remainingPlayers > 0 ? 1 : 0) }, () => []);
 
-    // Distribuir jogadores por posição para times completos
+    // Distribute players for complete teams
     for (let i = 0; i < numberOfCompleteTeams; i++) {
-      // Adicionar defensores
+      // Add defenders
       for (let j = 0; j < distribution.defensor; j++) {
         if (playersByPosition.defensor.length > 0) {
           newTeams[i].push(playersByPosition.defensor.shift()!);
         }
       }
-      // Adicionar meio-campistas
+      // Add midfielders
       for (let j = 0; j < distribution.meio; j++) {
         if (playersByPosition.meio.length > 0) {
           newTeams[i].push(playersByPosition.meio.shift()!);
         }
       }
-      // Adicionar atacantes
+      // Add forwards
       for (let j = 0; j < distribution.atacante; j++) {
         if (playersByPosition.atacante.length > 0) {
           newTeams[i].push(playersByPosition.atacante.shift()!);
@@ -106,7 +105,7 @@ const TeamDraw = () => {
       }
     }
 
-    // Gerenciar jogadores restantes
+    // Handle remaining players
     if (remainingPlayers > 0) {
       const remainingTeamIndex = numberOfCompleteTeams;
       const remainingPlayersList = [
@@ -117,27 +116,43 @@ const TeamDraw = () => {
       newTeams[remainingTeamIndex] = remainingPlayersList;
     }
 
-    // Verificar balanceamento de times
+    // Check team balance
     const teamStrengths = newTeams.map(calculateTeamStrength);
     const maxStrength = Math.max(...teamStrengths);
     const minStrength = Math.min(...teamStrengths);
 
     if (maxStrength - minStrength > 1) {
-      toast({
-        title: "Times desbalanceados",
-        description: "Tentando novo sorteio...",
-        variant: "destructive",
-      });
-      drawTeams(); // Tentar novamente se os times não forem balanceados
-      return;
+      return null;
     }
 
-    setTeams(newTeams);
+    return newTeams;
+  };
+
+  const drawTeams = () => {
+    let attempts = 0;
+    let drawnTeams = null;
+
+    while (attempts < MAX_ATTEMPTS) {
+      drawnTeams = attemptDrawTeams();
+      if (drawnTeams !== null) {
+        setTeams(drawnTeams);
+        toast({
+          title: "Times sorteados!",
+          description: "Os times foram divididos de forma equilibrada.",
+        });
+        return;
+      }
+      attempts++;
+    }
+
     toast({
-      title: "Times sorteados!",
-      description: "Os times foram divididos de forma equilibrada.",
+      title: "Não foi possível equilibrar os times",
+      description: "Tente novamente ou ajuste o número de jogadores por time.",
+      variant: "destructive",
     });
   };
+
+  // ... keep existing code (JSX return statement)
 
   return (
     <div className="max-w-4xl mx-auto p-6">
