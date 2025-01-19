@@ -3,6 +3,8 @@ import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 import { Shuffle, Users, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { BackToDashboard } from "./BackToDashboard";
+import { DynamicTitle } from "./DynamicTitle";
 
 interface Player {
   id: number;
@@ -138,11 +140,10 @@ const TeamDraw = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      <BackToDashboard />
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold text-gray-800">
-            Sorteio de Times
-          </h1>
+          <DynamicTitle />
           <Users className="h-6 w-6 text-primary" />
         </div>
         <div className="flex items-center gap-4">
@@ -166,7 +167,6 @@ const TeamDraw = () => {
           </Button>
         </div>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {teams.map((team, teamIndex) => (
           <motion.div

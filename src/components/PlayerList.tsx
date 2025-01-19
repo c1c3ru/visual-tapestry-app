@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Star, Check, Search } from "lucide-react";
+import { Star, Check, Search, ArrowUpDown } from "lucide-react";
 import { motion } from "framer-motion";
+import { BackToDashboard } from "./BackToDashboard";
+import { DynamicTitle } from "./DynamicTitle";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Player {
   id: number;
@@ -27,10 +30,22 @@ const initialPlayers: Player[] = [
 export const PlayerList = () => {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [searchTerm, setSearchTerm] = useState("");
+  const [ratingFilter, setRatingFilter] = useState<string>("all");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
-  const filteredPlayers = players.filter((player) =>
-    player.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPlayers = players
+    .filter((player) =>
+      player.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((player) =>
+      ratingFilter === "all" ? true : player.rating === Number(ratingFilter)
+    )
+    .sort((a, b) => {
+      if (!sortOrder) return 0;
+      return sortOrder === "asc" 
+        ? a.rating - b.rating 
+        : b.rating - a.rating;
+    });
 
   const selectedCount = players.filter((player) => player.selected).length;
 
@@ -42,62 +57,95 @@ export const PlayerList = () => {
     );
   };
 
+  const toggleSort = () => {
+    const orders: ("asc" | "desc" | null)[] = [null, "asc", "desc"];
+    const currentIndex = orders.indexOf(sortOrder);
+    setSortOrder(orders[(currentIndex + 1) % orders.length]);
+  };
+
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">Time Equilibrado</h1>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <input
-            type="text"
-            placeholder="Buscar jogador..."
-            className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+    <div className="min-h-screen bg-gray-50 p-6">
+      <BackToDashboard />
+      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <div className="flex items-center justify-between mb-6">
+          <DynamicTitle />
+          <div className="flex gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                placeholder="Buscar jogador..."
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Select value={ratingFilter} onValueChange={setRatingFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filtrar por nível" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os níveis</SelectItem>
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <SelectItem key={rating} value={rating.toString()}>
+                    Nível {rating}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <button
+              onClick={toggleSort}
+              className={`p-2 rounded-lg transition-colors ${
+                sortOrder ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-600'
+              } hover:bg-primary/20`}
+              title="Ordenar por nível"
+            >
+              <ArrowUpDown className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="text-sm text-gray-600 mb-4">
-        {selectedCount} jogadores marcados
-      </div>
+        <div className="text-sm text-gray-600 mb-4">
+          {selectedCount} jogadores marcados
+        </div>
 
-      <div className="space-y-2">
-        {filteredPlayers.map((player) => (
-          <motion.div
-            key={player.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => togglePlayer(player.id)}
-                className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
-                  player.selected
-                    ? "bg-primary text-white"
-                    : "border-2 border-gray-300"
-                }`}
-              >
-                {player.selected && <Check className="h-4 w-4" />}
-              </button>
-              <span className="text-gray-800 font-medium">{player.name}</span>
-            </div>
-            <div className="flex items-center">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star
-                  key={index}
-                  className={`h-5 w-5 ${
-                    index < player.rating
-                      ? "text-primary fill-current"
-                      : "text-gray-300"
+        <div className="space-y-2">
+          {filteredPlayers.map((player) => (
+            <motion.div
+              key={player.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => togglePlayer(player.id)}
+                  className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
+                    player.selected
+                      ? "bg-primary text-white"
+                      : "border-2 border-gray-300"
                   }`}
-                />
-              ))}
-            </div>
-          </motion.div>
-        ))}
+                >
+                  {player.selected && <Check className="h-4 w-4" />}
+                </button>
+                <span className="text-gray-800 font-medium">{player.name}</span>
+              </div>
+              <div className="flex items-center">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={index}
+                    className={`h-5 w-5 ${
+                      index < player.rating
+                        ? "text-primary fill-current"
+                        : "text-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );

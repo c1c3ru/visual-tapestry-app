@@ -1,12 +1,13 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Star, StarHalf, Save } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { BackToDashboard } from "./BackToDashboard";
+import { motion } from "framer-motion";
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
@@ -23,7 +24,6 @@ const positions: Position = {
 };
 
 const PlayerForm = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [rating, setRating] = React.useState(0);
   const [name, setName] = React.useState("");
@@ -32,6 +32,8 @@ const PlayerForm = () => {
   const [isGuest, setIsGuest] = React.useState(false);
   const [sport, setSport] = React.useState<Sport>("futsal");
   const [selectedPositions, setSelectedPositions] = React.useState<string[]>([]);
+  const ratingSystem = localStorage.getItem('ratingSystem') || 'stars';
+  const guestHighlight = localStorage.getItem('guestHighlight') || 'orange';
 
   const handleSave = () => {
     if (!name) {
@@ -42,7 +44,6 @@ const PlayerForm = () => {
       });
       return;
     }
-    // Save logic here
     toast({
       title: "Sucesso",
       description: "Jogador salvo com sucesso!",
@@ -57,29 +58,131 @@ const PlayerForm = () => {
     }
   };
 
-  return (
-    <div className={`min-h-screen p-4 transition-colors duration-300 ${isGuest ? 'bg-orange-50' : 'bg-background'}`}>
-      <div className="max-w-2xl mx-auto space-y-8">
-        <div className="flex items-center justify-between mb-6">
-          <button 
-            onClick={() => navigate(-1)}
-            className="text-foreground hover:text-primary transition-colors"
-          >
-            ←
-          </button>
-          <h1 className="text-xl font-semibold text-center flex-1">
-            {isGuest ? 'Cadastrar Jogador Convidado' : 'Cadastrar Jogador'}
-          </h1>
-          <div className="flex gap-4">
-            <Button onClick={handleSave} variant="ghost" size="icon">
-              <svg width="24" height="24" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3Z"/>
-              </svg>
-            </Button>
+  const renderRatingInput = () => {
+    switch (ratingSystem) {
+      case 'stars':
+        return (
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                onClick={() => setRating(star)}
+                className="focus:outline-none transition-transform hover:scale-110"
+              >
+                <Star
+                  size={32}
+                  className={`${
+                    rating >= star
+                      ? "fill-primary text-primary"
+                      : "fill-muted text-muted"
+                  } transition-colors`}
+                />
+              </button>
+            ))}
           </div>
-        </div>
+        );
+      case 'halfStars':
+        return (
+          <div className="flex gap-2">
+            {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((star) => (
+              <button
+                key={star}
+                onClick={() => setRating(star)}
+                className="focus:outline-none transition-transform hover:scale-110"
+              >
+                {Number.isInteger(star) ? (
+                  <Star
+                    size={32}
+                    className={`${
+                      rating >= star
+                        ? "fill-primary text-primary"
+                        : "fill-muted text-muted"
+                    } transition-colors`}
+                  />
+                ) : (
+                  <StarHalf
+                    size={32}
+                    className={`${
+                      rating >= star
+                        ? "fill-primary text-primary"
+                        : "fill-muted text-muted"
+                    } transition-colors`}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        );
+      case 'numeric10':
+        return (
+          <div className="flex gap-2">
+            {[...Array(10)].map((_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setRating(i + 1)}
+                className={`w-8 h-8 rounded-full ${
+                  rating >= i + 1
+                    ? i + 1 <= 3
+                      ? "bg-red-500"
+                      : i + 1 <= 7
+                      ? "bg-green-500"
+                      : "bg-blue-500"
+                    : "bg-gray-200"
+                } text-white transition-colors`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        );
+      case 'numeric5':
+        return (
+          <div className="flex gap-2">
+            {[...Array(5)].map((_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setRating(i + 1)}
+                className={`w-8 h-8 rounded-full ${
+                  rating >= i + 1
+                    ? i + 1 <= 2
+                      ? "bg-red-500"
+                      : i + 1 <= 4
+                      ? "bg-green-500"
+                      : "bg-blue-500"
+                    : "bg-gray-200"
+                } text-white transition-colors`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
-        <div className="space-y-6 animate-fade-in">
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className={`min-h-screen p-4 transition-colors duration-300 ${
+        isGuest ? `bg-${guestHighlight}-50` : 'bg-background'
+      }`}
+    >
+      <BackToDashboard />
+      <div className="max-w-2xl mx-auto space-y-8">
+        <h1 className="text-xl font-semibold text-center">
+          {isGuest ? 'Cadastrar Jogador Convidado' : 'Cadastrar Jogador'}
+        </h1>
+
+        <motion.div 
+          className="space-y-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <div>
             <Label htmlFor="name" className="text-muted-foreground mb-2 block">Nome *</Label>
             <Input
@@ -116,26 +219,7 @@ const PlayerForm = () => {
 
           <div>
             <Label className="text-muted-foreground mb-4 block">Nível</Label>
-            <div className="flex gap-2">
-              {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((star) => (
-                <button
-                  key={star}
-                  onClick={() => setRating(star)}
-                  className="focus:outline-none transition-transform hover:scale-110"
-                >
-                  <Star
-                    size={32}
-                    className={`${
-                      rating >= star
-                        ? "fill-primary text-primary"
-                        : rating + 0.5 === star
-                        ? "fill-primary/50 text-primary"
-                        : "fill-muted text-muted"
-                    } transition-colors`}
-                  />
-                </button>
-              ))}
-            </div>
+            {renderRatingInput()}
           </div>
 
           <div>
@@ -190,9 +274,24 @@ const PlayerForm = () => {
               Jogador Convidado
             </label>
           </div>
-        </div>
+
+          <div className="flex justify-end pt-6">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                onClick={handleSave}
+                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+              >
+                <Save className="w-4 h-4" />
+                Salvar
+              </Button>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
