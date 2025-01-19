@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { BackToDashboard } from './BackToDashboard';
 import { DynamicTitle } from './DynamicTitle';
 import { motion } from 'framer-motion';
@@ -11,11 +12,13 @@ interface PointRecord {
   date: string;
 }
 
+
 interface Statistic {
   name: string;
   date: string;
   attendanceCount: number;
   pointRecords: PointRecord[]; // Lista de registros de pontos/gols com data
+
   lastUpdated: string;
 }
 
@@ -28,6 +31,7 @@ const Statistics = () => {
       pointRecords: [
         { points: 10, date: '2024-01-15' },
       ],
+
       lastUpdated: new Date().toISOString()
     },
     { 
@@ -37,12 +41,14 @@ const Statistics = () => {
       pointRecords: [
         { points: 15, date: '2024-01-15' },
       ],
+
       lastUpdated: new Date().toISOString()
     },
   ]);
 
   const [isAdmin] = useState(true); // This can be dynamic
   const { toast } = useToast();
+
 
   const handlePointsChange = (index: number, value: number) => {
     if (value < 0) {
@@ -65,6 +71,7 @@ const Statistics = () => {
           ? { 
               ...item, 
               pointRecords: [...item.pointRecords, newRecord], // Adiciona novo registro de pontos
+
               lastUpdated: new Date().toISOString()
             } 
           : item
@@ -117,12 +124,13 @@ const Statistics = () => {
                       ))}
                     </div>
 
+
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Pontos:</span>
                       {isAdmin ? (
                         <input
                           type="number"
-                          value={stat.pointRecords[stat.pointRecords.length - 1]?.points || 0}
+
                           onChange={(e) => handlePointsChange(index, parseInt(e.target.value))}
                           className="w-20 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
                         />
@@ -130,6 +138,7 @@ const Statistics = () => {
                         <span className="font-medium">{stat.pointRecords[stat.pointRecords.length - 1]?.points}</span>
                       )}
                     </div>
+
 
                     <div className="text-xs text-muted-foreground mt-2">
                       <div>Cadastro: {format(new Date(stat.date), 'dd/MM/yyyy')}</div>

@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "@/components/DynamicTitle";
 
+
 interface Player {
   id: number;
   name: string;

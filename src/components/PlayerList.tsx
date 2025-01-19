@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 type Rating = 1 | 2 | 3 | 4 | 5;
 
+
 interface Player {
   id: number;
   name: string;
@@ -33,6 +34,7 @@ export const PlayerList = () => {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [searchTerm, setSearchTerm] = useState("");
   const [ratingFilter, setRatingFilter] = useState<"all" | Rating>("all");
+
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
   const filteredPlayers = players
@@ -45,6 +47,7 @@ export const PlayerList = () => {
     .sort((a, b) => {
       if (!sortOrder) return 0;
       return sortOrder === "asc" ? a.rating - b.rating : b.rating - a.rating;
+
     });
 
   const selectedCount = players.filter((player) => player.selected).length;
@@ -63,6 +66,7 @@ export const PlayerList = () => {
       const currentIndex = orders.indexOf(prevSortOrder);
       return orders[(currentIndex + 1) % orders.length];
     });
+
   };
 
   return (

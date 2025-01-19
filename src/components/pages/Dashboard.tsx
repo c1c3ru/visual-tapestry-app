@@ -10,11 +10,13 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import clsx from 'clsx';
 
+
 const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [dashboardTitle, setDashboardTitle] = useState('Dashboard');
   const [selectedRatingSystem, setSelectedRatingSystem] = useState('stars');
   const [guestHighlight, setGuestHighlight] = useState('orange');
+
   
   const isAdmin = true;
 
@@ -104,6 +106,7 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold mb-4">Sistema de Avaliação</h2>
             <RadioGroup
               value={selectedRatingSystem}
+
               onValueChange={handleRatingSystemChange}
               className="space-y-4"
             >
@@ -157,6 +160,7 @@ const Dashboard = () => {
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Destaque para Convidados</h2>
             <Select value={guestHighlight} onValueChange={handleGuestHighlightChange}>
+
               <SelectTrigger>
                 <SelectValue placeholder="Escolha o estilo de destaque" />
               </SelectTrigger>
@@ -171,6 +175,7 @@ const Dashboard = () => {
             <div className="mt-4">
               <p className="text-sm text-gray-600 mb-2">Prévia:</p>
               <div className={`p-2 rounded ${guestHighlightClass}`}>
+
                 Nome do Jogador Convidado
               </div>
             </div>
