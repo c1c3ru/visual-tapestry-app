@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, StarHalf, Edit2, User, ChevronLeft } from 'lucide-react';
+import { Star, StarHalf, Edit2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -18,10 +18,13 @@ import {
 const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [dashboardTitle, setDashboardTitle] = useState('Dashboard');
-  const [selectedRatingSystem, setSelectedRatingSystem] = useState('stars');
-  const [guestHighlight, setGuestHighlight] = useState('orange');
+  const [selectedRatingSystem, setSelectedRatingSystem] = useState(() => 
+    localStorage.getItem('ratingSystem') || 'stars'
+  );
+  const [guestHighlight, setGuestHighlight] = useState(() => 
+    localStorage.getItem('guestHighlight') || 'orange'
+  );
   
-  // Mock admin check - replace with your actual auth logic
   const isAdmin = true;
 
   const handleTitleEdit = () => {
