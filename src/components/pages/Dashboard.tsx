@@ -1,31 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star, StarHalf, Edit2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import clsx from 'clsx';
 
 const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [dashboardTitle, setDashboardTitle] = useState('Dashboard');
-  const [selectedRatingSystem, setSelectedRatingSystem] = useState(() => 
-    localStorage.getItem('ratingSystem') || 'stars'
-  );
-  const [guestHighlight, setGuestHighlight] = useState(() => 
-    localStorage.getItem('guestHighlight') || 'orange'
-  );
+  const [selectedRatingSystem, setSelectedRatingSystem] = useState('stars');
+  const [guestHighlight, setGuestHighlight] = useState('orange');
   
   const isAdmin = true;
+
+  useEffect(() => {
+    const storedRatingSystem = localStorage.getItem('ratingSystem');
+    const storedGuestHighlight = localStorage.getItem('guestHighlight');
+    if (storedRatingSystem) setSelectedRatingSystem(storedRatingSystem);
+    if (storedGuestHighlight) setGuestHighlight(storedGuestHighlight);
+  }, []);
 
   const handleTitleEdit = () => {
     if (!isAdmin) {
@@ -60,6 +58,14 @@ const Dashboard = () => {
     { title: 'Lista de Presença', route: '/presence' },
     { title: 'Estatísticas', route: '/statistics' },
   ];
+
+  const guestHighlightClass = clsx({
+    'bg-orange-100 text-orange-800': guestHighlight === 'orange',
+    'bg-purple-100 text-purple-800': guestHighlight === 'purple',
+    'bg-pink-100 text-pink-800': guestHighlight === 'pink',
+    'font-bold': guestHighlight === 'bold',
+    'italic': guestHighlight === 'italic',
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-white p-6 font-sans">
@@ -96,8 +102,8 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Sistema de Avaliação</h2>
-            <RadioGroup 
-              defaultValue={selectedRatingSystem} 
+            <RadioGroup
+              value={selectedRatingSystem}
               onValueChange={handleRatingSystemChange}
               className="space-y-4"
             >
@@ -150,7 +156,7 @@ const Dashboard = () => {
 
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Destaque para Convidados</h2>
-            <Select onValueChange={handleGuestHighlightChange} defaultValue={guestHighlight}>
+            <Select value={guestHighlight} onValueChange={handleGuestHighlightChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Escolha o estilo de destaque" />
               </SelectTrigger>
@@ -164,13 +170,7 @@ const Dashboard = () => {
             </Select>
             <div className="mt-4">
               <p className="text-sm text-gray-600 mb-2">Prévia:</p>
-              <div className={`p-2 rounded ${
-                guestHighlight === 'orange' ? 'bg-orange-100 text-orange-800' :
-                guestHighlight === 'purple' ? 'bg-purple-100 text-purple-800' :
-                guestHighlight === 'pink' ? 'bg-pink-100 text-pink-800' :
-                guestHighlight === 'bold' ? 'font-bold' :
-                guestHighlight === 'italic' ? 'italic' : ''
-              }`}>
+              <div className={`p-2 rounded ${guestHighlightClass}`}>
                 Nome do Jogador Convidado
               </div>
             </div>
@@ -189,9 +189,7 @@ const Dashboard = () => {
             >
               <Link to={item.route}>
                 <Card className="p-6 hover:shadow-lg transition-shadow duration-300 bg-white/80 backdrop-blur">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                    {item.title}
-                  </h2>
+                  <h2 className="text-xl font-semibold text-gray-800 mb-2">{item.title}</h2>
                   <div className="h-1 w-20 bg-primary rounded-full" />
                 </Card>
               </Link>

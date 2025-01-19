@@ -38,23 +38,32 @@ const PresenceList = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleAddPlayer = (e: React.FormEvent) => {
     e.preventDefault();
     
     const playerExists = players.find(
-      player => player.name.toLowerCase() === newPlayerName.toLowerCase()
+      (player) => player.name.toLowerCase() === newPlayerName.trim().toLowerCase()
     );
 
-    if (!playerExists) {
+    if (playerExists) {
       toast({
         title: "Erro",
-        description: "Jogador não encontrado. Por favor, verifique se está cadastrado.",
+        description: "Jogador já está cadastrado.",
         variant: "destructive",
       });
       return;
     }
 
+    setPlayers((prev) => [
+      ...prev,
+      { id: prev.length + 1, name: newPlayerName.trim(), present: false, paid: false, registered: true }
+    ]);
+    
     setNewPlayerName('');
+    toast({
+      title: "Jogador Adicionado",
+      description: "Novo jogador foi adicionado com sucesso.",
+    });
   };
 
   return (
@@ -69,16 +78,16 @@ const PresenceList = () => {
           <DynamicTitle />
         </div>
         
-        <form onSubmit={handleSubmit} className="mb-8">
+        <form onSubmit={handleAddPlayer} className="mb-8">
           <div className="flex gap-4">
             <Input
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
-              placeholder="Digite seu nome..."
+              placeholder="Digite o nome do novo jogador..."
               className="flex-1"
             />
             <Button type="submit">
-              Marcar Presença
+              Adicionar Jogador
             </Button>
           </div>
         </form>

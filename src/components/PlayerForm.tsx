@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Star, StarHalf, Save } from "lucide-react";
@@ -25,17 +25,22 @@ const positions: Position = {
 
 const PlayerForm = () => {
   const { toast } = useToast();
-  const [rating, setRating] = React.useState(0);
-  const [name, setName] = React.useState("");
-  const [nickname, setNickname] = React.useState("");
-  const [birthDate, setBirthDate] = React.useState("");
-  const [isGuest, setIsGuest] = React.useState(false);
-  const [sport, setSport] = React.useState<Sport>("futsal");
-  const [selectedPositions, setSelectedPositions] = React.useState<string[]>([]);
-  const ratingSystem = localStorage.getItem('ratingSystem') || 'stars';
-  const guestHighlight = localStorage.getItem('guestHighlight') || 'orange';
+  const [formData, setFormData] = useState({
+    name: "",
+    nickname: "",
+    birthDate: "",
+    isGuest: false,
+    sport: "futsal" as Sport,
+    selectedPositions: [] as string[],
+    rating: 0
+  });
+
+  const [ratingSystem, setRatingSystem] = useState<string>(localStorage.getItem("ratingSystem") || "stars");
+  const [guestHighlight, setGuestHighlight] = useState<string>(localStorage.getItem("guestHighlight") || "orange");
 
   const handleSave = () => {
+    const { name } = formData;
+
     if (!name) {
       toast({
         title: "Erro",
@@ -44,18 +49,22 @@ const PlayerForm = () => {
       });
       return;
     }
+
     toast({
       title: "Sucesso",
       description: "Jogador salvo com sucesso!",
     });
   };
 
-  const handlePositionChange = (position: string, checked: boolean) => {
-    if (checked) {
-      setSelectedPositions([...selectedPositions, position]);
-    } else {
-      setSelectedPositions(selectedPositions.filter(p => p !== position));
-    }
+  const handleInputChange = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handleCheckboxChange = (position: string, checked: boolean) => {
+    const updatedPositions = checked
+      ? [...formData.selectedPositions, position]
+      : formData.selectedPositions.filter(p => p !== position);
+    setFormData({ ...formData, selectedPositions: updatedPositions });
   };
 
   const renderRatingInput = () => {
@@ -66,13 +75,13 @@ const PlayerForm = () => {
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
-                onClick={() => setRating(star)}
+                onClick={() => setFormData({ ...formData, rating: star })}
                 className="focus:outline-none transition-transform hover:scale-110"
               >
                 <Star
                   size={32}
                   className={`${
-                    rating >= star
+                    formData.rating >= star
                       ? "fill-primary text-primary"
                       : "fill-muted text-muted"
                   } transition-colors`}
@@ -87,14 +96,14 @@ const PlayerForm = () => {
             {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((star) => (
               <button
                 key={star}
-                onClick={() => setRating(star)}
+                onClick={() => setFormData({ ...formData, rating: star })}
                 className="focus:outline-none transition-transform hover:scale-110"
               >
                 {Number.isInteger(star) ? (
                   <Star
                     size={32}
                     className={`${
-                      rating >= star
+                      formData.rating >= star
                         ? "fill-primary text-primary"
                         : "fill-muted text-muted"
                     } transition-colors`}
@@ -103,7 +112,7 @@ const PlayerForm = () => {
                   <StarHalf
                     size={32}
                     className={`${
-                      rating >= star
+                      formData.rating >= star
                         ? "fill-primary text-primary"
                         : "fill-muted text-muted"
                     } transition-colors`}
@@ -119,9 +128,9 @@ const PlayerForm = () => {
             {[...Array(10)].map((_, i) => (
               <button
                 key={i + 1}
-                onClick={() => setRating(i + 1)}
+                onClick={() => setFormData({ ...formData, rating: i + 1 })}
                 className={`w-8 h-8 rounded-full ${
-                  rating >= i + 1
+                  formData.rating >= i + 1
                     ? i + 1 <= 3
                       ? "bg-red-500"
                       : i + 1 <= 7
@@ -141,9 +150,9 @@ const PlayerForm = () => {
             {[...Array(5)].map((_, i) => (
               <button
                 key={i + 1}
-                onClick={() => setRating(i + 1)}
+                onClick={() => setFormData({ ...formData, rating: i + 1 })}
                 className={`w-8 h-8 rounded-full ${
-                  rating >= i + 1
+                  formData.rating >= i + 1
                     ? i + 1 <= 2
                       ? "bg-red-500"
                       : i + 1 <= 4
@@ -168,13 +177,13 @@ const PlayerForm = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className={`min-h-screen p-4 transition-colors duration-300 ${
-        isGuest ? `bg-${guestHighlight}-50` : 'bg-background'
+        formData.isGuest ? `bg-${guestHighlight}-50` : 'bg-background'
       }`}
     >
       <BackToDashboard />
       <div className="max-w-2xl mx-auto space-y-8">
         <h1 className="text-xl font-semibold text-center">
-          {isGuest ? 'Cadastrar Jogador Convidado' : 'Cadastrar Jogador'}
+          {formData.isGuest ? 'Cadastrar Jogador Convidado' : 'Cadastrar Jogador'}
         </h1>
 
         <motion.div 
@@ -187,8 +196,8 @@ const PlayerForm = () => {
             <Label htmlFor="name" className="text-muted-foreground mb-2 block">Nome *</Label>
             <Input
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
               className="border-b border-primary/20 rounded-none px-0 focus-visible:ring-0"
               placeholder="Digite o nome do jogador"
               required
@@ -199,8 +208,8 @@ const PlayerForm = () => {
             <Label htmlFor="nickname" className="text-muted-foreground mb-2 block">Apelido</Label>
             <Input
               id="nickname"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              value={formData.nickname}
+              onChange={(e) => handleInputChange("nickname", e.target.value)}
               className="border-b border-primary/20 rounded-none px-0 focus-visible:ring-0"
               placeholder="Digite o apelido do jogador"
             />
@@ -211,8 +220,8 @@ const PlayerForm = () => {
             <Input
               id="birthDate"
               type="date"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
+              value={formData.birthDate}
+              onChange={(e) => handleInputChange("birthDate", e.target.value)}
               className="border-b border-primary/20 rounded-none px-0 focus-visible:ring-0"
             />
           </div>
@@ -224,7 +233,7 @@ const PlayerForm = () => {
 
           <div>
             <Label className="text-muted-foreground mb-2 block">Modalidade</Label>
-            <Select value={sport} onValueChange={(value) => setSport(value as Sport)}>
+            <Select value={formData.sport} onValueChange={(value) => setFormData({ ...formData, sport: value as Sport })}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione uma modalidade" />
               </SelectTrigger>
@@ -241,19 +250,14 @@ const PlayerForm = () => {
           <div>
             <Label className="text-muted-foreground mb-2 block">Posições</Label>
             <div className="grid grid-cols-2 gap-4">
-              {positions[sport].map((position) => (
+              {positions[formData.sport].map((position) => (
                 <div key={position} className="flex items-center space-x-2">
                   <Checkbox
                     id={position}
-                    checked={selectedPositions.includes(position)}
-                    onCheckedChange={(checked) => 
-                      handlePositionChange(position, checked as boolean)
-                    }
+                    checked={formData.selectedPositions.includes(position)}
+                    onCheckedChange={(checked) => handleCheckboxChange(position, checked as boolean)}
                   />
-                  <label
-                    htmlFor={position}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
+                  <label htmlFor={position} className="text-sm font-medium leading-none">
                     {position}
                   </label>
                 </div>
@@ -264,15 +268,10 @@ const PlayerForm = () => {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="guest"
-              checked={isGuest}
-              onCheckedChange={(checked) => setIsGuest(checked as boolean)}
+              checked={formData.isGuest}
+              onCheckedChange={(checked) => setFormData({ ...formData, isGuest: checked as boolean })}
             />
-            <label
-              htmlFor="guest"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Jogador Convidado
-            </label>
+            <label htmlFor="guest" className="text-sm font-medium leading-none">Jogador Convidado</label>
           </div>
 
           <div className="flex justify-end pt-6">
