@@ -9,7 +9,6 @@ import GenerateMatchupsButton from "./GenerateMatchupsButton"; // Componente par
 import MatchupTable from "./MatchupTable"; // Componente para mostrar confrontos
 import ShareButtons from "./ShareButtons"; // Para compartilhar os confrontos
 
-
 interface Player {
   id: number;
   name: string;
@@ -24,6 +23,7 @@ const TeamDraw = () => {
   const [namingOption, setNamingOption] = useState("numeric"); // Nomenclatura dos times
   const [matchups, setMatchups] = useState<string[]>([]); // Confrontos gerados
   const { toast } = useToast();
+  const MAX_ATTEMPTS = 10;
 
   useEffect(() => {
     const selectedPlayers = [
@@ -87,6 +87,7 @@ const TeamDraw = () => {
     const newTeams = [];
     for (let i = 0; i < shuffledPlayers.length; i += playersPerTeam) {
       newTeams.push(shuffledPlayers.slice(i, i + playersPerTeam));
+
     }
     setTeams(newTeams);
   };
@@ -99,7 +100,10 @@ const TeamDraw = () => {
       newMatchups.push(`${teamA} vs ${teamB}`);
     }
     setMatchups(newMatchups);
+
   };
+
+  // ... keep existing code (JSX return statement)
 
   return (
     <div className="max-w-4xl mx-auto p-6">
