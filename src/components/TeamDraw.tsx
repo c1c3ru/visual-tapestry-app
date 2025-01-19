@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Shuffle, Users, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BackToDashboard } from "./BackToDashboard";
-import { DynamicTitle } from "./DynamicTitle";
+import { DynamicTitle } from "@/components/DynamicTitle";
 
 interface Player {
   id: number;
