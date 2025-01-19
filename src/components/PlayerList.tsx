@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Star, Check, Search, ArrowUpDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { BackToDashboard } from "./BackToDashboard";
+import { DynamicTitle } from "./DynamicTitle";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Player {
@@ -67,7 +68,7 @@ export const PlayerList = () => {
       <BackToDashboard />
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold text-gray-800">Time Equilibrado</h1>
+          <DynamicTitle />
           <div className="flex gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />

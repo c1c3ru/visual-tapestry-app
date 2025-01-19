@@ -4,6 +4,8 @@ import { Check, DollarSign, UserCheck, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BackToDashboard } from "./BackToDashboard";
+import { DynamicTitle } from "./DynamicTitle";
 
 interface Player {
   id: number;
@@ -56,13 +58,16 @@ const PresenceList = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <BackToDashboard />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-lg shadow-lg p-6"
+        className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
       >
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Lista de Presença</h2>
+        <div className="flex items-center justify-between mb-6">
+          <DynamicTitle />
+        </div>
         
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="flex gap-4">
