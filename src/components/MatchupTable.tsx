@@ -1,4 +1,6 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
 interface MatchupTableProps {
   matchups: string[];
@@ -6,22 +8,34 @@ interface MatchupTableProps {
 
 const MatchupTable: React.FC<MatchupTableProps> = ({ matchups }) => {
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto">
-        <thead>
-          <tr>
-            <th className="p-2 border-b">Confronto</th>
-          </tr>
-        </thead>
-        <tbody>
+    <motion.div 
+      className="mt-6 bg-white rounded-lg shadow overflow-hidden"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-center">Confrontos</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {matchups.map((matchup, index) => (
-            <tr key={index}>
-              <td className="p-2 border-b">{matchup}</td>
-            </tr>
+            <TableRow key={index}>
+              <TableCell className="text-center font-medium">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  {matchup}
+                </motion.div>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </motion.div>
   );
 };
 

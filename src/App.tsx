@@ -6,6 +6,7 @@ import { PlayerList } from './components/PlayerList';
 import TeamDraw from './components/TeamDraw';
 import PresenceList from './components/PresenceList';
 import Statistics  from './components/Statistics';
+import Championship from './components/pages/Championship';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
       <Route path="/teams/draw" element={<TeamDraw />} />
       <Route path="/presence" element={<PresenceList />} />
       <Route path="/statistics" element={<Statistics />} />
+      <Route path="/championship" element={<Championship />} />
     </Routes>
   );
 };
