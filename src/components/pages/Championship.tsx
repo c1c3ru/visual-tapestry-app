@@ -29,7 +29,27 @@ interface Tournament {
   name: string;
   type: string;
   teams: Team[];
-  matches?: string[][];
+  matches?: Group[];
+}
+
+interface Match {
+  team1: string;
+  team2: string;
+  score1?: number;
+  score2?: number;
+}
+
+interface Group {
+  name: string;
+  matches: Match[];
+}
+
+interface KnockoutMatches {
+  roundOf16: Match[];
+  quarterFinals: Match[];
+  semiFinals: Match[];
+  final: Match;
+  thirdPlace: Match;
 }
 
 const Championship = () => {
@@ -38,9 +58,42 @@ const Championship = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamName, setTeamName] = useState('');
   const [responsible, setResponsible] = useState('');
-  const [matches, setMatches] = useState<string[][]>([]);
-  const [isDrawGenerated, setIsDrawGenerated] = useState(false);
+  const [matches, setMatches] = useState<Group[]>([]);
+  const [generatedKnockoutMatches, setGeneratedKnockoutMatches] = useState<KnockoutMatches | undefined>();
   const { toast } = useToast();
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.text(`Tournament: ${tournamentName}`, 20, 20);
+    
+    let yPosition = 40;
+    matches.forEach((group, index) => {
+      doc.text(`${group.name}`, 20, yPosition);
+      yPosition += 10;
+      
+      group.matches.forEach((match) => {
+        doc.text(`${match.team1} vs ${match.team2}`, 30, yPosition);
+        yPosition += 10;
+      });
+      
+      yPosition += 10;
+    });
+
+    if (generatedKnockoutMatches) {
+      doc.text('Knockout Stage', 20, yPosition);
+      yPosition += 10;
+      
+      // Add knockout matches to PDF
+      doc.text('Round of 16', 20, yPosition);
+      yPosition += 10;
+      generatedKnockoutMatches.roundOf16.forEach((match) => {
+        doc.text(`${match.team1} vs ${match.team2}`, 30, yPosition);
+        yPosition += 10;
+      });
+    }
+
+    doc.save(`${tournamentName}-tournament.pdf`);
+  };
 
   const saveTournament = () => {
     const tournament: Tournament = {
@@ -108,7 +161,7 @@ const Championship = () => {
     }
 
     // Generate knockout stage matches
-    const knockoutMatches = {
+    const knockoutMatches: KnockoutMatches = {
       roundOf16: groups.flatMap(group => [{
         team1: `${group.name} Winner`,
         team2: `${String.fromCharCode(group.name.charCodeAt(6) + 1)} Runner-up`
@@ -132,7 +185,7 @@ const Championship = () => {
     };
 
     setMatches(groups);
-    setIsDrawGenerated(true);
+    setGeneratedKnockoutMatches(knockoutMatches);
     
     toast({
       title: "Confrontos gerados com sucesso!",
@@ -245,7 +298,7 @@ const Championship = () => {
               <Trophy className="h-4 w-4" />
               Gerar Confrontos
             </Button>
-            {isDrawGenerated && (
+            {matches.length > 0 && (
               <>
                 <Button onClick={generatePDF} className="gap-2">
                   <FileDown className="h-4 w-4" />
@@ -261,7 +314,7 @@ const Championship = () => {
         </motion.div>
       </div>
 
-      {isDrawGenerated && (
+      {matches.length > 0 && (
         <motion.div
           className="mt-8"
           initial={{ opacity: 0, y: 20 }}
@@ -270,7 +323,7 @@ const Championship = () => {
           <h2 className="text-2xl font-bold mb-4">Confrontos do Campeonato</h2>
           <TournamentBracket 
             groups={matches} 
-            knockoutMatches={knockoutMatches}
+            knockoutMatches={generatedKnockoutMatches}
           />
         </motion.div>
       )}
