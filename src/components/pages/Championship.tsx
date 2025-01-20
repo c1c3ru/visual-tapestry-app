@@ -16,6 +16,7 @@ import {
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
+import { TournamentBracket } from '../TournamentBracket';
 
 interface Team {
   id: string;
@@ -81,33 +82,62 @@ const Championship = () => {
 
   const generateMatches = () => {
     const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
-    const newMatches: string[][] = [];
     
-    if (tournamentType === 'knockout') {
-      for (let i = 0; i < shuffledTeams.length; i += 2) {
-        if (i + 1 < shuffledTeams.length) {
-          newMatches.push([shuffledTeams[i].name, shuffledTeams[i + 1].name]);
+    // Create groups (4 teams per group)
+    const groups: Group[] = [];
+    const teamsPerGroup = 4;
+    
+    for (let i = 0; i < shuffledTeams.length; i += teamsPerGroup) {
+      const groupTeams = shuffledTeams.slice(i, i + teamsPerGroup);
+      const groupMatches: Match[] = [];
+      
+      // Generate matches within group
+      for (let j = 0; j < groupTeams.length; j++) {
+        for (let k = j + 1; k < groupTeams.length; k++) {
+          groupMatches.push({
+            team1: groupTeams[j].name,
+            team2: groupTeams[k].name
+          });
         }
       }
-    } else if (tournamentType === 'league') {
-      for (let i = 0; i < shuffledTeams.length; i++) {
-        for (let j = i + 1; j < shuffledTeams.length; j++) {
-          newMatches.push([shuffledTeams[i].name, shuffledTeams[j].name]);
-        }
-      }
+      
+      groups.push({
+        name: `Group ${String.fromCharCode(65 + groups.length)}`,
+        matches: groupMatches
+      });
     }
-    
-    setMatches(newMatches);
-    setIsDrawGenerated(true);
-  };
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
-    doc.text(tournamentName, 20, 20);
-    matches.forEach((match, index) => {
-      doc.text(`${match[0]} vs ${match[1]}`, 20, 40 + (index * 10));
+    // Generate knockout stage matches
+    const knockoutMatches = {
+      roundOf16: groups.flatMap(group => [{
+        team1: `${group.name} Winner`,
+        team2: `${String.fromCharCode(group.name.charCodeAt(6) + 1)} Runner-up`
+      }]),
+      quarterFinals: Array(4).fill(null).map(() => ({
+        team1: "TBD",
+        team2: "TBD"
+      })),
+      semiFinals: Array(2).fill(null).map(() => ({
+        team1: "TBD",
+        team2: "TBD"
+      })),
+      final: {
+        team1: "TBD",
+        team2: "TBD"
+      },
+      thirdPlace: {
+        team1: "TBD",
+        team2: "TBD"
+      }
+    };
+
+    setMatches(groups);
+    setIsDrawGenerated(true);
+    
+    toast({
+      title: "Confrontos gerados com sucesso!",
+      description: "Os confrontos foram gerados e organizados em grupos e fases eliminatórias."
     });
-    doc.save('tournament.pdf');
   };
 
   return (
@@ -237,24 +267,11 @@ const Championship = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h2 className="text-2xl font-bold mb-4">Confrontos</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {matches.map((match, index) => (
-              <motion.div
-                key={index}
-                className="bg-white rounded-lg shadow p-4"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{match[0]}</span>
-                  <span className="text-primary font-bold">VS</span>
-                  <span className="font-medium">{match[1]}</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <h2 className="text-2xl font-bold mb-4">Confrontos do Campeonato</h2>
+          <TournamentBracket 
+            groups={matches} 
+            knockoutMatches={knockoutMatches}
+          />
         </motion.div>
       )}
     </div>
