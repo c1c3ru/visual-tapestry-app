@@ -87,7 +87,6 @@ const TeamDraw = () => {
     const newTeams = [];
     for (let i = 0; i < shuffledPlayers.length; i += playersPerTeam) {
       newTeams.push(shuffledPlayers.slice(i, i + playersPerTeam));
-
     }
     setTeams(newTeams);
   };
@@ -100,10 +99,7 @@ const TeamDraw = () => {
       newMatchups.push(`${teamA} vs ${teamB}`);
     }
     setMatchups(newMatchups);
-
   };
-
-  // ... keep existing code (JSX return statement)
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -190,8 +186,13 @@ const TeamDraw = () => {
         ))}
       </div>
 
-      {/* Componente para escolher a nomenclatura dos times */}
-      {teams.length > 0 && <TeamNameSelector onNameFormatChange={setNamingOption} />}
+      {/* Update the TeamNameSelector to include the value prop */}
+      {teams.length > 0 && (
+        <TeamNameSelector 
+          onNameFormatChange={setNamingOption} 
+          value={namingOption}
+        />
+      )}
       
       {/* Botão para gerar confrontos */}
       {teams.length > 0 && <GenerateMatchupsButton onGenerate={generateMatchups} />}
