@@ -11,14 +11,14 @@ export const BackToDashboard = () => {
       transition={{ duration: 0.3 }}
       className="absolute top-4 left-4"
     >
-      <Link to="/dashboard">
+      <Link to="/dashboard" className="text-inherit">
         <Button
           variant="ghost"
           size="sm"
           className="flex items-center gap-2 hover:bg-primary/10"
         >
           <ChevronLeft className="h-4 w-4" />
-          Dashboard
+          <span>Back to Dashboard</span>
         </Button>
       </Link>
     </motion.div>

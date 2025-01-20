@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check, DollarSign, UserCheck, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -18,16 +18,16 @@ interface Player {
 
 const PresenceList = () => {
   const [players, setPlayers] = useState<Player[]>([]);
-  const [newPlayerName, setNewPlayerName] = useState('');
+  const [newPlayerName, setNewPlayerName] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedPlayers = getFromLocalStorage('presenceList') || [];
+    const savedPlayers = getFromLocalStorage("presenceList") || [];
     setPlayers(savedPlayers);
   }, []);
 
   const savePlayersToStorage = (updatedPlayers: Player[]) => {
-    saveToLocalStorage('presenceList', updatedPlayers);
+    saveToLocalStorage("presenceList", updatedPlayers);
     setPlayers(updatedPlayers);
   };
 
@@ -35,7 +35,7 @@ const PresenceList = () => {
     const updatedPlayers = players.map((player) =>
       player.id === id ? { ...player, present: !player.present } : player
     );
-    
+
     savePlayersToStorage(updatedPlayers);
 
     toast({
@@ -48,7 +48,7 @@ const PresenceList = () => {
     const updatedPlayers = players.map((player) =>
       player.id === id ? { ...player, paid: !player.paid } : player
     );
-    
+
     savePlayersToStorage(updatedPlayers);
 
     toast({
@@ -59,9 +59,10 @@ const PresenceList = () => {
 
   const handleAddPlayer = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const playerExists = players.find(
-      (player) => player.name.toLowerCase() === newPlayerName.trim().toLowerCase()
+      (player) =>
+        player.name.toLowerCase() === newPlayerName.trim().toLowerCase()
     );
 
     if (playerExists) {
@@ -78,13 +79,13 @@ const PresenceList = () => {
       name: newPlayerName.trim(),
       present: false,
       paid: false,
-      registered: true
+      registered: true,
     };
 
     const updatedPlayers = [...players, newPlayer];
     savePlayersToStorage(updatedPlayers);
-    
-    setNewPlayerName('');
+
+    setNewPlayerName("");
     toast({
       title: "Jogador Adicionado",
       description: "Novo jogador foi adicionado com sucesso.",
@@ -102,7 +103,7 @@ const PresenceList = () => {
         <div className="flex items-center justify-between mb-6">
           <DynamicTitle />
         </div>
-        
+
         <form onSubmit={handleAddPlayer} className="mb-8">
           <div className="flex gap-4">
             <Input
@@ -111,9 +112,7 @@ const PresenceList = () => {
               placeholder="Digite o nome do novo jogador..."
               className="flex-1"
             />
-            <Button type="submit">
-              Adicionar Jogador
-            </Button>
+            <Button type="submit">Adicionar Jogador</Button>
           </div>
         </form>
 
@@ -126,26 +125,38 @@ const PresenceList = () => {
               className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <UserCheck className={`h-5 w-5 ${player.registered ? 'text-primary' : 'text-gray-400'}`} />
+                <UserCheck
+                  className={`h-5 w-5 ${
+                    player.registered ? "text-primary" : "text-gray-400"
+                  }`}
+                />
                 <span className="font-medium text-gray-800">{player.name}</span>
               </div>
-              
+
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
-                  <DollarSign className={`h-5 w-5 ${player.paid ? 'text-green-500' : 'text-red-500'}`} />
-                  <span className={`text-sm ${player.paid ? 'text-green-500' : 'text-red-500'}`}>
-                    {player.paid ? 'Pago' : 'Pendente'}
+                  <DollarSign
+                    className={`h-5 w-5 ${
+                      player.paid ? "text-green-500" : "text-red-500"
+                    }`}
+                  />
+                  <span
+                    className={`text-sm ${
+                      player.paid ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {player.paid ? "Pago" : "Pendente"}
                   </span>
                 </div>
-                
+
                 <button
                   onClick={() => togglePresence(player.id)}
                   disabled={!player.registered}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                     player.present
-                      ? 'bg-primary text-white hover:bg-primary/90'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  } ${!player.registered && 'opacity-50 cursor-not-allowed'}`}
+                      ? "bg-primary text-white hover:bg-primary/90"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  } ${!player.registered && "opacity-50 cursor-not-allowed"}`}
                 >
                   {player.present ? (
                     <>

@@ -14,7 +14,7 @@ export const DashboardMenu = () => {
     { title: 'Sorteio de Times', route: '/teams/draw' },
     { title: 'Lista de Presença', route: '/presence' },
     { title: 'Estatísticas', route: '/statistics' },
-    { title: 'Campeonato', route: '../pages/Championship.tsx' },
+    { title: 'Campeonato', route: '/championship' }, // Corrigido o caminho para a rota correta
   ];
 
   return (

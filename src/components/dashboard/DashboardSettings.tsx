@@ -13,6 +13,48 @@ interface DashboardSettingsProps {
   setGuestHighlight: (value: string) => void;
 }
 
+interface RatingSystem {
+  value: string;
+  label: string;
+  icon: JSX.Element;
+}
+
+interface GuestHighlight {
+  value: string;
+  label: string;
+}
+
+const ratingSystems: RatingSystem[] = [
+  { value: 'stars', label: 'Estrelas', icon: <div className="flex">
+    {[1,2,3,4,5].map((_, i) => (
+      <Star key={i} className="h-4 w-4 text-primary" />
+    ))}
+  </div> },
+  { value: 'halfStars', label: 'Meia Estrela', icon: <div className="flex">
+    <Star className="h-4 w-4 text-primary fill-primary" />
+    <StarHalf className="h-4 w-4 text-primary fill-primary" />
+    <Star className="h-4 w-4 text-gray-300" />
+  </div> },
+  { value: 'numeric10', label: 'Escala 1-10', icon: <div className="flex gap-1 text-sm">
+    <span className="text-red-500">1</span>
+    <span className="text-green-500">5</span>
+    <span className="text-blue-500">10</span>
+  </div> },
+  { value: 'numeric5', label: 'Escala 1-5', icon: <div className="flex gap-1 text-sm">
+    <span className="text-red-500">1</span>
+    <span className="text-green-500">3</span>
+    <span className="text-blue-500">5</span>
+  </div> },
+];
+
+const guestHighlights: GuestHighlight[] = [
+  { value: 'orange', label: 'Laranja' },
+  { value: 'purple', label: 'Roxo' },
+  { value: 'pink', label: 'Rosa' },
+  { value: 'bold', label: 'Negrito' },
+  { value: 'italic', label: 'Itálico' },
+];
+
 export const DashboardSettings = ({
   selectedRatingSystem,
   setSelectedRatingSystem,
@@ -48,50 +90,15 @@ export const DashboardSettings = ({
           onValueChange={handleRatingSystemChange}
           className="space-y-4"
         >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="stars" id="stars" />
-            <Label htmlFor="stars" className="flex items-center gap-2">
-              Estrelas
-              <div className="flex">
-                {[1,2,3,4,5].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 text-primary" />
-                ))}
-              </div>
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="halfStars" id="halfStars" />
-            <Label htmlFor="halfStars" className="flex items-center gap-2">
-              Meia Estrela
-              <div className="flex">
-                <Star className="h-4 w-4 text-primary fill-primary" />
-                <StarHalf className="h-4 w-4 text-primary fill-primary" />
-                <Star className="h-4 w-4 text-gray-300" />
-              </div>
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="numeric10" id="numeric10" />
-            <Label htmlFor="numeric10">
-              Escala 1-10
-              <div className="flex gap-1 text-sm">
-                <span className="text-red-500">1</span>
-                <span className="text-green-500">5</span>
-                <span className="text-blue-500">10</span>
-              </div>
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="numeric5" id="numeric5" />
-            <Label htmlFor="numeric5">
-              Escala 1-5
-              <div className="flex gap-1 text-sm">
-                <span className="text-red-500">1</span>
-                <span className="text-green-500">3</span>
-                <span className="text-blue-500">5</span>
-              </div>
-            </Label>
-          </div>
+          {ratingSystems.map((ratingSystem) => (
+            <div key={ratingSystem.value} className="flex items-center space-x-2">
+              <RadioGroupItem value={ratingSystem.value} id={ratingSystem.value} />
+              <Label htmlFor={ratingSystem.value} className="flex items-center gap-2">
+                {ratingSystem.label}
+                {ratingSystem.icon}
+              </Label>
+            </div>
+          ))}
         </RadioGroup>
       </Card>
 
@@ -102,11 +109,11 @@ export const DashboardSettings = ({
             <SelectValue placeholder="Escolha o estilo de destaque" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="orange">Laranja</SelectItem>
-            <SelectItem value="purple">Roxo</SelectItem>
-            <SelectItem value="pink">Rosa</SelectItem>
-            <SelectItem value="bold">Negrito</SelectItem>
-            <SelectItem value="italic">Itálico</SelectItem>
+            {guestHighlights.map((guestHighlight) => (
+              <SelectItem key={guestHighlight.value} value={guestHighlight.value}>
+                {guestHighlight.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div className="mt-4">

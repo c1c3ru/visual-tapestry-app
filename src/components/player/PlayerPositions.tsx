@@ -27,6 +27,10 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
   selectedPositions,
   onPositionChange
 }) => {
+  const handlePositionChange = (checked: boolean, position: string) => {
+    onPositionChange(position, checked);
+  };
+
   return (
     <div className="grid grid-cols-2 gap-4">
       {positions[sport].map((position) => (
@@ -34,7 +38,7 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
           <Checkbox
             id={position}
             checked={selectedPositions.includes(position)}
-            onCheckedChange={(checked) => onPositionChange(position, checked as boolean)}
+            onCheckedChange={(checked) => handlePositionChange(checked as boolean, position)}
           />
           <Label htmlFor={position} className="text-sm font-medium leading-none">
             {position}

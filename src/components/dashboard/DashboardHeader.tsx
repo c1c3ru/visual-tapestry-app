@@ -12,6 +12,7 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader = ({ isAdmin, dashboardTitle, setDashboardTitle }: DashboardHeaderProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [newTitle, setNewTitle] = useState(dashboardTitle);
 
   const handleTitleEdit = () => {
     if (!isAdmin) {
@@ -23,8 +24,16 @@ export const DashboardHeader = ({ isAdmin, dashboardTitle, setDashboardTitle }: 
 
   const handleTitleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (newTitle !== dashboardTitle) {
+      setDashboardTitle(newTitle);
+      toast.success("Título atualizado com sucesso!");
+    }
     setIsEditing(false);
-    toast.success("Título atualizado com sucesso!");
+  };
+
+  const handleTitleCancel = () => {
+    setIsEditing(false);
+    setNewTitle(dashboardTitle);
   };
 
   return (
@@ -33,12 +42,13 @@ export const DashboardHeader = ({ isAdmin, dashboardTitle, setDashboardTitle }: 
         <form onSubmit={handleTitleSave} className="flex gap-2">
           <input
             type="text"
-            value={dashboardTitle}
-            onChange={(e) => setDashboardTitle(e.target.value)}
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
             className="text-2xl font-bold bg-white border border-teal-200 rounded px-2 py-1"
             autoFocus
           />
           <Button type="submit" size="sm">Salvar</Button>
+          <Button type="button" size="sm" onClick={handleTitleCancel}>Cancelar</Button>
         </form>
       ) : (
         <div className="flex items-center gap-2">

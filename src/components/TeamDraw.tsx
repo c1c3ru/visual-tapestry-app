@@ -4,10 +4,10 @@ import { BackToDashboard } from "./BackToDashboard";
 import { Button } from "./ui/button";
 import { Shuffle, Users, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import TeamNameSelector from "./TeamNameSelector"; // Componente para selecionar nomenclatura
-import GenerateMatchupsButton from "./GenerateMatchupsButton"; // Componente para gerar confrontos
-import MatchupTable from "./MatchupTable"; // Componente para mostrar confrontos
-import ShareButtons from "./ShareButtons"; // Para compartilhar os confrontos
+import TeamNameSelector from "./TeamNameSelector"; 
+import GenerateMatchupsButton from "./GenerateMatchupsButton"; 
+import MatchupTable from "./MatchupTable"; 
+import ShareButtons from "./ShareButtons"; 
 import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
 
 interface Player {
@@ -23,8 +23,8 @@ const TeamDraw = () => {
   const [goalkeepers, setGoalkeepers] = useState<Player[]>([]);
   const [teams, setTeams] = useState<Player[][]>([]);
   const [playersPerTeam, setPlayersPerTeam] = useState(5);
-  const [namingOption, setNamingOption] = useState("numeric"); // Nomenclatura dos times
-  const [matchups, setMatchups] = useState<string[]>([]); // Confrontos gerados
+  const [namingOption, setNamingOption] = useState("numeric"); 
+  const [matchups, setMatchups] = useState<string[]>([]); 
   const { toast } = useToast();
   const MAX_ATTEMPTS = 10;
 
@@ -172,7 +172,6 @@ const TeamDraw = () => {
         ))}
       </div>
 
-      {/* Update the TeamNameSelector to include the value prop */}
       {teams.length > 0 && (
         <TeamNameSelector 
           onNameFormatChange={setNamingOption} 
@@ -180,13 +179,10 @@ const TeamDraw = () => {
         />
       )}
       
-      {/* Botão para gerar confrontos */}
       {teams.length > 0 && <GenerateMatchupsButton onGenerate={generateMatchups} />}
 
-      {/* Exibição da tabela de confrontos */}
       {matchups.length > 0 && <MatchupTable matchups={matchups} />}
       
-      {/* Botões para compartilhar */}
       {matchups.length > 0 && <ShareButtons />}
     </div>
   );

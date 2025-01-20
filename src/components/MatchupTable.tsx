@@ -12,6 +12,7 @@ const MatchupTable: React.FC<MatchupTableProps> = ({ matchups }) => {
       className="mt-6 bg-white rounded-lg shadow overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
     >
       <Table>
         <TableHeader>
@@ -26,7 +27,7 @@ const MatchupTable: React.FC<MatchupTableProps> = ({ matchups }) => {
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
                 >
                   {matchup}
                 </motion.div>

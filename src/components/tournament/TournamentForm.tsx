@@ -11,6 +11,7 @@ interface TournamentFormProps {
   onTournamentNameChange: (value: string) => void;
   onTeamNameChange: (value: string) => void;
   onResponsibleChange: (value: string) => void;
+  onAddTeam: (team: Team) => void;
 }
 
 export const TournamentForm: React.FC<TournamentFormProps> = ({
@@ -21,7 +22,19 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
   onTournamentNameChange,
   onTeamNameChange,
   onResponsibleChange,
+  onAddTeam,
 }) => {
+  const handleAddTeam = () => {
+    const newTeam: Team = {
+      id: (teams.length + 1).toString(),
+      name: teamName,
+      responsible: responsible,
+    };
+    onAddTeam(newTeam);
+    onTeamNameChange('');
+    onResponsibleChange('');
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -52,6 +65,15 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
             onChange={(e) => onResponsibleChange(e.target.value)}
             placeholder="Digite o nome do responsável"
           />
+        </div>
+        <div className="col-span-2">
+          <button
+            type="button"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={handleAddTeam}
+          >
+            Adicionar Time
+          </button>
         </div>
       </div>
 
