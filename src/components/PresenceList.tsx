@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Check, DollarSign, UserCheck, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
+import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
 
 interface Player {
   id: number;
@@ -16,25 +17,43 @@ interface Player {
 }
 
 const PresenceList = () => {
-  const [players, setPlayers] = useState<Player[]>([
-    { id: 1, name: 'João', present: true, paid: true, registered: true },
-    { id: 2, name: 'Maria', present: false, paid: false, registered: true },
-    { id: 3, name: 'Pedro', present: false, paid: true, registered: true },
-  ]);
-  
+  const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState('');
   const { toast } = useToast();
 
+  useEffect(() => {
+    const savedPlayers = getFromLocalStorage('presenceList') || [];
+    setPlayers(savedPlayers);
+  }, []);
+
+  const savePlayersToStorage = (updatedPlayers: Player[]) => {
+    saveToLocalStorage('presenceList', updatedPlayers);
+    setPlayers(updatedPlayers);
+  };
+
   const togglePresence = (id: number) => {
-    setPlayers((prev) =>
-      prev.map((player) =>
-        player.id === id ? { ...player, present: !player.present } : player
-      )
+    const updatedPlayers = players.map((player) =>
+      player.id === id ? { ...player, present: !player.present } : player
     );
+    
+    savePlayersToStorage(updatedPlayers);
 
     toast({
       title: "Presença atualizada",
       description: "Status de presença foi atualizado com sucesso.",
+    });
+  };
+
+  const togglePayment = (id: number) => {
+    const updatedPlayers = players.map((player) =>
+      player.id === id ? { ...player, paid: !player.paid } : player
+    );
+    
+    savePlayersToStorage(updatedPlayers);
+
+    toast({
+      title: "Pagamento atualizado",
+      description: "Status de pagamento foi atualizado com sucesso.",
     });
   };
 
@@ -54,10 +73,16 @@ const PresenceList = () => {
       return;
     }
 
-    setPlayers((prev) => [
-      ...prev,
-      { id: prev.length + 1, name: newPlayerName.trim(), present: false, paid: false, registered: true }
-    ]);
+    const newPlayer = {
+      id: Date.now(),
+      name: newPlayerName.trim(),
+      present: false,
+      paid: false,
+      registered: true
+    };
+
+    const updatedPlayers = [...players, newPlayer];
+    savePlayersToStorage(updatedPlayers);
     
     setNewPlayerName('');
     toast({
