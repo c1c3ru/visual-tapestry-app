@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BackToDashboard } from "./BackToDashboard";
 import { motion } from "framer-motion";
+import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
@@ -32,27 +33,49 @@ const PlayerForm = () => {
     isGuest: false,
     sport: "futsal" as Sport,
     selectedPositions: [] as string[],
-    rating: 0
+    rating: 0,
+    includeInDraw: false
   });
 
   const [ratingSystem, setRatingSystem] = useState<string>(localStorage.getItem("ratingSystem") || "stars");
   const [guestHighlight, setGuestHighlight] = useState<string>(localStorage.getItem("guestHighlight") || "orange");
 
   const handleSave = () => {
-    const { name } = formData;
+    const { name, selectedPositions, isGuest } = formData;
 
-    if (!name) {
+    if (!name || selectedPositions.length === 0) {
       toast({
         title: "Erro",
-        description: "Nome é obrigatório",
+        description: "Nome e pelo menos uma posição são obrigatórios",
         variant: "destructive",
       });
       return;
     }
 
+    const players = getFromLocalStorage('players') || [];
+    const newPlayer = {
+      ...formData,
+      id: Date.now(),
+      createdAt: new Date().toISOString()
+    };
+    
+    players.push(newPlayer);
+    saveToLocalStorage('players', players);
+
     toast({
       title: "Sucesso",
       description: "Jogador salvo com sucesso!",
+    });
+
+    setFormData({
+      name: "",
+      nickname: "",
+      birthDate: "",
+      isGuest: false,
+      sport: "futsal",
+      selectedPositions: [],
+      rating: 0,
+      includeInDraw: false
     });
   };
 
@@ -67,8 +90,48 @@ const PlayerForm = () => {
     setFormData({ ...formData, selectedPositions: updatedPositions });
   };
 
+  const handleStarClick = (star: number, isHalf: boolean = false) => {
+    const currentRating = formData.rating;
+    let newRating = star;
+
+    if (ratingSystem === 'halfStars') {
+      if (isHalf) {
+        newRating = star - 0.5;
+      } else if (currentRating === star) {
+        newRating = star - 0.5;
+      }
+    }
+
+    setFormData({ ...formData, rating: newRating });
+  };
+
   const renderRatingInput = () => {
     switch (ratingSystem) {
+      case 'halfStars':
+        return (
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <div key={star} className="relative">
+                <button
+                  onClick={() => handleStarClick(star, true)}
+                  className="absolute left-0 w-1/2 h-full focus:outline-none transition-transform hover:scale-110"
+                />
+                <button
+                  onClick={() => handleStarClick(star)}
+                  className="focus:outline-none transition-transform hover:scale-110"
+                >
+                  {formData.rating >= star ? (
+                    <Star className="fill-primary text-primary" size={32} />
+                  ) : formData.rating >= star - 0.5 ? (
+                    <StarHalf className="fill-primary text-primary" size={32} />
+                  ) : (
+                    <Star className="fill-muted text-muted" size={32} />
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+        );
       case 'stars':
         return (
           <div className="flex gap-2">
@@ -86,38 +149,6 @@ const PlayerForm = () => {
                       : "fill-muted text-muted"
                   } transition-colors`}
                 />
-              </button>
-            ))}
-          </div>
-        );
-      case 'halfStars':
-        return (
-          <div className="flex gap-2">
-            {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => setFormData({ ...formData, rating: star })}
-                className="focus:outline-none transition-transform hover:scale-110"
-              >
-                {Number.isInteger(star) ? (
-                  <Star
-                    size={32}
-                    className={`${
-                      formData.rating >= star
-                        ? "fill-primary text-primary"
-                        : "fill-muted text-muted"
-                    } transition-colors`}
-                  />
-                ) : (
-                  <StarHalf
-                    size={32}
-                    className={`${
-                      formData.rating >= star
-                        ? "fill-primary text-primary"
-                        : "fill-muted text-muted"
-                    } transition-colors`}
-                  />
-                )}
               </button>
             ))}
           </div>
@@ -178,14 +209,12 @@ const PlayerForm = () => {
       transition={{ duration: 0.5 }}
       className={`min-h-screen p-4 transition-colors duration-300 ${
         formData.isGuest ? `bg-${guestHighlight}-50` : 'bg-background'
-
       }`}
     >
       <BackToDashboard />
       <div className="max-w-2xl mx-auto space-y-8">
         <h1 className="text-xl font-semibold text-center">
           {formData.isGuest ? 'Cadastrar Jogador Convidado' : 'Cadastrar Jogador'}
-
         </h1>
 
         <motion.div 
@@ -250,7 +279,7 @@ const PlayerForm = () => {
           </div>
 
           <div>
-            <Label className="text-muted-foreground mb-2 block">Posições</Label>
+            <Label className="text-muted-foreground mb-2 block">Posições *</Label>
             <div className="grid grid-cols-2 gap-4">
               {positions[formData.sport].map((position) => (
                 <div key={position} className="flex items-center space-x-2">
@@ -273,7 +302,16 @@ const PlayerForm = () => {
               checked={formData.isGuest}
               onCheckedChange={(checked) => setFormData({ ...formData, isGuest: checked as boolean })}
             />
-            <label htmlFor="guest" className="text-sm font-medium leading-none">Jogador Convidado</label>
+            <label htmlFor="guest" className="text-sm font-medium leading-none">Jogador Convidado *</label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="includeInDraw"
+              checked={formData.includeInDraw}
+              onCheckedChange={(checked) => setFormData({ ...formData, includeInDraw: checked as boolean })}
+            />
+            <label htmlFor="includeInDraw" className="text-sm font-medium leading-none">Incluir no Sorteio de Times</label>
           </div>
 
           <div className="flex justify-end pt-6">
@@ -290,13 +328,10 @@ const PlayerForm = () => {
               </Button>
             </motion.div>
           </div>
-
-
         </motion.div>
       </div>
     </motion.div>
   );
-
 };
 
 export default PlayerForm;

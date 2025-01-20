@@ -8,16 +8,19 @@ import TeamNameSelector from "./TeamNameSelector"; // Componente para selecionar
 import GenerateMatchupsButton from "./GenerateMatchupsButton"; // Componente para gerar confrontos
 import MatchupTable from "./MatchupTable"; // Componente para mostrar confrontos
 import ShareButtons from "./ShareButtons"; // Para compartilhar os confrontos
+import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
 
 interface Player {
   id: number;
   name: string;
   rating: number;
   position: string;
+  includeInDraw: boolean;
 }
 
 const TeamDraw = () => {
   const [players, setPlayers] = useState<Player[]>([]);
+  const [goalkeepers, setGoalkeepers] = useState<Player[]>([]);
   const [teams, setTeams] = useState<Player[][]>([]);
   const [playersPerTeam, setPlayersPerTeam] = useState(5);
   const [namingOption, setNamingOption] = useState("numeric"); // Nomenclatura dos times
@@ -26,68 +29,51 @@ const TeamDraw = () => {
   const MAX_ATTEMPTS = 10;
 
   useEffect(() => {
-    const selectedPlayers = [
-      { id: 1, name: "Bale", rating: 4, selected: true, position: "atacante" },
-      { id: 2, name: "Betinho", rating: 1, selected: true, position: "meio" },
-      { id: 3, name: "Buffon", rating: 5, selected: true, position: "goleiro" },
-      { id: 4, name: "Coutinho", rating: 4, selected: true, position: "meio" },
-      { id: 5, name: "Cristiano", rating: 5, selected: true, position: "atacante" },
-      { id: 7, name: "Egídio", rating: 1, selected: true, position: "defensor" },
-      { id: 8, name: "Messi", rating: 5, selected: true, position: "atacante" },
-      { id: 9, name: "Navas", rating: 3, selected: true, position: "goleiro" },
-      { id: 10, name: "Neymar", rating: 5, selected: true, position: "atacante" },
-      { id: 11, name: "Pogba", rating: 4, selected: true, position: "meio" },
-      { id: 12, name: "Reinaldo", rating: 1, selected: true, position: "defensor"},
-      { id: 13, name: "Ronaldo", rating: 5, selected: true, position: "atacante" },
-      { id: 14, name: "Salah", rating: 4, selected: true, position: "atacante" },
-      { id: 15, name: "Sergio Ramos", rating: 5, selected: true, position: "defensor" },
-      { id: 16, name: "Thiago Silva", rating: 4, selected: true, position: "defensor" },
-      { id: 17, name: "Van Dijk", rating: 5, selected: true, position: "defensor" },
-      { id: 18, name: "Mbappé", rating: 5, selected: true, position: "atacante" },
-      { id: 19, name: "Haaland", rating: 5, selected: true, position: "atacante" },
-      { id: 20, name: "Kante", rating: 4, selected: true, position: "meio" },
-      { id: 21, name: "De Bruyne", rating: 5, selected: true, position: "meio" },
-      { id: 22, name: "Modric", rating: 5, selected: true, position: "meio" },
-      { id: 23, name: "Kimmich", rating: 4, selected: true, position: "meio" },
-      { id: 24, name: "Alisson", rating: 5, selected: true, position: "goleiro" },
-      { id: 25, name: "Ederson", rating: 4, selected: true, position: "goleiro" },
-      { id: 26, name: "Courtois", rating: 5, selected: true, position: "goleiro" },
-      { id: 27, name: "Lewandowski", rating: 5, selected: true, position: "atacante" },
-      { id: 28, name: "Benzema", rating: 4, selected: true, position: "atacante" },
-      { id: 29, name: "Griezmann", rating: 4, selected: true, position: "atacante" },
-      { id: 30, name: "Pique", rating: 4, selected: true, position: "defensor" },
-      { id: 31, name: "Ramos", rating: 5, selected: true, position: "defensor" },
-      { id: 32, name: "Busquets", rating: 4, selected: true, position: "meio" },
-      { id: 33, name: "Jordi Alba", rating: 4, selected: true, position: "defensor" },
-      { id: 34, name: "Gareth Bale", rating: 4, selected: true, position: "atacante" },
-      { id: 35, name: "Lukaku", rating: 4, selected: true, position: "atacante" },
-      { id: 36, name: "Son", rating: 4, selected: true, position: "atacante" },
-      { id: 37, name: "Hakimi", rating: 4, selected: true, position: "defensor" },
-      { id: 38, name: "Rashford", rating: 4, selected: true, position: "atacante" },
-      { id: 39, name: "Verratti", rating: 4, selected: true, position: "meio" },
-      { id: 40, name: "Rakitic", rating: 4, selected: true, position: "meio" },
-      { id: 41, name: "Toni Kroos", rating: 5, selected: true, position: "meio" },
-      { id: 42, name: "Pepe", rating: 4, selected: true, position: "defensor" },
-      { id: 43, name: "Chiellini", rating: 5, selected: true, position: "defensor" },
-      { id: 44, name: "Neymar Jr", rating: 5, selected: true, position: "atacante" },
-      { id: 45, name: "Timo Werner", rating: 4, selected: true, position: "atacante" },
-      { id: 46, name: "Sergio Busquets", rating: 4, selected: true, position: "meio" },
-      { id: 47, name: "Pogba", rating: 5, selected: true, position: "meio" },
-      { id: 48, name: "Marcelo", rating: 4, selected: true, position: "defensor" }
-    ];
-  
-    // Filtra jogadores selecionados e remove goleiros
-    const filteredPlayers = selectedPlayers.filter(player => player.selected && player.position !== "goleiro");
-  
-    setPlayers(filteredPlayers);
+    const savedPlayers = getFromLocalStorage('players') || [];
+    const filteredPlayers = savedPlayers.filter((p: Player) => p.includeInDraw);
+    const filteredGoalkeepers = filteredPlayers.filter((p: Player) => 
+      p.position === "goleiro" || p.position === "Goleiro"
+    );
+    const otherPlayers = filteredPlayers.filter((p: Player) => 
+      p.position !== "goleiro" && p.position !== "Goleiro"
+    );
+
+    setGoalkeepers(filteredGoalkeepers);
+    setPlayers(otherPlayers);
   }, []);
-  
+
   const drawTeams = () => {
+    setTeams([]);
+    setMatchups([]);
+    
     const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+    const shuffledGoalkeepers = [...goalkeepers].sort(() => Math.random() - 0.5);
+    
     const newTeams = [];
-    for (let i = 0; i < shuffledPlayers.length; i += playersPerTeam) {
-      newTeams.push(shuffledPlayers.slice(i, i + playersPerTeam));
+    let currentTeam = [];
+    
+    // Distribute goalkeepers first
+    for (let i = 0; i < shuffledGoalkeepers.length; i++) {
+      if (currentTeam.length === playersPerTeam) {
+        newTeams.push(currentTeam);
+        currentTeam = [];
+      }
+      currentTeam.push(shuffledGoalkeepers[i]);
     }
+    
+    // Then distribute other players
+    for (let i = 0; i < shuffledPlayers.length; i++) {
+      if (currentTeam.length === playersPerTeam) {
+        newTeams.push(currentTeam);
+        currentTeam = [];
+      }
+      currentTeam.push(shuffledPlayers[i]);
+    }
+    
+    if (currentTeam.length > 0) {
+      newTeams.push(currentTeam);
+    }
+    
     setTeams(newTeams);
   };
 
