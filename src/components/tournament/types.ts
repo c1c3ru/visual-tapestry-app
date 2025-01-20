@@ -1,6 +1,6 @@
 export interface Match {
-  team1: string;
-  team2: string;
+  team1: Team;
+  team2: Team;
   score1?: number;
   score2?: number;
 }
@@ -28,5 +28,6 @@ export interface Tournament {
   name: string;
   type: string;
   teams: Team[];
-  matches?: Group[];
+  groups?: Group[];
+  knockoutMatches?: KnockoutMatches;
 }

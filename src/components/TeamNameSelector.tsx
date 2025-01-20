@@ -7,6 +7,17 @@ interface TeamNameSelectorProps {
   value: string;
 }
 
+interface TeamNameFormat {
+  value: string;
+  label: string;
+}
+
+const teamNameFormats: TeamNameFormat[] = [
+  { value: 'numeric', label: 'Time 01, Time 02, ...' },
+  { value: 'alphabet', label: 'Time A, Time B, ...' },
+  { value: 'color', label: 'Por cores' },
+];
+
 const TeamNameSelector: React.FC<TeamNameSelectorProps> = ({ onNameFormatChange, value }) => {
   return (
     <div className="my-6 p-4 bg-white rounded-lg shadow">
@@ -16,18 +27,12 @@ const TeamNameSelector: React.FC<TeamNameSelectorProps> = ({ onNameFormatChange,
         onValueChange={onNameFormatChange}
         className="flex flex-col space-y-2"
       >
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="numeric" id="numeric" />
-          <Label htmlFor="numeric">Time 01, Time 02, ...</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="alphabet" id="alphabet" />
-          <Label htmlFor="alphabet">Time A, Time B, ...</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="color" id="color" />
-          <Label htmlFor="color">Por cores</Label>
-        </div>
+        {teamNameFormats.map((format) => (
+          <div key={format.value} className="flex items-center space-x-2">
+            <RadioGroupItem value={format.value} id={format.value} />
+            <Label htmlFor={format.value}>{format.label}</Label>
+          </div>
+        ))}
       </RadioGroup>
     </div>
   );

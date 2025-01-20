@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const BUTTON_CLASSES = "px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition";
@@ -7,15 +7,26 @@ const BUTTON_LOADING_CLASSES = "px-6 py-3 bg-gray-300 text-white rounded-lg shad
 const Login = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
-    // Simular um tempo de carregamento, como seria esperado ao autenticar com o Google.
-    setTimeout(() => {
+    try {
       // Lógica de autenticação com o Google
+      await new Promise(resolve => setTimeout(resolve, 1500));
       navigate('/dashboard');
-    }, 1500); // Simula 1.5 segundos de carregamento
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (error) {
+      console.error(error);
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
@@ -32,6 +43,9 @@ const Login = () => {
           "Login com Google"
         )}
       </button>
+      {error && (
+        <p className="text-red-500 mt-4">{error}</p>
+      )}
     </div>
   );
 };

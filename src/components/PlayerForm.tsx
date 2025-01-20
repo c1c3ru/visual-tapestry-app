@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Star, StarHalf, Save } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -21,7 +27,7 @@ const positions: Position = {
   futebol: ["Goleiro", "Defensor", "Meio-campo", "Atacante"],
   volei: ["Levantador", "Líbero", "Central", "Ponteiro", "Oposto"],
   basquete: ["Armador", "Ala", "Ala-pivô", "Pivô"],
-  handbol: ["Goleiro", "Ponta", "Central", "Pivô"]
+  handbol: ["Goleiro", "Ponta", "Central", "Pivô"],
 };
 
 const PlayerForm = () => {
@@ -34,11 +40,15 @@ const PlayerForm = () => {
     sport: "futsal" as Sport,
     selectedPositions: [] as string[],
     rating: 0,
-    includeInDraw: false
+    includeInDraw: false,
   });
 
-  const [ratingSystem, setRatingSystem] = useState<string>(localStorage.getItem("ratingSystem") || "stars");
-  const [guestHighlight, setGuestHighlight] = useState<string>(localStorage.getItem("guestHighlight") || "orange");
+  const [ratingSystem, setRatingSystem] = useState<string>(
+    localStorage.getItem("ratingSystem") || "stars"
+  );
+  const [guestHighlight, setGuestHighlight] = useState<string>(
+    localStorage.getItem("guestHighlight") || "orange"
+  );
 
   const handleSave = () => {
     const { name, selectedPositions, isGuest } = formData;
@@ -52,15 +62,15 @@ const PlayerForm = () => {
       return;
     }
 
-    const players = getFromLocalStorage('players') || [];
+    const players = getFromLocalStorage("players") || [];
     const newPlayer = {
       ...formData,
       id: Date.now(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
-    
+
     players.push(newPlayer);
-    saveToLocalStorage('players', players);
+    saveToLocalStorage("players", players);
 
     toast({
       title: "Sucesso",
@@ -75,7 +85,7 @@ const PlayerForm = () => {
       sport: "futsal",
       selectedPositions: [],
       rating: 0,
-      includeInDraw: false
+      includeInDraw: false,
     });
   };
 
@@ -86,7 +96,7 @@ const PlayerForm = () => {
   const handleCheckboxChange = (position: string, checked: boolean) => {
     const updatedPositions = checked
       ? [...formData.selectedPositions, position]
-      : formData.selectedPositions.filter(p => p !== position);
+      : formData.selectedPositions.filter((p) => p !== position);
     setFormData({ ...formData, selectedPositions: updatedPositions });
   };
 
@@ -94,7 +104,7 @@ const PlayerForm = () => {
     const currentRating = formData.rating;
     let newRating = star;
 
-    if (ratingSystem === 'halfStars') {
+    if (ratingSystem === "halfStars") {
       if (isHalf) {
         newRating = star - 0.5;
       } else if (currentRating === star) {
@@ -107,7 +117,7 @@ const PlayerForm = () => {
 
   const renderRatingInput = () => {
     switch (ratingSystem) {
-      case 'halfStars':
+      case "halfStars":
         return (
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -132,7 +142,7 @@ const PlayerForm = () => {
             ))}
           </div>
         );
-      case 'stars':
+      case "stars":
         return (
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -153,7 +163,7 @@ const PlayerForm = () => {
             ))}
           </div>
         );
-      case 'numeric10':
+      case "numeric 10":
         return (
           <div className="flex gap-2">
             {[...Array(10)].map((_, i) => (
@@ -175,7 +185,7 @@ const PlayerForm = () => {
             ))}
           </div>
         );
-      case 'numeric5':
+      case "numeric 5":
         return (
           <div className="flex gap-2">
             {[...Array(5)].map((_, i) => (
@@ -203,28 +213,32 @@ const PlayerForm = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className={`min-h-screen p-4 transition-colors duration-300 ${
-        formData.isGuest ? `bg-${guestHighlight}-50` : 'bg-background'
+        formData.isGuest ? `bg-${guestHighlight}-50` : "bg-background"
       }`}
     >
       <BackToDashboard />
       <div className="max-w-2xl mx-auto space-y-8">
         <h1 className="text-xl font-semibold text-center">
-          {formData.isGuest ? 'Cadastrar Jogador Convidado' : 'Cadastrar Jogador'}
+          {formData.isGuest
+            ? "Cadastrar Jogador Convidado"
+            : "Cadastrar Jogador"}
         </h1>
 
-        <motion.div 
+        <motion.div
           className="space-y-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
           <div>
-            <Label htmlFor="name" className="text-muted-foreground mb-2 block">Nome *</Label>
+            <Label htmlFor="name" className="text-muted-foreground mb-2 block">
+              Nome *
+            </Label>
             <Input
               id="name"
               value={formData.name}
@@ -236,7 +250,12 @@ const PlayerForm = () => {
           </div>
 
           <div>
-            <Label htmlFor="nickname" className="text-muted-foreground mb-2 block">Apelido</Label>
+            <Label
+              htmlFor="nickname"
+              className="text-muted-foreground mb-2 block"
+            >
+              Apelido
+            </Label>
             <Input
               id="nickname"
               value={formData.nickname}
@@ -247,7 +266,12 @@ const PlayerForm = () => {
           </div>
 
           <div>
-            <Label htmlFor="birthDate" className="text-muted-foreground mb-2 block">Data de Nascimento</Label>
+            <Label
+              htmlFor="birthDate"
+              className="text-muted-foreground mb-2 block"
+            >
+              Data de Nascimento
+            </Label>
             <Input
               id="birthDate"
               type="date"
@@ -263,8 +287,15 @@ const PlayerForm = () => {
           </div>
 
           <div>
-            <Label className="text-muted-foreground mb-2 block">Modalidade</Label>
-            <Select value={formData.sport} onValueChange={(value) => setFormData({ ...formData, sport: value as Sport })}>
+            <Label className="text-muted-foreground mb-2 block">
+              Modalidade
+            </Label>
+            <Select
+              value={formData.sport}
+              onValueChange={(value) =>
+                setFormData({ ...formData, sport: value as Sport })
+              }
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione uma modalidade" />
               </SelectTrigger>
@@ -279,16 +310,23 @@ const PlayerForm = () => {
           </div>
 
           <div>
-            <Label className="text-muted-foreground mb-2 block">Posições *</Label>
+            <Label className="text-muted-foreground mb-2 block">
+              Posições *
+            </Label>
             <div className="grid grid-cols-2 gap-4">
               {positions[formData.sport].map((position) => (
                 <div key={position} className="flex items-center space-x-2">
                   <Checkbox
                     id={position}
                     checked={formData.selectedPositions.includes(position)}
-                    onCheckedChange={(checked) => handleCheckboxChange(position, checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      handleCheckboxChange(position, checked as boolean)
+                    }
                   />
-                  <label htmlFor={position} className="text-sm font-medium leading-none">
+                  <label
+                    htmlFor={position}
+                    className="text-sm font-medium leading-none"
+                  >
                     {position}
                   </label>
                 </div>
@@ -300,25 +338,44 @@ const PlayerForm = () => {
             <Checkbox
               id="guest"
               checked={formData.isGuest}
-              onCheckedChange={(checked) => setFormData({ ...formData, isGuest: checked as boolean })}
+              onCheckedChange={(checked) => {
+                setFormData({ ...formData, isGuest: checked as boolean });
+                if (checked && formData.includeInDraw) {
+                  toast({
+                    title: "Sucesso",
+                    description: "Jogador convidado incluído no sorteio!",
+                  });
+                } else if (!formData.includeInDraw) {
+                  toast({
+                    title: "Aviso",
+                    description: "Jogador não incluído no sorteio.",
+                  });
+                }
+              }}
             />
-            <label htmlFor="guest" className="text-sm font-medium leading-none">Jogador Convidado *</label>
+            <label htmlFor="guest" className="text-sm font-medium leading-none">
+              Jogador Convidado *
+            </label>
           </div>
 
           <div className="flex items-center space-x-2">
             <Checkbox
               id="includeInDraw"
               checked={formData.includeInDraw}
-              onCheckedChange={(checked) => setFormData({ ...formData, includeInDraw: checked as boolean })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, includeInDraw: checked as boolean })
+              }
             />
-            <label htmlFor="includeInDraw" className="text-sm font-medium leading-none">Incluir no Sorteio de Times</label>
+            <label
+              htmlFor="includeInDraw"
+              className="text-sm font-medium leading-none"
+            >
+              Incluir no Sorteio de Times
+            </label>
           </div>
 
           <div className="flex justify-end pt-6">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 onClick={handleSave}
                 className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
