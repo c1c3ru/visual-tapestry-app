@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BackToDashboard } from '../BackToDashboard';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -35,7 +35,7 @@ const Championship = () => {
       yPosition += 10;
       
       group.matches.forEach((match) => {
-        doc.text(`${match.team1} vs ${match.team2}`, 30, yPosition);
+        doc.text(`${match.team1.name} vs ${match.team2.name}`, 30, yPosition);
         yPosition += 10;
       });
       
@@ -50,7 +50,7 @@ const Championship = () => {
       doc.text('Round of 16', 20, yPosition);
       yPosition += 10;
       generatedKnockoutMatches.roundOf16.forEach((match) => {
-        doc.text(`${match.team1} vs ${match.team2}`, 30, yPosition);
+        doc.text(`${match.team1.name} vs ${match.team2.name}`, 30, yPosition);
         yPosition += 10;
       });
     }
@@ -237,8 +237,8 @@ const Championship = () => {
   ];
 
   useEffect(() => {
-    if (tournamentType === 'knockout') {
-      const knockoutMatches = generateKnockoutMatches(mockTeams);
+    if (tournamentType === 'worldCup') {
+      const knockoutMatches = generateMatches(mockTeams);
       setGeneratedKnockoutMatches(knockoutMatches);
     }
   }, [tournamentType]);
@@ -374,4 +374,3 @@ const Championship = () => {
 };
 
 export default Championship;
-

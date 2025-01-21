@@ -1,4 +1,4 @@
-import { Team, KnockoutMatches, Match } from './types';
+import { Team, KnockoutMatches, Match, Group } from './types';
 
 export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
   // Embaralha os times para criar confrontos aleatórios
@@ -69,7 +69,7 @@ export const createTeamFromString = (name: string): Team => ({
   responsible: ''
 });
 
-export const generateGroups = (teams: string[]) => {
+export const generateGroups = (teams: string[]): Group[] => {
   const groups: Group[] = [];
   const teamsPerGroup = Math.ceil(teams.length / 4);
 

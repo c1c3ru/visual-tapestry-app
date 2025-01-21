@@ -1,5 +1,6 @@
 import { generateKnockoutMatches } from '../tournament';
 import { Team, Match } from '../types';
+import '@testing-library/jest-dom';
 
 describe('Tournament Utils', () => {
   const mockTeams: Team[] = [
@@ -16,7 +17,6 @@ describe('Tournament Utils', () => {
   test('generateKnockoutMatches should create correct number of matches', () => {
     const matches = generateKnockoutMatches(mockTeams);
     
-    // Verifica se temos o número correto de jogos em cada fase
     expect(matches.quarterFinals.length).toBe(4);
     expect(matches.semiFinals.length).toBe(2);
     expect(matches.final).toBeDefined();
@@ -26,7 +26,6 @@ describe('Tournament Utils', () => {
   test('generateKnockoutMatches should pair teams correctly', () => {
     const matches = generateKnockoutMatches(mockTeams);
     
-    // Verifica se todos os jogos têm times diferentes
     matches.quarterFinals.forEach((match: Match) => {
       expect(match.team1.id).not.toBe(match.team2.id);
     });
