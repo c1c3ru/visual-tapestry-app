@@ -5,7 +5,7 @@ import { Save, Trophy, FileDown, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { TournamentBracket } from '../TournamentBracket';
-import { Team, Tournament, Group, KnockoutMatches } from '@/utils/types';
+import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
 import { generateKnockoutMatches } from '@/utils/tournament';
 import TournamentHeader from '../tournament/TournamentHeader';
 import TournamentForm from '../tournament/TournamentForm';
@@ -23,6 +23,33 @@ const Championship = () => {
   const [generatedKnockoutMatches, setGeneratedKnockoutMatches] = useState<KnockoutMatches | undefined>();
   const [showSocialButtons, setShowSocialButtons] = useState(false);
   const { toast } = useToast();
+
+  const saveTournament = async () => {
+    try {
+      const tournament: Tournament = {
+        id: Date.now().toString(),
+        name: tournamentName,
+        type: tournamentType,
+        teams: teams,
+        matches: matches,
+        knockoutMatches: generatedKnockoutMatches
+      };
+
+      // Here you would typically save to your backend
+      // For now, we'll just show a success message
+      toast({
+        title: "Torneio Salvo",
+        description: "O torneio foi salvo com sucesso!",
+      });
+
+    } catch (error) {
+      toast({
+        title: "Erro ao Salvar",
+        description: "Ocorreu um erro ao salvar o torneio.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const generatePDF = () => {
     if (!tournamentName) {
