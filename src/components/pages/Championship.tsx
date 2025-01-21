@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { BackToDashboard } from '../BackToDashboard';
 import { Button } from '../ui/button';
-import { Save, Trophy } from 'lucide-react';
+import { Save, Trophy, FileDown, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import jsPDF from 'jspdf';
 import { TournamentBracket } from '../TournamentBracket';
-import { Team, Tournament, Group, KnockoutMatches, Match } from '@/utils/types';
+import { Team, Tournament, Group, KnockoutMatches } from '@/utils/types';
 import { generateKnockoutMatches } from '@/utils/tournament';
 import TournamentHeader from '../tournament/TournamentHeader';
 import TournamentForm from '../tournament/TournamentForm';
 import TeamList from '../tournament/TeamList';
+import ShareButtons from '../ShareButtons';
+import { generateTournamentPDF } from '@/utils/pdf';
 
 const Championship = () => {
   const [tournamentName, setTournamentName] = useState('');
@@ -20,53 +21,24 @@ const Championship = () => {
   const [responsible, setResponsible] = useState('');
   const [matches, setMatches] = useState<Group[]>([]);
   const [generatedKnockoutMatches, setGeneratedKnockoutMatches] = useState<KnockoutMatches | undefined>();
+  const [showSocialButtons, setShowSocialButtons] = useState(false);
   const { toast } = useToast();
 
   const generatePDF = () => {
-    const doc = new jsPDF();
-    doc.text(`Tournament: ${tournamentName}`, 20, 20);
-    
-    let yPosition = 40;
-    matches.forEach((group, index) => {
-      doc.text(`${group.name}`, 20, yPosition);
-      yPosition += 10;
-      
-      group.matches.forEach((match) => {
-        doc.text(`${match.team1.name} vs ${match.team2.name}`, 30, yPosition);
-        yPosition += 10;
+    if (!tournamentName) {
+      toast({
+        title: "Nome do Torneio Necessário",
+        description: "Por favor, insira um nome para o torneio antes de gerar o PDF.",
+        variant: "destructive"
       });
-      
-      yPosition += 10;
-    });
-
-    if (generatedKnockoutMatches) {
-      doc.text('Knockout Stage', 20, yPosition);
-      yPosition += 10;
-      
-      // Add knockout matches to PDF
-      doc.text('Round of 16', 20, yPosition);
-      yPosition += 10;
-      generatedKnockoutMatches.roundOf16.forEach((match) => {
-        doc.text(`${match.team1.name} vs ${match.team2.name}`, 30, yPosition);
-        yPosition += 10;
-      });
+      return;
     }
 
-    doc.save(`${tournamentName}-tournament.pdf`);
-  };
-
-  const saveTournament = () => {
-    const tournament: Tournament = {
-      id: Date.now().toString(),
-      name: tournamentName,
-      type: tournamentType,
-      teams: teams,
-      matches: matches
-    };
-    localStorage.setItem('tournament', JSON.stringify(tournament));
+    generateTournamentPDF(tournamentName, matches, generatedKnockoutMatches);
+    
     toast({
-      title: "Torneio salvo com sucesso!",
-      description: "Seus dados foram salvos localmente."
+      title: "PDF Gerado com Sucesso",
+      description: "O arquivo PDF do torneio foi gerado e baixado."
     });
   };
 
@@ -94,6 +66,15 @@ const Championship = () => {
   };
 
   const generateMatches = () => {
+    if (!tournamentName) {
+      toast({
+        title: "Nome do Torneio Necessário",
+        description: "Por favor, insira um nome para o torneio antes de gerar os confrontos.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
     
     if (tournamentType === 'worldCup') {
@@ -189,30 +170,12 @@ const Championship = () => {
       setMatches(groups);
     }
     
+    setShowSocialButtons(true);
     toast({
       title: "Confrontos gerados com sucesso!",
       description: "Os confrontos foram gerados e organizados de acordo com o tipo de torneio selecionado."
     });
   };
-
-  // Mock teams for demonstration
-  const mockTeams: Team[] = [
-    { id: '1', name: 'Flamengo', responsible: 'João' },
-    { id: '2', name: 'Palmeiras', responsible: 'Maria' },
-    { id: '3', name: 'Santos', responsible: 'Pedro' },
-    { id: '4', name: 'São Paulo', responsible: 'Ana' },
-    { id: '5', name: 'Corinthians', responsible: 'Carlos' },
-    { id: '6', name: 'Grêmio', responsible: 'Paulo' },
-    { id: '7', name: 'Internacional', responsible: 'Lucas' },
-    { id: '8', name: 'Atlético-MG', responsible: 'Julia' },
-  ];
-
-  useEffect(() => {
-    if (tournamentType === 'worldCup' && mockTeams.length > 0) {
-      const knockoutMatches = generateKnockoutMatches(mockTeams);
-      setGeneratedKnockoutMatches(knockoutMatches);
-    }
-  }, [tournamentType]);
 
   return (
     <div className="container mx-auto p-4 space-y-8">
@@ -261,11 +224,26 @@ const Championship = () => {
 
       {(matches.length > 0 || generatedKnockoutMatches) && (
         <motion.div
-          className="mt-8"
+          className="mt-8 space-y-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h2 className="text-2xl font-bold mb-4">Confrontos do Campeonato</h2>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white/5 p-4 rounded-lg">
+            <h2 className="text-2xl font-bold">Confrontos do Campeonato</h2>
+            <div className="flex gap-4 items-center">
+              <Button onClick={generatePDF} className="gap-2">
+                <FileDown className="h-4 w-4" />
+                Gerar PDF
+              </Button>
+              {showSocialButtons && (
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-500">Compartilhar:</span>
+                  <ShareButtons />
+                </div>
+              )}
+            </div>
+          </div>
+          
           <TournamentBracket 
             groups={matches} 
             knockoutMatches={generatedKnockoutMatches}
