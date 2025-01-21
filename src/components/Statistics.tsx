@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Edit2, Save, Trash2 } from 'lucide-react';
-import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
+import { usePlayerContext } from "@/context/PlayerContext";
 
 interface PointRecord {
   points: number;
@@ -23,18 +23,44 @@ interface Statistic {
 }
 
 const Statistics = () => {
+  const { players } = usePlayerContext();
   const [statistics, setStatistics] = useState<Statistic[]>([]);
   const [editingRecord, setEditingRecord] = useState<{index: number, recordIndex: number} | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedStats = getFromLocalStorage('statistics') || [];
-    setStatistics(savedStats);
-  }, []);
+    // Dados de exemplo - Início
+    const exampleStats = [
+      {
+        name: "Exemplo Jogador 1",
+        date: "2023-01-01",
+        attendanceCount: 5,
+        pointRecords: [{ points: 10, date: "2023-01-01" }],
+        lastUpdated: "2023-01-01"
+      },
+      {
+        name: "Exemplo Jogador 2",
+        date: "2023-01-02",
+        attendanceCount: 3,
+        pointRecords: [{ points: 5, date: "2023-01-02" }],
+        lastUpdated: "2023-01-02"
+      }
+    ];
+    // Dados de exemplo - Fim
+
+    const savedStats = players.map(player => ({
+      name: player.name,
+      date: player.createdAt,
+      attendanceCount: 0,
+      pointRecords: [],
+      lastUpdated: player.createdAt
+    }));
+
+    setStatistics([...exampleStats, ...savedStats]);
+  }, [players]);
 
   const saveStatistics = (newStats: Statistic[]) => {
-    saveToLocalStorage('statistics', newStats);
     setStatistics(newStats);
   };
 

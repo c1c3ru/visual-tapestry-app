@@ -4,6 +4,13 @@ import { motion } from "framer-motion";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React, { useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { useToast } from "@/hooks/use-toast";
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Edit2, Save, Trash2 } from 'lucide-react';
+import { usePlayerContext } from "@/context/PlayerContext";
 
 type Rating = 1 | 2 | 3 | 4 | 5;
 
@@ -29,11 +36,67 @@ const initialPlayers: Player[] = [
   { id: 12, name: "Reinaldo", rating: 1, selected: true },
 ];
 
+interface PointRecord {
+  points: number;
+  date: string;
+}
+
+interface Statistic {
+  name: string;
+  date: string;
+  attendanceCount: number;
+  pointRecords: PointRecord[];
+  lastUpdated: string;
+}
+
 export const PlayerList = () => {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [searchTerm, setSearchTerm] = useState("");
   const [ratingFilter, setRatingFilter] = useState<"all" | Rating>("all");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+  const { toast } = useToast();
+  const { players: contextPlayers } = usePlayerContext();
+  const [statistics, setStatistics] = useState<Statistic[]>([]);
+  const [editingRecord, setEditingRecord] = useState<{index: number, recordIndex: number} | null>(null);
+  const [editValue, setEditValue] = useState<string>('');
+
+  useEffect(() => {
+    const savedStats = contextPlayers.map(player => ({
+      name: player.name,
+      date: player.createdAt,
+      attendanceCount: 0,
+      pointRecords: [],
+      lastUpdated: player.createdAt
+    }));
+    setStatistics(savedStats);
+  }, [contextPlayers]);
+
+  const handlePointsChange = (index: number, value: number) => {
+    if (value < 0) {
+      toast({
+        title: "Erro",
+        description: "Os pontos não podem ser negativos.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newRecord = {
+      points: value,
+      date: new Date().toISOString(),
+    };
+
+    const updatedStatistics = [...statistics];
+    updatedStatistics[index].pointRecords.push(newRecord);
+    updatedStatistics[index].lastUpdated = new Date().toISOString();
+    setStatistics(updatedStatistics);
+
+    toast({
+      title: "Sucesso",
+      description: "Pontos atualizados com sucesso.",
+      variant: "default",
+    });
+  };
 
   const filteredPlayers = players
     .filter((player) =>

@@ -1,4 +1,4 @@
-import { Group, KnockoutMatches, Match } from "@/components/tournament/types";
+import { Group, KnockoutMatches, Match } from "@/utils/types";
 
 export const generateGroups = (teams: string[]): Group[] => {
   const groups: Group[] = [];
