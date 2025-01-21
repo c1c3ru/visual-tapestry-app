@@ -1,22 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-
-interface Match {
-  team1: string;
-  team2: string;
-  score1?: number;
-  score2?: number;
-}
-
-interface Group {
-  name: string;
-  matches: Match[];
-}
-
-interface KnockoutMatch {
-  round: string;
-  matches: Match[];
-}
+import { Match, Group } from '@/utils/types';
 
 interface TournamentBracketProps {
   groups: Group[];
@@ -29,7 +13,7 @@ interface TournamentBracketProps {
   };
 }
 
-const KnockoutStage = ({ round, matches }: KnockoutMatch) => {
+const KnockoutStage = ({ round, matches }: { round: string; matches: Match[] }) => {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
       {matches.map((match, index) => (
@@ -41,14 +25,17 @@ const KnockoutStage = ({ round, matches }: KnockoutMatch) => {
           transition={{ delay: index * 0.1 }}
         >
           <div className="flex flex-col space-y-2">
+            {match.isHomeGame && (
+              <div className="text-xs text-yellow-400 mb-1">Jogo em Casa</div>
+            )}
             <div className="flex justify-between items-center text-white">
-              <span>{match.team1}</span>
+              <span>{match.team1.name}</span>
               <span className="text-sm font-semibold bg-yellow-500/20 px-2 py-1 rounded">
                 {match.score1 ?? '-'}
               </span>
             </div>
             <div className="flex justify-between items-center text-white">
-              <span>{match.team2}</span>
+              <span>{match.team2.name}</span>
               <span className="text-sm font-semibold bg-yellow-500/20 px-2 py-1 rounded">
                 {match.score2 ?? '-'}
               </span>
@@ -72,13 +59,13 @@ const FinalAndThirdPlace = ({ final, thirdPlace }: { final: Match; thirdPlace: M
         <h3 className="text-center font-bold mb-3 text-yellow-400">Final</h3>
         <div className="flex flex-col space-y-2">
           <div className="flex justify-between items-center text-white">
-            <span className="font-bold">{final.team1}</span>
+            <span className="font-bold">{final.team1.name}</span>
             <span className="text-lg font-bold bg-yellow-500/20 px-2 py-1 rounded">
               {final.score1 ?? '-'}
             </span>
           </div>
           <div className="flex justify-between items-center text-white">
-            <span className="font-bold">{final.team2}</span>
+            <span className="font-bold">{final.team2.name}</span>
             <span className="text-lg font-bold bg-yellow-500/20 px-2 py-1 rounded">
               {final.score2 ?? '-'}
             </span>
@@ -95,13 +82,13 @@ const FinalAndThirdPlace = ({ final, thirdPlace }: { final: Match; thirdPlace: M
         <h3 className="text-center font-bold mb-3 text-bronze">Terceiro Lugar</h3>
         <div className="flex flex-col space-y-2">
           <div className="flex justify-between items-center text-white">
-            <span className="font-semibold">{thirdPlace.team1}</span>
+            <span className="font-semibold">{thirdPlace.team1.name}</span>
             <span className="text-sm font-bold bg-yellow-500/20 px-2 py-1 rounded">
               {thirdPlace.score1 ?? '-'}
             </span>
           </div>
           <div className="flex justify-between items-center text-white">
-            <span className="font-semibold">{thirdPlace.team2}</span>
+            <span className="font-semibold">{thirdPlace.team2.name}</span>
             <span className="text-sm font-bold bg-yellow-500/20 px-2 py-1 rounded">
               {thirdPlace.score2 ?? '-'}
             </span>
@@ -124,32 +111,34 @@ export const TournamentBracket = ({ groups, knockoutMatches }: TournamentBracket
       </h1>
 
       {/* Fase de Grupos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {groups.map((group, index) => (
-          <motion.div
-            key={group.name}
-            className="bg-white/10 rounded-lg p-4 border border-yellow-500/30"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <h3 className="text-lg font-bold mb-3 text-yellow-400">{group.name}</h3>
-            <div className="space-y-2">
-              {group.matches.map((match, matchIndex) => (
-                <div key={matchIndex} className="bg-white/5 rounded p-2">
-                  <div className="flex justify-between items-center text-sm text-white">
-                    <span>{match.team1}</span>
-                    <span className="text-xs bg-yellow-500/20 px-2 py-1 rounded">
-                      {match.score1 !== undefined ? match.score1 : '-'} : {match.score2 !== undefined ? match.score2 : '-'}
-                    </span>
-                    <span>{match.team2}</span>
+      {groups.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {groups.map((group, index) => (
+            <motion.div
+              key={group.name}
+              className="bg-white/10 rounded-lg p-4 border border-yellow-500/30"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <h3 className="text-lg font-bold mb-3 text-yellow-400">{group.name}</h3>
+              <div className="space-y-2">
+                {group.matches.map((match, matchIndex) => (
+                  <div key={matchIndex} className="bg-white/5 rounded p-2">
+                    <div className="flex justify-between items-center text-sm text-white">
+                      <span>{match.team1.name}</span>
+                      <span className="text-xs bg-yellow-500/20 px-2 py-1 rounded">
+                        {match.score1 !== undefined ? match.score1 : '-'} : {match.score2 !== undefined ? match.score2 : '-'}
+                      </span>
+                      <span>{match.team2.name}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        ))}
-      </div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Fases Eliminatórias */}
       {knockoutMatches && (

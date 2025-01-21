@@ -7,54 +7,17 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { 
   Trophy,
   Save,
-  Edit2,
-  Trash2,
-  Share2,
-  FileDown,
   Users
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import { TournamentBracket } from '../TournamentBracket';
-
-interface Team {
-  id: string;
-  name: string;
-  responsible: string;
-}
-
-interface Tournament {
-  id: string;
-  name: string;
-  type: string;
-  teams: Team[];
-  matches?: Group[];
-}
-
-interface Match {
-  team1: string;
-  team2: string;
-  score1?: number;
-  score2?: number;
-}
-
-interface Group {
-  name: string;
-  matches: Match[];
-}
-
-interface KnockoutMatches {
-  roundOf16: Match[];
-  quarterFinals: Match[];
-  semiFinals: Match[];
-  final: Match;
-  thirdPlace: Match;
-}
+import { Team, Tournament, Group, KnockoutMatches } from '@/utils/types';
 
 const Championship = () => {
   const [tournamentName, setTournamentName] = useState('');
-  const [tournamentType, setTournamentType] = useState('league');
+  const [tournamentType, setTournamentType] = useState<'league' | 'worldCup' | 'homeAway'>('league');
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamName, setTeamName] = useState('');
   const [responsible, setResponsible] = useState('');
@@ -136,60 +99,128 @@ const Championship = () => {
   const generateMatches = () => {
     const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
     
-    // Create groups (4 teams per group)
-    const groups: Group[] = [];
-    const teamsPerGroup = 4;
-    
-    for (let i = 0; i < shuffledTeams.length; i += teamsPerGroup) {
-      const groupTeams = shuffledTeams.slice(i, i + teamsPerGroup);
-      const groupMatches: Match[] = [];
+    if (tournamentType === 'worldCup') {
+      // Gerar grupos para a fase de classificação
+      const groups: Group[] = [];
+      const teamsPerGroup = 4;
       
-      // Generate matches within group
-      for (let j = 0; j < groupTeams.length; j++) {
-        for (let k = j + 1; k < groupTeams.length; k++) {
-          groupMatches.push({
-            team1: groupTeams[j].name,
-            team2: groupTeams[k].name
-          });
+      for (let i = 0; i < shuffledTeams.length; i += teamsPerGroup) {
+        const groupTeams = shuffledTeams.slice(i, i + teamsPerGroup);
+        const groupMatches: Match[] = [];
+        
+        for (let j = 0; j < groupTeams.length; j++) {
+          for (let k = j + 1; k < groupTeams.length; k++) {
+            groupMatches.push({
+              team1: groupTeams[j],
+              team2: groupTeams[k]
+            });
+          }
         }
+        
+        groups.push({
+          name: `Grupo ${String.fromCharCode(65 + groups.length)}`,
+          matches: groupMatches
+        });
       }
+
+      setMatches(groups);
       
-      groups.push({
-        name: `Group ${String.fromCharCode(65 + groups.length)}`,
-        matches: groupMatches
-      });
-    }
-
-    // Generate knockout stage matches
-    const knockoutMatches: KnockoutMatches = {
-      roundOf16: groups.flatMap(group => [{
-        team1: `${group.name} Winner`,
-        team2: `${String.fromCharCode(group.name.charCodeAt(6) + 1)} Runner-up`
-      }]),
-      quarterFinals: Array(4).fill(null).map(() => ({
-        team1: "TBD",
-        team2: "TBD"
-      })),
-      semiFinals: Array(2).fill(null).map(() => ({
-        team1: "TBD",
-        team2: "TBD"
-      })),
-      final: {
-        team1: "TBD",
-        team2: "TBD"
-      },
-      thirdPlace: {
-        team1: "TBD",
-        team2: "TBD"
+      // Gerar fase eliminatória
+      const knockoutMatches: KnockoutMatches = {
+        roundOf16: Array(8).fill(null).map(() => ({
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
+        })),
+        quarterFinals: Array(4).fill(null).map(() => ({
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
+        })),
+        semiFinals: Array(2).fill(null).map(() => ({
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
+        })),
+        final: {
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
+        },
+        thirdPlace: {
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
+        }
+      };
+      
+      setGeneratedKnockoutMatches(knockoutMatches);
+    } else if (tournamentType === 'homeAway') {
+      // Gerar confrontos ida e volta
+      const knockoutMatches: KnockoutMatches = {
+        roundOf16: shuffledTeams.slice(0, 16).reduce<Match[]>((acc, team, index) => {
+          if (index % 2 === 0) {
+            acc.push(
+              {
+                team1: team,
+                team2: shuffledTeams[index + 1],
+                isHomeGame: true
+              },
+              {
+                team1: shuffledTeams[index + 1],
+                team2: team,
+                isHomeGame: true
+              }
+            );
+          }
+          return acc;
+        }, []),
+        quarterFinals: Array(8).fill(null).map(() => ({
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' },
+          isHomeGame: true
+        })),
+        semiFinals: Array(4).fill(null).map(() => ({
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' },
+          isHomeGame: true
+        })),
+        final: {
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
+        },
+        thirdPlace: {
+          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
+          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
+        }
+      };
+      
+      setGeneratedKnockoutMatches(knockoutMatches);
+    } else {
+      // Liga (código existente)
+      const groups: Group[] = [];
+      const teamsPerGroup = 4;
+      
+      for (let i = 0; i < shuffledTeams.length; i += teamsPerGroup) {
+        const groupTeams = shuffledTeams.slice(i, i + teamsPerGroup);
+        const groupMatches: Match[] = [];
+        
+        for (let j = 0; j < groupTeams.length; j++) {
+          for (let k = j + 1; k < groupTeams.length; k++) {
+            groupMatches.push({
+              team1: groupTeams[j],
+              team2: groupTeams[k]
+            });
+          }
+        }
+        
+        groups.push({
+          name: `Grupo ${String.fromCharCode(65 + groups.length)}`,
+          matches: groupMatches
+        });
       }
-    };
 
-    setMatches(groups);
-    setGeneratedKnockoutMatches(knockoutMatches);
+      setMatches(groups);
+    }
     
     toast({
       title: "Confrontos gerados com sucesso!",
-      description: "Os confrontos foram gerados e organizados em grupos e fases eliminatórias."
+      description: "Os confrontos foram gerados e organizados de acordo com o tipo de torneio selecionado."
     });
   };
 
@@ -222,7 +253,7 @@ const Championship = () => {
             <Label>Tipo de Torneio</Label>
             <RadioGroup
               value={tournamentType}
-              onValueChange={setTournamentType}
+              onValueChange={(value: 'league' | 'worldCup' | 'homeAway') => setTournamentType(value)}
               className="flex flex-col space-y-2"
             >
               <div className="flex items-center space-x-2">
@@ -230,8 +261,12 @@ const Championship = () => {
                 <Label htmlFor="league">Pontos Corridos</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="knockout" id="knockout" />
-                <Label htmlFor="knockout">Mata-mata</Label>
+                <RadioGroupItem value="worldCup" id="worldCup" />
+                <Label htmlFor="worldCup">Copa do Mundo (Grupos + Mata-mata)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="homeAway" id="homeAway" />
+                <Label htmlFor="homeAway">Mata-mata (Ida e Volta)</Label>
               </div>
             </RadioGroup>
           </div>
@@ -282,7 +317,7 @@ const Championship = () => {
                     size="icon"
                     onClick={() => removeTeam(team.id)}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trophy className="h-4 w-4" />
                   </Button>
                 </motion.div>
               ))}
@@ -298,23 +333,11 @@ const Championship = () => {
               <Trophy className="h-4 w-4" />
               Gerar Confrontos
             </Button>
-            {matches.length > 0 && (
-              <>
-                <Button onClick={generatePDF} className="gap-2">
-                  <FileDown className="h-4 w-4" />
-                  Gerar PDF
-                </Button>
-                <Button className="gap-2">
-                  <Share2 className="h-4 w-4" />
-                  Compartilhar
-                </Button>
-              </>
-            )}
           </div>
         </motion.div>
       </div>
 
-      {matches.length > 0 && (
+      {(matches.length > 0 || generatedKnockoutMatches) && (
         <motion.div
           className="mt-8"
           initial={{ opacity: 0, y: 20 }}
