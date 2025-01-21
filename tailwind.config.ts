@@ -56,6 +56,10 @@ export default {
           DEFAULT: "#CD7F32",
           foreground: "#FFFFFF",
         },
+        tournament: {
+          bg: "#9b87f5",
+          accent: "#FEF7CD",
+        }
       },
       borderRadius: {
         lg: "var(--radius)",
