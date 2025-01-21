@@ -13,7 +13,7 @@ import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import { TournamentBracket } from '../TournamentBracket';
-import { Team, Tournament, Group, KnockoutMatches } from '@/utils/types';
+import { Team, Tournament, Group, KnockoutMatches, Match } from '@/utils/types'; // Added Match import
 
 const Championship = () => {
   const [tournamentName, setTournamentName] = useState('');
