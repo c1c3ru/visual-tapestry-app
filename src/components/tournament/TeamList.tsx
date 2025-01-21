@@ -1,0 +1,42 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '../ui/button';
+import { Trophy } from 'lucide-react';
+import { Team } from '@/utils/types';
+
+interface TeamListProps {
+  teams: Team[];
+  onRemoveTeam: (id: string) => void;
+}
+
+const TeamList: React.FC<TeamListProps> = ({ teams, onRemoveTeam }) => {
+  return (
+    <div className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-xl font-semibold mb-4">Times Cadastrados</h2>
+      <div className="space-y-4">
+        {teams.map((team) => (
+          <motion.div
+            key={team.id}
+            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div>
+              <p className="font-medium">{team.name}</p>
+              <p className="text-sm text-gray-600">{team.responsible}</p>
+            </div>
+            <Button
+              variant="destructive"
+              size="icon"
+              onClick={() => onRemoveTeam(team.id)}
+            >
+              <Trophy className="h-4 w-4" />
+            </Button>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default TeamList;
