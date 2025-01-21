@@ -1,12 +1,75 @@
-import { Group, KnockoutMatches, Match, Team } from "@/utils/types";
+import { Team, KnockoutMatches, Match } from './types';
 
-const createTeamFromString = (name: string): Team => ({
+export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
+  // Embaralha os times para criar confrontos aleatórios
+  const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+  
+  // Cria os jogos das quartas de final
+  const quarterFinals: Match[] = [];
+  for (let i = 0; i < 8; i += 2) {
+    quarterFinals.push({
+      team1: shuffledTeams[i],
+      team2: shuffledTeams[i + 1],
+      score1: Math.floor(Math.random() * 5),
+      score2: Math.floor(Math.random() * 5),
+    });
+  }
+
+  // Times que avançam para as semifinais (simulado)
+  const semifinalists = quarterFinals.map(match => 
+    match.score1! > match.score2! ? match.team1 : match.team2
+  );
+
+  // Cria os jogos das semifinais
+  const semiFinals: Match[] = [
+    {
+      team1: semifinalists[0],
+      team2: semifinalists[1],
+      score1: Math.floor(Math.random() * 4),
+      score2: Math.floor(Math.random() * 4),
+    },
+    {
+      team1: semifinalists[2],
+      team2: semifinalists[3],
+      score1: Math.floor(Math.random() * 4),
+      score2: Math.floor(Math.random() * 4),
+    }
+  ];
+
+  // Times que avançam para a final e disputa de terceiro lugar
+  const finalists = semiFinals.map(match => 
+    match.score1! > match.score2! ? match.team1 : match.team2
+  );
+  const thirdPlaceTeams = semiFinals.map(match => 
+    match.score1! > match.score2! ? match.team2 : match.team1
+  );
+
+  return {
+    roundOf16: [], // Não utilizado neste exemplo
+    quarterFinals,
+    semiFinals,
+    final: {
+      team1: finalists[0],
+      team2: finalists[1],
+      score1: Math.floor(Math.random() * 3),
+      score2: Math.floor(Math.random() * 3),
+    },
+    thirdPlace: {
+      team1: thirdPlaceTeams[0],
+      team2: thirdPlaceTeams[1],
+      score1: Math.floor(Math.random() * 3),
+      score2: Math.floor(Math.random() * 3),
+    }
+  };
+};
+
+export const createTeamFromString = (name: string): Team => ({
   id: name.toLowerCase().replace(/\s/g, '-'),
   name: name,
   responsible: ''
 });
 
-export const generateGroups = (teams: string[]): Group[] => {
+export const generateGroups = (teams: string[]) => {
   const groups: Group[] = [];
   const teamsPerGroup = Math.ceil(teams.length / 4);
 
@@ -30,29 +93,4 @@ export const generateGroups = (teams: string[]): Group[] => {
   }
 
   return groups;
-};
-
-export const generateKnockoutMatches = (groups: Group[]): KnockoutMatches => {
-  return {
-    roundOf16: groups.flatMap(group => [{
-      team1: createTeamFromString(`${group.name} Winner`),
-      team2: createTeamFromString(`${String.fromCharCode(group.name.charCodeAt(6) + 1)} Runner-up`)
-    }]),
-    quarterFinals: Array(4).fill(null).map(() => ({
-      team1: createTeamFromString("TBD"),
-      team2: createTeamFromString("TBD")
-    })),
-    semiFinals: Array(2).fill(null).map(() => ({
-      team1: createTeamFromString("TBD"),
-      team2: createTeamFromString("TBD")
-    })),
-    final: {
-      team1: createTeamFromString("TBD"),
-      team2: createTeamFromString("TBD")
-    },
-    thirdPlace: {
-      team1: createTeamFromString("TBD"),
-      team2: createTeamFromString("TBD")
-    }
-  };
 };

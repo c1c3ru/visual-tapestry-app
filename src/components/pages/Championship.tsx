@@ -224,6 +224,25 @@ const Championship = () => {
     });
   };
 
+  // Adiciona dados fictícios para demonstração
+  const mockTeams: Team[] = [
+    { id: '1', name: 'Flamengo', responsible: 'João' },
+    { id: '2', name: 'Palmeiras', responsible: 'Maria' },
+    { id: '3', name: 'Santos', responsible: 'Pedro' },
+    { id: '4', name: 'São Paulo', responsible: 'Ana' },
+    { id: '5', name: 'Corinthians', responsible: 'Carlos' },
+    { id: '6', name: 'Grêmio', responsible: 'Paulo' },
+    { id: '7', name: 'Internacional', responsible: 'Lucas' },
+    { id: '8', name: 'Atlético-MG', responsible: 'Julia' },
+  ];
+
+  useEffect(() => {
+    if (tournamentType === 'knockout') {
+      const knockoutMatches = generateKnockoutMatches(mockTeams);
+      setGeneratedKnockoutMatches(knockoutMatches);
+    }
+  }, [tournamentType]);
+
   return (
     <div className="container mx-auto p-4 space-y-8">
       <BackToDashboard />
@@ -355,3 +374,4 @@ const Championship = () => {
 };
 
 export default Championship;
+
