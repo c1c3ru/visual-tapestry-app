@@ -42,6 +42,7 @@ export interface Team {
 }
 
 export interface Tournament {
+  id: string; // Added missing id property
   name: string;
   type: 'league' | 'worldCup' | 'homeAway';
   teams: Team[];
