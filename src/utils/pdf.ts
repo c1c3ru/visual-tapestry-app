@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { Group, KnockoutMatches } from '@/components/tournament/types';
+import { Group, KnockoutMatches } from '@/utils/types';
 
 export const generateTournamentPDF = (
   tournamentName: string,

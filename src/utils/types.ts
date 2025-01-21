@@ -31,3 +31,19 @@ export interface Tournament {
   groups?: Group[];
   knockoutMatches?: KnockoutMatches;
 }
+
+export interface Player {
+  id: number;
+  name: string;
+  nickname: string;
+  birthDate: string;
+  isGuest: boolean;
+  sport: string;
+  selectedPositions: string[];
+  rating: number;
+  includeInDraw: boolean;
+  createdAt: string;
+  present: boolean; // Adicionado
+  paid: boolean; // Adicionado
+  registered: boolean; // Adicionado
+}
