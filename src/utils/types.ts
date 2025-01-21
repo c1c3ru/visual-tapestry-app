@@ -42,10 +42,11 @@ export interface Team {
 }
 
 export interface Tournament {
-  id: string; // Added missing id property
+  id: string;
   name: string;
   type: 'league' | 'worldCup' | 'homeAway';
   teams: Team[];
+  matches: Group[];  // Added this property
   groups?: Group[];
   knockoutMatches?: KnockoutMatches;
 }
