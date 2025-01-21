@@ -13,7 +13,8 @@ import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 import { TournamentBracket } from '../TournamentBracket';
-import { Team, Tournament, Group, KnockoutMatches, Match } from '@/utils/types'; // Added Match import
+import { Team, Tournament, Group, KnockoutMatches, Match } from '@/utils/types';
+import { generateKnockoutMatches } from '@/utils/tournament';
 
 const Championship = () => {
   const [tournamentName, setTournamentName] = useState('');
@@ -192,7 +193,7 @@ const Championship = () => {
       
       setGeneratedKnockoutMatches(knockoutMatches);
     } else {
-      // Liga (código existente)
+      // Liga
       const groups: Group[] = [];
       const teamsPerGroup = 4;
       
@@ -237,8 +238,8 @@ const Championship = () => {
   ];
 
   useEffect(() => {
-    if (tournamentType === 'worldCup') {
-      const knockoutMatches = generateMatches(mockTeams);
+    if (tournamentType === 'worldCup' && mockTeams.length > 0) {
+      const knockoutMatches = generateKnockoutMatches(mockTeams);
       setGeneratedKnockoutMatches(knockoutMatches);
     }
   }, [tournamentType]);
