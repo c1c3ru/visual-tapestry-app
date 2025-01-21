@@ -14,7 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BackToDashboard } from "./BackToDashboard";
 import { motion } from "framer-motion";
-import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
+import { usePlayerContext } from "@/context/PlayerContext";
+import { Player } from "@/utils/types";
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
@@ -32,6 +33,7 @@ const positions: Position = {
 
 const PlayerForm = () => {
   const { toast } = useToast();
+  const { addPlayer } = usePlayerContext();
   const [formData, setFormData] = useState({
     name: "",
     nickname: "",
@@ -51,7 +53,7 @@ const PlayerForm = () => {
   );
 
   const handleSave = () => {
-    const { name, selectedPositions, isGuest } = formData;
+    const { name, selectedPositions } = formData;
 
     if (!name || selectedPositions.length === 0) {
       toast({
@@ -62,15 +64,16 @@ const PlayerForm = () => {
       return;
     }
 
-    const players = getFromLocalStorage("players") || [];
-    const newPlayer = {
+    const newPlayer: Player = {
       ...formData,
       id: Date.now(),
       createdAt: new Date().toISOString(),
+      present: false,
+      paid: false,
+      registered: true,
     };
 
-    players.push(newPlayer);
-    saveToLocalStorage("players", players);
+    addPlayer(newPlayer);
 
     toast({
       title: "Sucesso",
