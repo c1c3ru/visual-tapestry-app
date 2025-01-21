@@ -1,4 +1,10 @@
-import { Group, KnockoutMatches, Match } from "@/utils/types";
+import { Group, KnockoutMatches, Match, Team } from "@/utils/types";
+
+const createTeamFromString = (name: string): Team => ({
+  id: name.toLowerCase().replace(/\s/g, '-'),
+  name: name,
+  responsible: ''
+});
 
 export const generateGroups = (teams: string[]): Group[] => {
   const groups: Group[] = [];
@@ -11,8 +17,8 @@ export const generateGroups = (teams: string[]): Group[] => {
     for (let j = 0; j < groupTeams.length; j++) {
       for (let k = j + 1; k < groupTeams.length; k++) {
         matches.push({
-          team1: groupTeams[j],
-          team2: groupTeams[k]
+          team1: createTeamFromString(groupTeams[j]),
+          team2: createTeamFromString(groupTeams[k])
         });
       }
     }
@@ -29,24 +35,24 @@ export const generateGroups = (teams: string[]): Group[] => {
 export const generateKnockoutMatches = (groups: Group[]): KnockoutMatches => {
   return {
     roundOf16: groups.flatMap(group => [{
-      team1: `${group.name} Winner`,
-      team2: `${String.fromCharCode(group.name.charCodeAt(6) + 1)} Runner-up`
+      team1: createTeamFromString(`${group.name} Winner`),
+      team2: createTeamFromString(`${String.fromCharCode(group.name.charCodeAt(6) + 1)} Runner-up`)
     }]),
     quarterFinals: Array(4).fill(null).map(() => ({
-      team1: "TBD",
-      team2: "TBD"
+      team1: createTeamFromString("TBD"),
+      team2: createTeamFromString("TBD")
     })),
     semiFinals: Array(2).fill(null).map(() => ({
-      team1: "TBD",
-      team2: "TBD"
+      team1: createTeamFromString("TBD"),
+      team2: createTeamFromString("TBD")
     })),
     final: {
-      team1: "TBD",
-      team2: "TBD"
+      team1: createTeamFromString("TBD"),
+      team2: createTeamFromString("TBD")
     },
     thirdPlace: {
-      team1: "TBD",
-      team2: "TBD"
+      team1: createTeamFromString("TBD"),
+      team2: createTeamFromString("TBD")
     }
   };
 };
