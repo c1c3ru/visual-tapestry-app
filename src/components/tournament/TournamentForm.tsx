@@ -1,95 +1,89 @@
 import React from 'react';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Team } from '../../utils/types';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { Button } from '../ui/button';
+import { Users } from 'lucide-react';
+import { Team } from '@/utils/types';
 
 interface TournamentFormProps {
   tournamentName: string;
+  tournamentType: 'league' | 'worldCup' | 'homeAway';
   teamName: string;
   responsible: string;
-  teams: Team[];
   onTournamentNameChange: (value: string) => void;
+  onTournamentTypeChange: (value: 'league' | 'worldCup' | 'homeAway') => void;
   onTeamNameChange: (value: string) => void;
   onResponsibleChange: (value: string) => void;
-  onAddTeam: (team: Team) => void;
+  onAddTeam: () => void;
 }
 
-export const TournamentForm: React.FC<TournamentFormProps> = ({
+const TournamentForm: React.FC<TournamentFormProps> = ({
   tournamentName,
+  tournamentType,
   teamName,
   responsible,
-  teams,
   onTournamentNameChange,
+  onTournamentTypeChange,
   onTeamNameChange,
   onResponsibleChange,
   onAddTeam,
 }) => {
-  const handleAddTeam = () => {
-    const newTeam: Team = {
-      id: (teams.length + 1).toString(),
-      name: teamName,
-      responsible: responsible,
-    };
-    onAddTeam(newTeam);
-    onTeamNameChange('');
-    onResponsibleChange('');
-  };
-
   return (
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="tournamentName">Nome do Campeonato</Label>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <Label htmlFor="tournamentName">Nome do Torneio</Label>
         <Input
           id="tournamentName"
           value={tournamentName}
           onChange={(e) => onTournamentNameChange(e.target.value)}
-          placeholder="Digite o nome do campeonato"
+          placeholder="Digite o nome do torneio"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="teamName">Nome do Time</Label>
-          <Input
-            id="teamName"
-            value={teamName}
-            onChange={(e) => onTeamNameChange(e.target.value)}
-            placeholder="Digite o nome do time"
-          />
-        </div>
-        <div>
-          <Label htmlFor="responsible">Responsável</Label>
-          <Input
-            id="responsible"
-            value={responsible}
-            onChange={(e) => onResponsibleChange(e.target.value)}
-            placeholder="Digite o nome do responsável"
-          />
-        </div>
-        <div className="col-span-2">
-          <button
-            type="button"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={handleAddTeam}
-          >
-            Adicionar Time
-          </button>
-        </div>
+      <div className="space-y-4">
+        <Label>Tipo de Torneio</Label>
+        <RadioGroup
+          value={tournamentType}
+          onValueChange={onTournamentTypeChange}
+          className="flex flex-col space-y-2"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="league" id="league" />
+            <Label htmlFor="league">Pontos Corridos</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="worldCup" id="worldCup" />
+            <Label htmlFor="worldCup">Copa do Mundo (Grupos + Mata-mata)</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="homeAway" id="homeAway" />
+            <Label htmlFor="homeAway">Mata-mata (Ida e Volta)</Label>
+          </div>
+        </RadioGroup>
       </div>
 
-      {teams.length > 0 && (
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Times Cadastrados</h3>
-          <ul className="space-y-2">
-            {teams.map((team, index) => (
-              <li key={team.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                <span className="font-medium">{team.name}</span>
-                <span className="text-gray-600">{team.responsible}</span>
-              </li>
-            ))}
-          </ul>
+      <div className="space-y-4">
+        <Label>Adicionar Time</Label>
+        <div className="flex flex-col md:flex-row gap-4">
+          <Input
+            value={teamName}
+            onChange={(e) => onTeamNameChange(e.target.value)}
+            placeholder="Nome do time"
+          />
+          <Input
+            value={responsible}
+            onChange={(e) => onResponsibleChange(e.target.value)}
+            placeholder="Responsável"
+          />
+          <Button onClick={onAddTeam} className="whitespace-nowrap">
+            <Users className="mr-2 h-4 w-4" />
+            Adicionar Time
+          </Button>
         </div>
-      )}
+      </div>
     </div>
   );
 };
+
+export default TournamentForm;
