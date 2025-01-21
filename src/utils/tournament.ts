@@ -1,6 +1,9 @@
 import { Team, KnockoutMatches, Match, Group } from './types';
 
 export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
+  // Embaralha os times para criar confrontos aleatórios
+  const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+  
   return {
     roundOf16: Array(8).fill(null).map(() => ({
       team1: { id: 'tbd', name: 'A Definir', responsible: '' },
