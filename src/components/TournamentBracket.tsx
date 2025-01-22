@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { Match, Group } from '@/utils/types';
 import { TournamentBracketProps } from '@/utils/tournament';
 
+
+
 const KnockoutStage = ({ round, matches }: { round: string; matches: Match[] }) => {
-  if (!matches) return null;
-  
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
       {matches.map((match, index) => (
@@ -21,13 +21,13 @@ const KnockoutStage = ({ round, matches }: { round: string; matches: Match[] }) 
               <div className="text-xs text-yellow-400 mb-1">Jogo em Casa</div>
             )}
             <div className="flex justify-between items-center text-white">
-              <span>{match.team1?.name || 'TBD'}</span>
+              <span>{match.team1.name}</span>
               <span className="text-sm font-semibold bg-yellow-500/20 px-2 py-1 rounded">
                 {match.score1 ?? '-'}
               </span>
             </div>
             <div className="flex justify-between items-center text-white">
-              <span>{match.team2?.name || 'TBD'}</span>
+              <span>{match.team2.name}</span>
               <span className="text-sm font-semibold bg-yellow-500/20 px-2 py-1 rounded">
                 {match.score2 ?? '-'}
               </span>
@@ -40,8 +40,6 @@ const KnockoutStage = ({ round, matches }: { round: string; matches: Match[] }) 
 };
 
 const FinalAndThirdPlace = ({ final, thirdPlace }: { final: Match; thirdPlace: Match }) => {
-  if (!final || !thirdPlace) return null;
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <motion.div
@@ -53,13 +51,13 @@ const FinalAndThirdPlace = ({ final, thirdPlace }: { final: Match; thirdPlace: M
         <h3 className="text-center font-bold mb-3 text-yellow-400">Final</h3>
         <div className="flex flex-col space-y-2">
           <div className="flex justify-between items-center text-white">
-            <span className="font-bold">{final.team1?.name || 'TBD'}</span>
+            <span className="font-bold">{final.team1.name}</span>
             <span className="text-lg font-bold bg-yellow-500/20 px-2 py-1 rounded">
               {final.score1 ?? '-'}
             </span>
           </div>
           <div className="flex justify-between items-center text-white">
-            <span className="font-bold">{final.team2?.name || 'TBD'}</span>
+            <span className="font-bold">{final.team2.name}</span>
             <span className="text-lg font-bold bg-yellow-500/20 px-2 py-1 rounded">
               {final.score2 ?? '-'}
             </span>
@@ -76,13 +74,13 @@ const FinalAndThirdPlace = ({ final, thirdPlace }: { final: Match; thirdPlace: M
         <h3 className="text-center font-bold mb-3 text-bronze">Terceiro Lugar</h3>
         <div className="flex flex-col space-y-2">
           <div className="flex justify-between items-center text-white">
-            <span className="font-semibold">{thirdPlace.team1?.name || 'TBD'}</span>
+            <span className="font-semibold">{thirdPlace.team1.name}</span>
             <span className="text-sm font-bold bg-yellow-500/20 px-2 py-1 rounded">
               {thirdPlace.score1 ?? '-'}
             </span>
           </div>
           <div className="flex justify-between items-center text-white">
-            <span className="font-semibold">{thirdPlace.team2?.name || 'TBD'}</span>
+            <span className="font-semibold">{thirdPlace.team2.name}</span>
             <span className="text-sm font-bold bg-yellow-500/20 px-2 py-1 rounded">
               {thirdPlace.score2 ?? '-'}
             </span>
@@ -93,7 +91,7 @@ const FinalAndThirdPlace = ({ final, thirdPlace }: { final: Match; thirdPlace: M
   );
 };
 
-export const TournamentBracket = ({ groups = [], knockoutMatches }: TournamentBracketProps) => {
+export const TournamentBracket = ({ groups, knockoutMatches }: TournamentBracketProps) => {
   return (
     <motion.div
       className="w-full bg-[#9b87f5] rounded-lg shadow-lg p-6 overflow-x-auto"
@@ -105,7 +103,7 @@ export const TournamentBracket = ({ groups = [], knockoutMatches }: TournamentBr
       </h1>
 
       {/* Fase de Grupos */}
-      {groups && groups.length > 0 && (
+      {groups.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {groups.map((group, index) => (
             <motion.div
@@ -117,14 +115,14 @@ export const TournamentBracket = ({ groups = [], knockoutMatches }: TournamentBr
             >
               <h3 className="text-lg font-bold mb-3 text-yellow-400">{group.name}</h3>
               <div className="space-y-2">
-                {group.matches?.map((match, matchIndex) => (
+                {group.matches.map((match, matchIndex) => (
                   <div key={matchIndex} className="bg-white/5 rounded p-2">
                     <div className="flex justify-between items-center text-sm text-white">
-                      <span>{match.team1?.name || 'TBD'}</span>
+                      <span>{match.team1.name}</span>
                       <span className="text-xs bg-yellow-500/20 px-2 py-1 rounded">
                         {match.score1 !== undefined ? match.score1 : '-'} : {match.score2 !== undefined ? match.score2 : '-'}
                       </span>
-                      <span>{match.team2?.name || 'TBD'}</span>
+                      <span>{match.team2.name}</span>
                     </div>
                   </div>
                 ))}
@@ -142,39 +140,28 @@ export const TournamentBracket = ({ groups = [], knockoutMatches }: TournamentBr
           </h2>
 
           <div className="space-y-12">
-            {knockoutMatches.roundOf16 && knockoutMatches.roundOf16.length > 0 && (
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-4 text-center">
-                  Oitavas de Final
-                </h3>
-                <KnockoutStage round="Oitavas de Final" matches={knockoutMatches.roundOf16} />
-              </div>
-            )}
+            <div>
+              <h3 className="text-xl font-semibold text-white mb-4 text-center">
+                Oitavas de Final
+              </h3>
+              <KnockoutStage round="Oitavas de Final" matches={knockoutMatches.roundOf16} />
+            </div>
 
-            {knockoutMatches.quarterFinals && knockoutMatches.quarterFinals.length > 0 && (
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-4 text-center">
-                  Quartas de Final
-                </h3>
-                <KnockoutStage round="Quartas de Final" matches={knockoutMatches.quarterFinals} />
-              </div>
-            )}
+            <div>
+              <h3 className="text-xl font-semibold text-white mb-4 text-center">
+                Quartas de Final
+              </h3>
+              <KnockoutStage round="Quartas de Final" matches={knockoutMatches.quarterFinals} />
+            </div>
 
-            {knockoutMatches.semiFinals && knockoutMatches.semiFinals.length > 0 && (
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-4 text-center">
-                  Semi-Finais
-                </h3>
-                <KnockoutStage round="Semi-Finais" matches={knockoutMatches.semiFinals} />
-              </div>
-            )}
+            <div>
+              <h3 className="text-xl font-semibold text-white mb-4 text-center">
+                Semi-Finais
+              </h3>
+              <KnockoutStage round="Semi-Finais" matches={knockoutMatches.semiFinals} />
+            </div>
 
-            {knockoutMatches.final && knockoutMatches.thirdPlace && (
-              <FinalAndThirdPlace 
-                final={knockoutMatches.final} 
-                thirdPlace={knockoutMatches.thirdPlace} 
-              />
-            )}
+            <FinalAndThirdPlace final={knockoutMatches.final} thirdPlace={knockoutMatches.thirdPlace} />
           </div>
         </div>
       )}
