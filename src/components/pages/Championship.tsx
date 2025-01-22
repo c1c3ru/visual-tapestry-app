@@ -72,11 +72,15 @@ const Championship = () => {
 
   const generateMatches = () => {
     const generatedMatches = generateTournamentMatches(teams, tournamentType);
-    setMatches(generatedMatches);
-    setGeneratedKnockoutMatches(null); // Atualize conforme necessário para knockout
+    // Wrap matches in a group structure
+    const groupedMatches: Group[] = [{
+      name: 'Todos os Jogos',
+      matches: generatedMatches
+    }];
+    setMatches(groupedMatches);
+    setGeneratedKnockoutMatches(undefined);
   };
 
-  // Adiciona dados fictícios para demonstração
   const mockTeams: Team[] = [
     { id: '1', name: 'Flamengo', responsible: 'João' },
     { id: '2', name: 'Palmeiras', responsible: 'Maria' },
