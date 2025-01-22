@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TournamentBracket } from '../TournamentBracket';
 import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
-import { generateKnockoutMatches } from '@/utils/tournament';
+import { generateKnockoutMatches, generateTournamentMatches } from '@/utils/tournament';
 import { BackToDashboard } from '../BackToDashboard';
 import { useToast } from "@/hooks/use-toast";
 import { useTournamentStore } from '@/stores/useTournamentStore';
