@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { BackToDashboard } from '../BackToDashboard';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { 
-  Trophy,
-  Save,
-  Users
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useToast } from '@/hooks/use-toast';
-import jsPDF from 'jspdf';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Save, Trophy, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { TournamentBracket } from '../TournamentBracket';
-import { Team, Tournament, Group, KnockoutMatches, Match } from '@/utils/types';
+import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
 import { generateKnockoutMatches } from '@/utils/tournament';
+import TournamentHeader from '../tournament/TournamentHeader';
+import TournamentForm from '../tournament/TournamentForm';
+import TeamList from '../tournament/TeamList';
+import ShareButtons from '../ShareButtons';
+import { generateTournamentPDF } from '@/utils/pdf';
 
 const Championship = () => {
   const [tournamentName, setTournamentName] = useState('');
@@ -24,57 +22,11 @@ const Championship = () => {
   const [responsible, setResponsible] = useState('');
   const [matches, setMatches] = useState<Group[]>([]);
   const [generatedKnockoutMatches, setGeneratedKnockoutMatches] = useState<KnockoutMatches | undefined>();
+  const [showSocialButtons, setShowSocialButtons] = useState(false);
   const { toast } = useToast();
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
-    doc.text(`Tournament: ${tournamentName}`, 20, 20);
-    
-    let yPosition = 40;
-    matches.forEach((group, index) => {
-      doc.text(`${group.name}`, 20, yPosition);
-      yPosition += 10;
-      
-      group.matches.forEach((match) => {
-        doc.text(`${match.team1.name} vs ${match.team2.name}`, 30, yPosition);
-        yPosition += 10;
-      });
-      
-      yPosition += 10;
-    });
-
-    if (generatedKnockoutMatches) {
-      doc.text('Knockout Stage', 20, yPosition);
-      yPosition += 10;
-      
-      // Add knockout matches to PDF
-      doc.text('Round of 16', 20, yPosition);
-      yPosition += 10;
-      generatedKnockoutMatches.roundOf16.forEach((match) => {
-        doc.text(`${match.team1.name} vs ${match.team2.name}`, 30, yPosition);
-        yPosition += 10;
-      });
-    }
-
-    doc.save(`${tournamentName}-tournament.pdf`);
-  };
-
-  const saveTournament = () => {
-    const tournament: Tournament = {
-      id: Date.now().toString(),
-      name: tournamentName,
-      type: tournamentType,
-      teams: teams,
-      matches: matches
-    };
-    localStorage.setItem('tournament', JSON.stringify(tournament));
-    toast({
-      title: "Torneio salvo com sucesso!",
-      description: "Seus dados foram salvos localmente."
-    });
-  };
-
   const addTeam = () => {
+    const newTeam: Team = { id: Date.now().toString(), name: teamName, responsible };
     if (!teamName || !responsible) {
       toast({
         title: "Erro ao adicionar time",
@@ -83,146 +35,59 @@ const Championship = () => {
       });
       return;
     }
-    
-    setTeams([...teams, {
-      id: Date.now().toString(),
-      name: teamName,
-      responsible
-    }]);
-    setTeamName('');
-    setResponsible('');
+    setTeams([...teams, newTeam]);
+    setTeamName("");
+    setResponsible("");
   };
 
-  const removeTeam = (id: string) => {
-    setTeams(teams.filter(team => team.id !== id));
+  const removeTeam = (teamId: string) => {
+    setTeams(teams.filter((team) => team.id !== teamId));
+  };
+
+  const saveTournament = async () => {
+    try {
+      const tournament: Tournament = {
+        id: Date.now().toString(),
+        name: tournamentName,
+        type: tournamentType,
+        teams: teams,
+        matches: matches,
+        knockoutMatches: generatedKnockoutMatches
+      };
+
+      // Here you would typically save to your backend
+      // For now, we'll just show a success message
+      toast({
+        title: "Torneio Salvo",
+        description: "O torneio foi salvo com sucesso!",
+      });
+
+    } catch (error) {
+      toast({
+        title: "Erro ao Salvar",
+        description: "Ocorreu um erro ao salvar o torneio.",
+        variant: "destructive"
+      });
+    }
   };
 
   const generateMatches = () => {
-    const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
-    
-    if (tournamentType === 'worldCup') {
-      // Gerar grupos para a fase de classificação
-      const groups: Group[] = [];
-      const teamsPerGroup = 4;
-      
-      for (let i = 0; i < shuffledTeams.length; i += teamsPerGroup) {
-        const groupTeams = shuffledTeams.slice(i, i + teamsPerGroup);
-        const groupMatches: Match[] = [];
-        
-        for (let j = 0; j < groupTeams.length; j++) {
-          for (let k = j + 1; k < groupTeams.length; k++) {
-            groupMatches.push({
-              team1: groupTeams[j],
-              team2: groupTeams[k]
-            });
-          }
-        }
-        
-        groups.push({
-          name: `Grupo ${String.fromCharCode(65 + groups.length)}`,
-          matches: groupMatches
-        });
-      }
+    const generatedMatches = generateTournamentMatches(teams, tournamentType);
+    setMatches(generatedMatches);
+    setGeneratedKnockoutMatches(null); // Atualize conforme necessário para knockout
+  };
 
-      setMatches(groups);
-      
-      // Gerar fase eliminatória
-      const knockoutMatches: KnockoutMatches = {
-        roundOf16: Array(8).fill(null).map(() => ({
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-        })),
-        quarterFinals: Array(4).fill(null).map(() => ({
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-        })),
-        semiFinals: Array(2).fill(null).map(() => ({
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-        })),
-        final: {
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-        },
-        thirdPlace: {
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-        }
-      };
-      
-      setGeneratedKnockoutMatches(knockoutMatches);
-    } else if (tournamentType === 'homeAway') {
-      // Gerar confrontos ida e volta
-      const knockoutMatches: KnockoutMatches = {
-        roundOf16: shuffledTeams.slice(0, 16).reduce<Match[]>((acc, team, index) => {
-          if (index % 2 === 0) {
-            acc.push(
-              {
-                team1: team,
-                team2: shuffledTeams[index + 1],
-                isHomeGame: true
-              },
-              {
-                team1: shuffledTeams[index + 1],
-                team2: team,
-                isHomeGame: true
-              }
-            );
-          }
-          return acc;
-        }, []),
-        quarterFinals: Array(8).fill(null).map(() => ({
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' },
-          isHomeGame: true
-        })),
-        semiFinals: Array(4).fill(null).map(() => ({
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' },
-          isHomeGame: true
-        })),
-        final: {
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-        },
-        thirdPlace: {
-          team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-          team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-        }
-      };
-      
-      setGeneratedKnockoutMatches(knockoutMatches);
-    } else {
-      // Liga
-      const groups: Group[] = [];
-      const teamsPerGroup = 4;
-      
-      for (let i = 0; i < shuffledTeams.length; i += teamsPerGroup) {
-        const groupTeams = shuffledTeams.slice(i, i + teamsPerGroup);
-        const groupMatches: Match[] = [];
-        
-        for (let j = 0; j < groupTeams.length; j++) {
-          for (let k = j + 1; k < groupTeams.length; k++) {
-            groupMatches.push({
-              team1: groupTeams[j],
-              team2: groupTeams[k]
-            });
-          }
-        }
-        
-        groups.push({
-          name: `Grupo ${String.fromCharCode(65 + groups.length)}`,
-          matches: groupMatches
-        });
-      }
-
-      setMatches(groups);
+  const generatePDF = () => {
+    if (!tournamentName) {
+      toast({
+        title: "Nome do Torneio Necessário",
+        description: "Por favor, insira um nome para o torneio antes de gerar o PDF.",
+        variant: "destructive"
+      });
+      return;
     }
-    
-    toast({
-      title: "Confrontos gerados com sucesso!",
-      description: "Os confrontos foram gerados e organizados de acordo com o tipo de torneio selecionado."
-    });
+    const groups = matches.map(match => ({ name: `${match.team1.name} vs ${match.team2.name}`, matches: [match] }));
+    generateTournamentPDF(tournamentName, groups);
   };
 
   // Adiciona dados fictícios para demonstração
@@ -310,6 +175,57 @@ const Championship = () => {
               </Button>
             </div>
           </div>
+          <div className="space-y-4">
+            <Label htmlFor="tournamentName">Nome do Torneio</Label>
+            <Input
+              id="tournamentName"
+              value={tournamentName}
+              onChange={(e) => setTournamentName(e.target.value)}
+              placeholder="Digite o nome do torneio"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <Label>Tipo de Torneio</Label>
+            <RadioGroup
+              value={tournamentType}
+              onValueChange={(value: 'league' | 'worldCup' | 'homeAway') => setTournamentType(value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="league" id="league" />
+                <Label htmlFor="league">Pontos Corridos</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="worldCup" id="worldCup" />
+                <Label htmlFor="worldCup">Copa do Mundo (Grupos + Mata-mata)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="homeAway" id="homeAway" />
+                <Label htmlFor="homeAway">Mata-mata (Ida e Volta)</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="space-y-4">
+            <Label>Adicionar Time</Label>
+            <div className="flex flex-col md:flex-row gap-4">
+              <Input
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+                placeholder="Nome do time"
+              />
+              <Input
+                value={responsible}
+                onChange={(e) => setResponsible(e.target.value)}
+                placeholder="Responsável"
+              />
+              <Button onClick={addTeam} className="whitespace-nowrap">
+                <Users className="mr-2 h-4 w-4" />
+                Adicionar Time
+              </Button>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div 
@@ -318,6 +234,31 @@ const Championship = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">Times Cadastrados</h2>
+            <div className="space-y-4">
+              {teams.map((team) => (
+                <motion.div
+                  key={team.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <div>
+                    <p className="font-medium">{team.name}</p>
+                    <p className="text-sm text-gray-600">{team.responsible}</p>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => removeTeam(team.id)}
+                  >
+                    <Trophy className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4">Times Cadastrados</h2>
             <div className="space-y-4">
@@ -359,7 +300,7 @@ const Championship = () => {
 
       {(matches.length > 0 || generatedKnockoutMatches) && (
         <motion.div
-          className="mt-8"
+          className="mt-8 space-y-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >

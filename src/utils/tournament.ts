@@ -1,5 +1,25 @@
 import { Team, KnockoutMatches, Match, Group } from './types';
 
+export interface TournamentBracketProps {
+  groups: Group[];
+  knockoutMatches?: {
+    roundOf16: Match[];
+    quarterFinals: Match[];
+    semiFinals: Match[];
+    final: Match;
+    thirdPlace: Match;
+  };
+}
+export interface Tournament {
+  id: string;
+  name: string;
+  type: 'league' | 'worldCup' | 'homeAway';
+  teams: Team[];
+  matches: Match[];
+  groups?: Group[];
+  knockoutMatches?: KnockoutMatches;
+}
+
 export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
   // Embaralha os times para criar confrontos aleatórios
   const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
@@ -59,4 +79,26 @@ export const generateGroups = (teams: string[]): Group[] => {
   }
 
   return groups;
+};
+
+export const generateTournamentMatches = (teams: Team[], tournamentType: string): Match[] => {
+  const matches: Match[] = [];
+
+  if (tournamentType === "league") {
+    for (let i = 0; i < teams.length; i++) {
+      for (let j = i + 1; j < teams.length; j++) {
+        matches.push({ team1: teams[i], team2: teams[j] });
+      }
+    }
+  } else if (tournamentType === "knockout") {
+    // Lógica para torneio eliminatório
+    const knockoutMatches = generateKnockoutMatches(teams);
+    matches.push(...knockoutMatches.roundOf16);
+    matches.push(...knockoutMatches.quarterFinals);
+    matches.push(...knockoutMatches.semiFinals);
+    matches.push(knockoutMatches.final);
+    matches.push(knockoutMatches.thirdPlace);
+  }
+
+  return matches;
 };
