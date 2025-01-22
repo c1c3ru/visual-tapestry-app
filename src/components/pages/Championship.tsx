@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Trophy } from "lucide-react";
+import { Save, Trophy, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { TournamentBracket } from '../TournamentBracket';
 import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
-import { generateKnockoutMatches, generateTournamentMatches } from '@/utils/tournament';
-import { BackToDashboard } from '../BackToDashboard';
-import { useToast } from "@/hooks/use-toast";
-import { useTournamentStore } from '@/stores/useTournamentStore';
-import { TournamentHeader } from '../tournament/TournamentHeader';
-import { TournamentForm } from '../tournament/TournamentForm';
-import { TeamList } from '../tournament/TeamList';
+import { generateKnockoutMatches } from '@/utils/tournament';
+import TournamentHeader from '../tournament/TournamentHeader';
+import TournamentForm from '../tournament/TournamentForm';
+import TeamList from '../tournament/TeamList';
+import ShareButtons from '../ShareButtons';
+import { generateTournamentPDF } from '@/utils/pdf';
 
 const Championship = () => {
-  const { toast } = useToast();
-  const { addTournament, setCurrentTournament } = useTournamentStore();
   const [tournamentName, setTournamentName] = useState('');
   const [tournamentType, setTournamentType] = useState<'league' | 'worldCup' | 'homeAway'>('league');
   const [teams, setTeams] = useState<Team[]>([]);
@@ -22,8 +22,11 @@ const Championship = () => {
   const [responsible, setResponsible] = useState('');
   const [matches, setMatches] = useState<Group[]>([]);
   const [generatedKnockoutMatches, setGeneratedKnockoutMatches] = useState<KnockoutMatches | undefined>();
+  const [showSocialButtons, setShowSocialButtons] = useState(false);
+  const { toast } = useToast();
 
   const addTeam = () => {
+    const newTeam: Team = { id: Date.now().toString(), name: teamName, responsible };
     if (!teamName || !responsible) {
       toast({
         title: "Erro ao adicionar time",
@@ -32,7 +35,6 @@ const Championship = () => {
       });
       return;
     }
-    const newTeam: Team = { id: Date.now().toString(), name: teamName, responsible };
     setTeams([...teams, newTeam]);
     setTeamName("");
     setResponsible("");
@@ -53,9 +55,8 @@ const Championship = () => {
         knockoutMatches: generatedKnockoutMatches
       };
 
-      addTournament(tournament);
-      setCurrentTournament(tournament);
-
+      // Here you would typically save to your backend
+      // For now, we'll just show a success message
       toast({
         title: "Torneio Salvo",
         description: "O torneio foi salvo com sucesso!",
@@ -72,14 +73,24 @@ const Championship = () => {
 
   const generateMatches = () => {
     const generatedMatches = generateTournamentMatches(teams, tournamentType);
-    const groupedMatches: Group[] = [{
-      name: 'Todos os Jogos',
-      matches: generatedMatches
-    }];
-    setMatches(groupedMatches);
-    setGeneratedKnockoutMatches(undefined);
+    setMatches(generatedMatches);
+    setGeneratedKnockoutMatches(null); // Atualize conforme necessário para knockout
   };
 
+  const generatePDF = () => {
+    if (!tournamentName) {
+      toast({
+        title: "Nome do Torneio Necessário",
+        description: "Por favor, insira um nome para o torneio antes de gerar o PDF.",
+        variant: "destructive"
+      });
+      return;
+    }
+    const groups = matches.map(match => ({ name: `${match.team1.name} vs ${match.team2.name}`, matches: [match] }));
+    generateTournamentPDF(tournamentName, groups);
+  };
+
+  // Adiciona dados fictícios para demonstração
   const mockTeams: Team[] = [
     { id: '1', name: 'Flamengo', responsible: 'João' },
     { id: '2', name: 'Palmeiras', responsible: 'Maria' },
@@ -99,44 +110,192 @@ const Championship = () => {
   }, [tournamentType]);
 
   return (
-    <div className="container mx-auto p-4 space-y-8 bg-gray-50 min-h-screen">
+    <div className="container mx-auto p-4 space-y-8">
       <BackToDashboard />
-      <TournamentHeader />
+      
+      <div className="flex items-center gap-2 mb-6">
+        <Trophy className="h-8 w-8 text-primary" />
+        <h1 className="text-3xl font-bold">Campeonato</h1>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <TournamentForm
-          tournamentName={tournamentName}
-          tournamentType={tournamentType}
-          teamName={teamName}
-          responsible={responsible}
-          onTournamentNameChange={setTournamentName}
-          onTournamentTypeChange={setTournamentType}
-          onTeamNameChange={setTeamName}
-          onResponsibleChange={setResponsible}
-          onAddTeam={addTeam}
-        />
+        <motion.div 
+          className="space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="space-y-4">
+            <Label htmlFor="tournamentName">Nome do Torneio</Label>
+            <Input
+              id="tournamentName"
+              value={tournamentName}
+              onChange={(e) => setTournamentName(e.target.value)}
+              placeholder="Digite o nome do torneio"
+            />
+          </div>
 
-        <div className="space-y-6">
-          <TeamList teams={teams} onRemoveTeam={removeTeam} />
+          <div className="space-y-4">
+            <Label>Tipo de Torneio</Label>
+            <RadioGroup
+              value={tournamentType}
+              onValueChange={(value: 'league' | 'worldCup' | 'homeAway') => setTournamentType(value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="league" id="league" />
+                <Label htmlFor="league">Pontos Corridos</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="worldCup" id="worldCup" />
+                <Label htmlFor="worldCup">Copa do Mundo (Grupos + Mata-mata)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="homeAway" id="homeAway" />
+                <Label htmlFor="homeAway">Mata-mata (Ida e Volta)</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="space-y-4">
+            <Label>Adicionar Time</Label>
+            <div className="flex flex-col md:flex-row gap-4">
+              <Input
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+                placeholder="Nome do time"
+              />
+              <Input
+                value={responsible}
+                onChange={(e) => setResponsible(e.target.value)}
+                placeholder="Responsável"
+              />
+              <Button onClick={addTeam} className="whitespace-nowrap">
+                <Users className="mr-2 h-4 w-4" />
+                Adicionar Time
+              </Button>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <Label htmlFor="tournamentName">Nome do Torneio</Label>
+            <Input
+              id="tournamentName"
+              value={tournamentName}
+              onChange={(e) => setTournamentName(e.target.value)}
+              placeholder="Digite o nome do torneio"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <Label>Tipo de Torneio</Label>
+            <RadioGroup
+              value={tournamentType}
+              onValueChange={(value: 'league' | 'worldCup' | 'homeAway') => setTournamentType(value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="league" id="league" />
+                <Label htmlFor="league">Pontos Corridos</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="worldCup" id="worldCup" />
+                <Label htmlFor="worldCup">Copa do Mundo (Grupos + Mata-mata)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="homeAway" id="homeAway" />
+                <Label htmlFor="homeAway">Mata-mata (Ida e Volta)</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="space-y-4">
+            <Label>Adicionar Time</Label>
+            <div className="flex flex-col md:flex-row gap-4">
+              <Input
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+                placeholder="Nome do time"
+              />
+              <Input
+                value={responsible}
+                onChange={(e) => setResponsible(e.target.value)}
+                placeholder="Responsável"
+              />
+              <Button onClick={addTeam} className="whitespace-nowrap">
+                <Users className="mr-2 h-4 w-4" />
+                Adicionar Time
+              </Button>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div 
+          className="space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">Times Cadastrados</h2>
+            <div className="space-y-4">
+              {teams.map((team) => (
+                <motion.div
+                  key={team.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <div>
+                    <p className="font-medium">{team.name}</p>
+                    <p className="text-sm text-gray-600">{team.responsible}</p>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => removeTeam(team.id)}
+                  >
+                    <Trophy className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">Times Cadastrados</h2>
+            <div className="space-y-4">
+              {teams.map((team) => (
+                <motion.div
+                  key={team.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <div>
+                    <p className="font-medium">{team.name}</p>
+                    <p className="text-sm text-gray-600">{team.responsible}</p>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => removeTeam(team.id)}
+                  >
+                    <Trophy className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
 
           <div className="flex gap-4 flex-wrap">
-            <Button 
-              onClick={saveTournament} 
-              className="gap-2 bg-tournament-bg hover:bg-tournament-bg/90"
-            >
-              <Trophy className="h-4 w-4" />
+            <Button onClick={saveTournament} className="gap-2">
+              <Save className="h-4 w-4" />
               Salvar
             </Button>
-            <Button 
-              onClick={generateMatches} 
-              className="gap-2 bg-tournament-bg hover:bg-tournament-bg/90" 
-              disabled={teams.length < 2}
-            >
+            <Button onClick={generateMatches} className="gap-2" disabled={teams.length < 2}>
               <Trophy className="h-4 w-4" />
               Gerar Confrontos
             </Button>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {(matches.length > 0 || generatedKnockoutMatches) && (
@@ -145,7 +304,7 @@ const Championship = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">Confrontos do Campeonato</h2>
+          <h2 className="text-2xl font-bold mb-4">Confrontos do Campeonato</h2>
           <TournamentBracket 
             groups={matches} 
             knockoutMatches={generatedKnockoutMatches}

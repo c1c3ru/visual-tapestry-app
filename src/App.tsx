@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/pages/Login';
-import { PlayerProvider } from './context/PlayerContext';
+import { PlayerProvider } from './context/PlayerContext'; // Corrigir o caminho do PlayerProvider
 import Dashboard from './components/pages/Dashboard';
 import PlayerForm from './components/PlayerForm';
 import { PlayerList } from './components/PlayerList';
@@ -22,7 +22,7 @@ const App = () => {
         <Route path="/presence" element={<PresenceList />} />
         <Route path="/statistics" element={<Statistics />} />
         <Route path="/championship" element={<Championship />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} /> {/* Fallback */}
       </Routes>
     </PlayerProvider>
   );

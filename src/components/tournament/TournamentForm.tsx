@@ -1,95 +1,95 @@
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "@/components/ui/button";
-import { Users } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Team } from '../../utils/types';
 
 interface TournamentFormProps {
   tournamentName: string;
-  tournamentType: 'league' | 'worldCup' | 'homeAway';
   teamName: string;
   responsible: string;
+  teams: Team[];
   onTournamentNameChange: (value: string) => void;
-  onTournamentTypeChange: (value: 'league' | 'worldCup' | 'homeAway') => void;
   onTeamNameChange: (value: string) => void;
   onResponsibleChange: (value: string) => void;
-  onAddTeam: () => void;
+  onAddTeam: (team: Team) => void;
 }
 
 export const TournamentForm: React.FC<TournamentFormProps> = ({
   tournamentName,
-  tournamentType,
   teamName,
   responsible,
+  teams,
   onTournamentNameChange,
-  onTournamentTypeChange,
   onTeamNameChange,
   onResponsibleChange,
   onAddTeam,
 }) => {
+  const handleAddTeam = () => {
+    const newTeam: Team = {
+      id: (teams.length + 1).toString(),
+      name: teamName,
+      responsible: responsible,
+    };
+    onAddTeam(newTeam);
+    onTeamNameChange('');
+    onResponsibleChange('');
+  };
+
   return (
-    <motion.div 
-      className="space-y-6 bg-white p-6 rounded-lg shadow-md"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="space-y-4">
-        <Label htmlFor="tournamentName">Nome do Torneio</Label>
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="tournamentName">Nome do Campeonato</Label>
         <Input
           id="tournamentName"
           value={tournamentName}
           onChange={(e) => onTournamentNameChange(e.target.value)}
-          placeholder="Digite o nome do torneio"
-          className="border-tournament-bg/20 focus:border-tournament-bg"
+          placeholder="Digite o nome do campeonato"
         />
       </div>
 
-      <div className="space-y-4">
-        <Label>Tipo de Torneio</Label>
-        <RadioGroup
-          value={tournamentType}
-          onValueChange={onTournamentTypeChange}
-          className="flex flex-col space-y-2"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="league" id="league" />
-            <Label htmlFor="league">Pontos Corridos</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="worldCup" id="worldCup" />
-            <Label htmlFor="worldCup">Copa do Mundo (Grupos + Mata-mata)</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="homeAway" id="homeAway" />
-            <Label htmlFor="homeAway">Mata-mata (Ida e Volta)</Label>
-          </div>
-        </RadioGroup>
-      </div>
-
-      <div className="space-y-4">
-        <Label>Adicionar Time</Label>
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="teamName">Nome do Time</Label>
           <Input
+            id="teamName"
             value={teamName}
             onChange={(e) => onTeamNameChange(e.target.value)}
-            placeholder="Nome do time"
-            className="border-tournament-bg/20 focus:border-tournament-bg"
+            placeholder="Digite o nome do time"
           />
+        </div>
+        <div>
+          <Label htmlFor="responsible">Responsável</Label>
           <Input
+            id="responsible"
             value={responsible}
             onChange={(e) => onResponsibleChange(e.target.value)}
-            placeholder="Responsável"
-            className="border-tournament-bg/20 focus:border-tournament-bg"
+            placeholder="Digite o nome do responsável"
           />
-          <Button onClick={onAddTeam} className="bg-tournament-bg hover:bg-tournament-bg/90 text-white">
-            <Users className="mr-2 h-4 w-4" />
+        </div>
+        <div className="col-span-2">
+          <button
+            type="button"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={handleAddTeam}
+          >
             Adicionar Time
-          </Button>
+          </button>
         </div>
       </div>
-    </motion.div>
+
+      {teams.length > 0 && (
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold mb-2">Times Cadastrados</h3>
+          <ul className="space-y-2">
+            {teams.map((team, index) => (
+              <li key={team.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                <span className="font-medium">{team.name}</span>
+                <span className="text-gray-600">{team.responsible}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 };
