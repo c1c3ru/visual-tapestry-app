@@ -1,17 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Match, Group } from '@/utils/types';
+import { TournamentBracketProps } from '@/utils/tournament';
 
-interface TournamentBracketProps {
-  groups: Group[];
-  knockoutMatches?: {
-    roundOf16: Match[];
-    quarterFinals: Match[];
-    semiFinals: Match[];
-    final: Match;
-    thirdPlace: Match;
-  };
-}
+
 
 const KnockoutStage = ({ round, matches }: { round: string; matches: Match[] }) => {
   return (
