@@ -16,6 +16,13 @@ export interface Player {
   paid: boolean;
   registered: boolean;
 }
+export interface PlayerState {
+  players: Player[];
+  setPlayers: (players: Player[]) => void;
+  updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
+  addPlayer: (player: Player) => void;
+  removePlayer: (id: number) => void;
+}
 
 export interface Match {
   team1: Team;

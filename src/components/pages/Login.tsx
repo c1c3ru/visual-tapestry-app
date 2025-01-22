@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 const BUTTON_CLASSES = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
@@ -6,6 +7,7 @@ const BUTTON_LOADING_CLASSES = "bg-gray-500 text-white font-bold py-2 px-4 round
 
 const Login = () => {
   const { isLoading, error, setLoading, setError } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -15,6 +17,7 @@ const Login = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       // Sucesso no login
       setLoading(false);
+      navigate('/dashboard'); // Redirecionar para a página de dashboard
     } catch (error) {
       setError("Erro ao fazer login com Google");
       setLoading(false);

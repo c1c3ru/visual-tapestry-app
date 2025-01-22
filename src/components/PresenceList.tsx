@@ -12,6 +12,7 @@ import { Player, Rating } from "@/utils/types";
 const PresenceList = () => {
   const { players, addPlayer, updatePlayer } = usePlayerStore();
   const [newPlayerName, setNewPlayerName] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
   const { toast } = useToast();
   const isAdmin = true; // Suponha que temos uma maneira de verificar se o usuário é administrador
 
@@ -24,6 +25,7 @@ const PresenceList = () => {
     );
 
     if (playerExists) {
+      setNameError("Jogador já está cadastrado.");
       toast({
         title: "Erro",
         description: "Jogador já está cadastrado.",
@@ -52,6 +54,7 @@ const PresenceList = () => {
     addPlayer(newPlayer);
 
     setNewPlayerName("");
+    setNameError(null);
     toast({
       title: "Jogador Adicionado",
       description: "Novo jogador foi adicionado com sucesso.",
@@ -101,10 +104,13 @@ const PresenceList = () => {
                 value={newPlayerName}
                 onChange={(e) => setNewPlayerName(e.target.value)}
                 placeholder="Digite o nome do novo jogador..."
-                className="flex-1"
+                className={`flex-1 ${nameError ? 'border-red-500' : ''}`}
               />
               <Button type="submit">Adicionar Jogador</Button>
             </div>
+            {nameError && (
+              <p className="text-red-500 mt-2">{nameError}</p>
+            )}
           </form>
         )}
 

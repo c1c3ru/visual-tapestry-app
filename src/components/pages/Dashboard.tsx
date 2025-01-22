@@ -46,7 +46,7 @@ const Dashboard = () => {
           guestHighlight={guestHighlight}
           setGuestHighlight={setGuestHighlight}
         />
-        <DashboardMenu isAdmin={isAdmin} />
+        <DashboardMenu  />
       </div>
     </motion.div>
   );

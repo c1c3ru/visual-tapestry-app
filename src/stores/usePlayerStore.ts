@@ -1,14 +1,11 @@
 import { create } from 'zustand';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorage';
-import { Player } from '@/utils/types';
-type Rating = 1 | 2 | 3 | 4 | 5;
-
+import { Player, Rating } from '@/utils/types';
 
 interface PlayerState {
   players: Player[];
-  setPlayers: (players: Player[]) => void;
-  updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
   addPlayer: (player: Player) => void;
+  updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
   removePlayer: (id: number) => void;
 }
 

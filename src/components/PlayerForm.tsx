@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Star, StarHalf, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -51,6 +51,12 @@ const PlayerForm = () => {
     registered: true,
     selected: false,
   });
+  const [errors, setErrors] = useState({
+    name: false,
+    isGuest: false,
+    selectedPositions: false,
+    rating: false,
+  });
   const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,8 +84,27 @@ const PlayerForm = () => {
     }));
   };
 
+  const validateForm = () => {
+    const newErrors = {
+      name: newPlayer.name.trim() === "",
+      isGuest: newPlayer.isGuest === null,
+      selectedPositions: newPlayer.selectedPositions.length === 0,
+      rating: newPlayer.rating === 0 as Rating,
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some((error) => error);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
     const player: Player = {
       ...newPlayer,
       id: Date.now(),
@@ -104,6 +129,12 @@ const PlayerForm = () => {
       registered: true,
       selected: false,
     });
+    setErrors({
+      name: false,
+      isGuest: false,
+      selectedPositions: false,
+      rating: false,
+    });
   };
 
   return (
@@ -124,7 +155,9 @@ const PlayerForm = () => {
                 value={newPlayer.name}
                 onChange={handleChange}
                 placeholder="Nome do jogador"
+                className={errors.name ? "border-red-500" : ""}
               />
+              {errors.name && <p className="text-red-500">Nome é obrigatório.</p>}
             </div>
             <div>
               <Label htmlFor="nickname">Apelido</Label>
@@ -153,7 +186,9 @@ const PlayerForm = () => {
                 name="isGuest"
                 checked={newPlayer.isGuest}
                 onChange={(e) => handleChange(e as React.ChangeEvent<HTMLInputElement>)}
+                className={errors.isGuest ? "border-red-500" : ""}
               />
+              {errors.isGuest && <p className="text-red-500">Marcar como convidado é obrigatório.</p>}
             </div>
             <div>
               <Label htmlFor="sport">Esporte</Label>
@@ -183,11 +218,13 @@ const PlayerForm = () => {
                     name="selectedPositions"
                     checked={newPlayer.selectedPositions.includes(position)}
                     onChange={() => handlePositionChange(position)}
+                    className={errors.selectedPositions ? "border-red-500" : ""}
                   >
                     {position}
                   </Checkbox>
                 ))}
               </div>
+              {errors.selectedPositions && <p className="text-red-500">Escolher pelo menos uma posição é obrigatório.</p>}
             </div>
             <div>
               <Label htmlFor="rating">Avaliação</Label>
@@ -198,11 +235,13 @@ const PlayerForm = () => {
                     type="button"
                     variant={newPlayer.rating === rating ? "default" : "outline"}
                     onClick={() => setNewPlayer((prev) => ({ ...prev, rating: rating as Rating }))}
+                    className={errors.rating ? "border-red-500" : ""}
                   >
                     {rating}
                   </Button>
                 ))}
               </div>
+              {errors.rating && <p className="text-red-500">Avaliação é obrigatória.</p>}
             </div>
             <Button type="submit">
               <Save className="mr-2 h-4 w-4" />
