@@ -3,7 +3,7 @@ import Login from './components/pages/Login';
 import { PlayerProvider } from './context/PlayerContext';
 import Dashboard from './components/pages/Dashboard';
 import PlayerForm from './components/PlayerForm';
-import { PlayerList } from './components/PlayerList';
+import PlayerList from './components/PlayerList';
 import TeamDraw from './components/TeamDraw';
 import PresenceList from './components/PresenceList';
 import Statistics from './components/Statistics';

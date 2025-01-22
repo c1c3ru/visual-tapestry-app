@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
-import { usePlayerContext } from "@/context/PlayerContext";
-import { Player } from "@/utils/types";
+import { usePlayerStore } from "@/stores/usePlayerStore";
+import { Player, Rating } from "@/utils/types";
 
 const PresenceList = () => {
-  const { players, updatePlayer } = usePlayerContext();
+  const { players, addPlayer, updatePlayer } = usePlayerStore();
   const [newPlayerName, setNewPlayerName] = useState("");
   const { toast } = useToast();
   const isAdmin = true; // Suponha que temos uma maneira de verificar se o usuário é administrador
@@ -40,15 +40,16 @@ const PresenceList = () => {
       isGuest: false,
       sport: "",
       selectedPositions: [],
-      rating: 0,
+      rating: 0 as Rating, // Garantir que o valor de rating seja do tipo Rating
       includeInDraw: false,
       createdAt: new Date().toISOString(),
       present: false,
       paid: false,
       registered: true,
+      selected: false,
     };
 
-    updatePlayer(newPlayer.id, newPlayer);
+    addPlayer(newPlayer);
 
     setNewPlayerName("");
     toast({

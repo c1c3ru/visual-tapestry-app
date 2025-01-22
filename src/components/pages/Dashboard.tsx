@@ -1,13 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { DashboardHeader } from '../dashboard/DashboardHeader';
 import { DashboardSettings } from '../dashboard/DashboardSettings';
 import { DashboardMenu } from '../dashboard/DashboardMenu';
 import { useSettingsStore } from '@/stores/useSettingsStore';
+import { useDashboardStore } from '@/stores/useDashboardStore';
 import { motion } from 'framer-motion';
 
 const Dashboard = () => {
-  const [dashboardTitle, setDashboardTitle] = useState('Dashboard');
-  const [isAdmin, setIsAdmin] = useState(true);
+  const { 
+    dashboardTitle, 
+    isAdmin, 
+    setDashboardTitle, 
+    setIsAdmin 
+  } = useDashboardStore();
   const { 
     ratingSystem, 
     guestHighlight, 
@@ -20,7 +25,7 @@ const Dashboard = () => {
     if (storedTitle) {
       setDashboardTitle(storedTitle);
     }
-  }, []);
+  }, [setDashboardTitle]);
 
   return (
     <motion.div 
@@ -30,20 +35,18 @@ const Dashboard = () => {
       className="min-h-screen bg-gradient-to-br from-teal-50 to-white p-6 font-sans"
     >
       <div className="max-w-4xl mx-auto">
-        <DashboardHeader 
-          isAdmin={isAdmin}
+        <DashboardHeader
           dashboardTitle={dashboardTitle}
+          isAdmin={isAdmin}
           setDashboardTitle={setDashboardTitle}
         />
-        
-        <DashboardSettings 
+        <DashboardSettings
           selectedRatingSystem={ratingSystem}
           setSelectedRatingSystem={setRatingSystem}
           guestHighlight={guestHighlight}
           setGuestHighlight={setGuestHighlight}
         />
-
-        <DashboardMenu />
+        <DashboardMenu isAdmin={isAdmin} />
       </div>
     </motion.div>
   );
