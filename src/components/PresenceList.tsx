@@ -1,5 +1,4 @@
 import React from "react";
-
 import { motion } from "framer-motion";
 import { Check, DollarSign, UserCheck, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -10,13 +9,20 @@ import { DynamicTitle } from "./DynamicTitle";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { Player, Rating } from "@/utils/types";
 
+interface FormElements extends HTMLFormControlsCollection {
+  newPlayerName: HTMLInputElement;
+}
+
+interface AddPlayerForm extends HTMLFormElement {
+  readonly elements: FormElements;
+}
+
 const PresenceList = () => {
   const { players, addPlayer, updatePlayer } = usePlayerStore();
-
   const { toast } = useToast();
   const isAdmin = true; // Suponha que temos uma maneira de verificar se o usuário é administrador
 
-  const handleAddPlayer = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddPlayer = (e: React.FormEvent<AddPlayerForm>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const newPlayerName = form.elements.newPlayerName.value.trim();
