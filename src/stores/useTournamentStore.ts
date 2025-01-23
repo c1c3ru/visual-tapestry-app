@@ -1,48 +1,38 @@
-import { create } from 'zustand';
-import { Tournament, Team, Match, Group, KnockoutMatches } from '@/utils/types';
-import { generateGroups, generateKnockoutMatches } from '@/utils/tournament';
+import {create} from 'zustand';
+import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
 
 interface TournamentState {
-  tournament: Tournament | null;
+  tournamentName: string;
+  tournamentType: 'league' | 'worldCup' | 'homeAway';
+  teamName: string;
+  responsible: string;
   teams: Team[];
   groups: Group[];
   knockoutMatches: KnockoutMatches | null;
-  setTournament: (tournament: Tournament) => void;
+  setTournamentName: (name: string) => void;
+  setTournamentType: (type: 'league' | 'worldCup' | 'homeAway') => void;
+  setTeamName: (name: string) => void;
+  setResponsible: (name: string) => void;
   addTeam: (team: Team) => void;
-  removeTeam: (teamId: string) => void;
-  generateMatches: (teams: Team[], type: 'league' | 'worldCup' | 'homeAway') => void;
-  updateMatch: (matchId: string, score1: number, score2: number) => void;
+  removeTeam: (id: string) => void;
+  generateMatches: () => void;
 }
 
 export const useTournamentStore = create<TournamentState>((set) => ({
-  tournament: null,
+  tournamentName: '',
+  tournamentType: 'league',
+  teamName: '',
+  responsible: '',
   teams: [],
   groups: [],
   knockoutMatches: null,
-  setTournament: (tournament) => set({ tournament }),
+  setTournamentName: (name) => set({ tournamentName: name }),
+  setTournamentType: (type) => set({ tournamentType: type }),
+  setTeamName: (name) => set({ teamName: name }),
+  setResponsible: (name) => set({ responsible: name }),
   addTeam: (team) => set((state) => ({ teams: [...state.teams, team] })),
-  removeTeam: (teamId) =>
-    set((state) => ({
-      teams: state.teams.filter((team) => team.id !== teamId),
-    })),
-  generateMatches: (teams, type) =>
-    set((state) => {
-      if (type === 'worldCup') {
-        return {
-          ...state,
-          groups: generateGroups(teams.map(team => team.name)),
-          knockoutMatches: generateKnockoutMatches(teams)
-        };
-      }
-      return {
-        ...state,
-        groups: generateGroups(teams.map(team => team.name)),
-        knockoutMatches: null
-      };
-    }),
-  updateMatch: (matchId, score1, score2) =>
-    set((state) => {
-      // Implementation for updating match scores
-      return state;
-    }),
+  removeTeam: (id) => set((state) => ({ teams: state.teams.filter((team) => team.id !== id) })),
+  generateMatches: () => {
+    // Implementar a lógica para gerar partidas
+  },
 }));
