@@ -18,6 +18,9 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { Player, Rating } from "@/utils/types";
 import { RatingInput } from "./player/RatingInput";
+import NumberRating from "@/public/NumberRating";
+import Scale5Rating from "@/public/Scale5Rating";
+import StarRating from "@/public/StarRating";
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
@@ -41,10 +44,18 @@ const PlayerForm = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setNewPlayer({ [name]: type === "checkbox" ? checked : value });
+    toast({
+      title: "Campo Atualizado",
+      description: `O campo ${name} foi atualizado.`,
+    });
   };
 
   const handleSelectChange = (value: string) => {
     setNewPlayer({ sport: value as Sport, selectedPositions: [] });
+    toast({
+      title: "Esporte Selecionado",
+      description: `${value} foi selecionado como esporte.`,
+    });
   };
 
   const handlePositionChange = (position: string) => {
@@ -53,10 +64,18 @@ const PlayerForm = () => {
       : [...newPlayer.selectedPositions, position];
     
     setNewPlayer({ selectedPositions: updatedPositions } as Partial<Omit<Player, "id" | "createdAt">>);
+    toast({
+      title: "Posições Atualizadas",
+      description: "As posições foram atualizadas com sucesso.",
+    });
   };
 
   const handleRatingChange = (newRating: Rating) => {
     setNewPlayer({ rating: newRating });
+    toast({
+      title: "Avaliação Atualizada",
+      description: `Nova avaliação: ${newRating}`,
+    });
   };
 
   const validateForm = () => {

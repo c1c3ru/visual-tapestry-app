@@ -1,5 +1,7 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
+import { generateTournamentMatches, generateGroups, generateKnockoutMatches } from '@/utils/tournament';
+import { useToast } from '@/hooks/use-toast';
 
 interface TournamentState {
   tournamentName: string;
@@ -18,7 +20,7 @@ interface TournamentState {
   generateMatches: () => void;
 }
 
-export const useTournamentStore = create<TournamentState>((set) => ({
+export const useTournamentStore = create<TournamentState>((set, get) => ({
   tournamentName: '',
   tournamentType: 'league',
   teamName: '',
@@ -33,6 +35,41 @@ export const useTournamentStore = create<TournamentState>((set) => ({
   addTeam: (team) => set((state) => ({ teams: [...state.teams, team] })),
   removeTeam: (id) => set((state) => ({ teams: state.teams.filter((team) => team.id !== id) })),
   generateMatches: () => {
-    // Implementar a lógica para gerar partidas
+    const { teams, tournamentType } = get();
+    const toast = useToast();
+
+    if (teams.length < 4) {
+      toast.toast({
+        title: "Erro",
+        description: "Mínimo de 4 times necessário para gerar partidas.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (teams.length > 64) {
+      toast.toast({
+        title: "Erro",
+        description: "Máximo de 64 times permitido.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (tournamentType === 'worldCup') {
+      const groups = generateGroups(teams);
+      set({ groups });
+    } else if (tournamentType === 'homeAway') {
+      const knockoutMatches = generateKnockoutMatches(teams);
+      set({ knockoutMatches });
+    } else {
+      const matches = generateTournamentMatches(teams, tournamentType);
+      set({ groups: [{ name: 'Liga', matches }] });
+    }
+
+    toast.toast({
+      title: "Sucesso",
+      description: "Partidas geradas com sucesso!",
+    });
   },
 }));
