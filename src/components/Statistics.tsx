@@ -11,15 +11,15 @@ import { Edit2, Save, Trash2 } from 'lucide-react';
 import { useStatisticsStore } from "@/stores/useStatisticsStore";
 
 const Statistics = () => {
-  const { statistics, setStatistics, updateStatistic, addStatistic, removeStatistic } = useStatisticsStore();
+  const { statistics, updateStatistic, removeStatistic } = useStatisticsStore();
 
   const [editingRecord, setEditingRecord] = useState<{index: number, recordIndex: number} | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const { toast } = useToast();
 
-  const handleEdit = (index: number, recordIndex: number) => {
+  const handleEdit = (index: number, recordIndex: number, currentPoints?: number) => {
     setEditingRecord({ index, recordIndex });
-    setEditValue(statistics[index].pointRecords[recordIndex].points.toString());
+    setEditValue(currentPoints?.toString() || statistics[index].pointRecords[recordIndex].points.toString());
   };
 
   const handleSave = () => {
@@ -27,11 +27,17 @@ const Statistics = () => {
       const { index, recordIndex } = editingRecord;
       const updatedPointRecords = [...statistics[index].pointRecords];
       updatedPointRecords[recordIndex].points = parseInt(editValue, 10);
+      
+      const updatedStatistic = {
+        ...statistics[index],
+        pointRecords: updatedPointRecords,
+        lastUpdated: new Date().toISOString()
+      };
 
-
-      updateStatistic(index, { pointRecords: updatedPointRecords });
+      updateStatistic(index, updatedStatistic);
       setEditingRecord(null);
       setEditValue('');
+      
       toast({
         title: "Registro atualizado",
         description: "O registro de pontos foi atualizado com sucesso.",
@@ -39,44 +45,26 @@ const Statistics = () => {
     }
   };
 
-  const handleDelete = (index: number) => {
-    removeStatistic(index);
-
-    toast({
-      title: "Estatística removida",
-      description: "A estatística foi removida com sucesso.",
-    });
-  };
-
-  const handleEdit = (index: number, recordIndex: number, currentPoints: number) => {
-    setEditingRecord({ index, recordIndex });
-    setEditValue(currentPoints.toString());
-  };
-
-  const handleSaveEdit = (index: number, recordIndex: number) => {
-    const updatedStatistics = [...statistics];
-    updatedStatistics[index].pointRecords[recordIndex].points = Number(editValue);
-    updatedStatistics[index].lastUpdated = new Date().toISOString();
-    saveStatistics(updatedStatistics);
-    setEditingRecord(null);
-    setEditValue('');
-
-    toast({
-      title: "Registro Atualizado",
-      description: "O registro foi atualizado com sucesso.",
-    });
-  };
-
-  const handleDelete = (index: number, recordIndex: number) => {
-    const updatedStatistics = [...statistics];
-    updatedStatistics[index].pointRecords.splice(recordIndex, 1);
-    updatedStatistics[index].lastUpdated = new Date().toISOString();
-    saveStatistics(updatedStatistics);
-
-    toast({
-      title: "Registro Excluído",
-      description: "O registro foi excluído com sucesso.",
-    });
+  const handleDelete = (index: number, recordIndex?: number) => {
+    if (typeof recordIndex === 'undefined') {
+      // Delete entire statistic
+      removeStatistic(index);
+      toast({
+        title: "Estatística removida",
+        description: "A estatística foi removida com sucesso.",
+      });
+    } else {
+      // Delete specific record
+      const updatedStatistic = { ...statistics[index] };
+      updatedStatistic.pointRecords.splice(recordIndex, 1);
+      updatedStatistic.lastUpdated = new Date().toISOString();
+      
+      updateStatistic(index, updatedStatistic);
+      toast({
+        title: "Registro Excluído",
+        description: "O registro foi excluído com sucesso.",
+      });
+    }
   };
 
   return (
@@ -134,7 +122,6 @@ const Statistics = () => {
           ))}
         </div>
       </motion.div>
-
     </div>
   );
 };
