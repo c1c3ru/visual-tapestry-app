@@ -8,7 +8,7 @@ import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { Player } from "@/utils/types";
+import { Player, Rating } from "@/utils/types"; // Added Rating type import
 import clsx from "clsx";
 
 interface FormElements extends HTMLFormControlsCollection {
