@@ -16,10 +16,10 @@ const PresenceList = () => {
   const { toast } = useToast();
   const isAdmin = true; // Suponha que temos uma maneira de verificar se o usuário é administrador
 
-  const handleAddPlayer = (e: React.FormEvent) => {
+  const handleAddPlayer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const newPlayerName = e.target.elements.newPlayerName.value.trim();
+    const form = e.currentTarget;
+    const newPlayerName = form.elements.newPlayerName.value.trim();
     if (!newPlayerName) {
       toast({
         title: "Erro",
@@ -32,7 +32,6 @@ const PresenceList = () => {
     const playerExists = players.find(
       (player) =>
         player.name.toLowerCase() === newPlayerName.toLowerCase()
-
     );
 
     if (playerExists) {
@@ -47,14 +46,12 @@ const PresenceList = () => {
     const newPlayer: Player = {
       id: Date.now(),
       name: newPlayerName,
-
       nickname: "",
       birthDate: "",
       isGuest: false,
       sport: "",
       selectedPositions: [],
       rating: 0 as Rating, // Garantir que o valor de rating seja do tipo Rating
-
       includeInDraw: false,
       createdAt: new Date().toISOString(),
       present: false,
@@ -64,7 +61,6 @@ const PresenceList = () => {
     };
 
     addPlayer(newPlayer);
-
 
     toast({
       title: "Jogador Adicionado",
@@ -114,7 +110,6 @@ const PresenceList = () => {
               <Input
                 name="newPlayerName"
                 placeholder="Digite o nome do novo jogador..."
-
               />
               <Button type="submit">Adicionar Jogador</Button>
             </div>

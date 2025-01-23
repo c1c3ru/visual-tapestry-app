@@ -47,11 +47,11 @@ const PlayerForm = () => {
   };
 
   const handlePositionChange = (position: string) => {
-    setNewPlayer((prev) => ({
-      selectedPositions: prev.selectedPositions.includes(position)
-        ? prev.selectedPositions.filter((pos) => pos !== position)
-        : [...prev.selectedPositions, position],
-    }));
+    setNewPlayer({
+      selectedPositions: newPlayer.selectedPositions.includes(position)
+        ? newPlayer.selectedPositions.filter((pos) => pos !== position)
+        : [...newPlayer.selectedPositions, position]
+    } as Partial<Omit<Player, "id" | "createdAt">>);
   };
 
   const validateForm = () => {
@@ -71,7 +71,6 @@ const PlayerForm = () => {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos obrigatórios.",
-
         variant: "destructive",
       });
       return;
@@ -224,7 +223,6 @@ const PlayerForm = () => {
         </form>
       </motion.div>
     </div>
-
   );
 };
 
