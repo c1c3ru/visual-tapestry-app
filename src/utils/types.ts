@@ -1,3 +1,6 @@
+export type Rating = 1 | 2 | 3 | 4 | 5;
+
+
 export interface Player {
   id: number;
   name: string;
@@ -6,12 +9,36 @@ export interface Player {
   isGuest: boolean;
   sport: string;
   selectedPositions: string[];
-  rating: number;
+  rating: Rating;
   includeInDraw: boolean;
   createdAt: string;
-  present: boolean; // Adicionado
-  paid: boolean; // Adicionado
-  registered: boolean; // Adicionado
+  selected: boolean;
+  present: boolean;
+  paid: boolean;
+  registered: boolean;
+}
+
+export interface PlayerState {
+  players: Player[];
+  newPlayer: Omit<Player, 'id' | 'createdAt'>;
+  errors: {
+    name: boolean;
+    isGuest: boolean;
+    selectedPositions: boolean;
+    rating: boolean;
+  };
+  editingPlayer: { id: number } | null;
+  editValue: string;
+  addPlayer: (player: Player) => void;
+  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
+  setErrors: (errors: Partial<PlayerState['errors']>) => void;
+  resetForm: () => void;
+  updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
+  removePlayer: (id: number) => void;
+  setPlayers: (players: Player[]) => void;
+  setEditingPlayer: (player: { id: number } | null) => void;
+  setEditValue: (value: string) => void;
+
 }
 
 export interface Match {
@@ -46,7 +73,29 @@ export interface Tournament {
   name: string;
   type: 'league' | 'worldCup' | 'homeAway';
   teams: Team[];
-  matches: Group[];  // Added this property
+  matches: Group[];
   groups?: Group[];
   knockoutMatches?: KnockoutMatches;
 }
+
+export interface DashboardState {
+  dashboardTitle: string;
+  isAdmin: boolean;
+  setDashboardTitle: (title: string) => void;
+  setIsAdmin: (isAdmin: boolean) => void;
+}
+
+export interface DashboardSettingsProps {
+  selectedRatingSystem: string;
+  guestHighlight: string;
+  setGuestHighlight: (highlight: string) => void;
+  setSelectedRatingSystem: (system: string) => void;
+}
+
+export interface DashboardHeaderProps {
+  dashboardTitle: string;
+  isAdmin: boolean;
+  setDashboardTitle: (title: string) => void;
+}
+
+

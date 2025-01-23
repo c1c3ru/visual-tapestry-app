@@ -1,8 +1,20 @@
-import {create} from 'zustand';
-import { Player, Rating, PlayerState } from '@/utils/types';
+import { create } from 'zustand';
+import { Player, Rating } from '@/utils/types';
 
-export const usePlayerStore = create<PlayerState>((set) => ({
-  players: [],
+interface PlayerFormState {
+  newPlayer: Omit<Player, 'id' | 'createdAt'>;
+  errors: {
+    name: boolean;
+    isGuest: boolean;
+    selectedPositions: boolean;
+    rating: boolean;
+  };
+  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
+  setErrors: (errors: Partial<PlayerFormState['errors']>) => void;
+  resetForm: () => void;
+}
+
+export const usePlayerFormStore = create<PlayerFormState>((set) => ({
   newPlayer: {
     name: "",
     nickname: "",
@@ -23,12 +35,6 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     selectedPositions: false,
     rating: false,
   },
-  editingPlayer: null,
-  editValue: '',
-  addPlayer: (player) =>
-    set((state) => ({
-      players: [...state.players, player],
-    })),
   setNewPlayer: (player) => set((state) => ({
     newPlayer: { ...state.newPlayer, ...player },
   })),
@@ -57,18 +63,4 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       rating: false,
     },
   }),
-  updatePlayer: (id, updatedPlayer) =>
-    set((state) => ({
-      players: state.players.map((player) =>
-        player.id === id ? { ...player, ...updatedPlayer } : player
-      ),
-    })),
-  removePlayer: (id) =>
-    set((state) => ({
-      players: state.players.filter((player) => player.id !== id),
-    })),
-  setPlayers: (players) => set({ players }),
-  setEditingPlayer: (editingPlayer) => set({ editingPlayer }),
-  setEditValue: (editValue) => set({ editValue }),
-
 }));

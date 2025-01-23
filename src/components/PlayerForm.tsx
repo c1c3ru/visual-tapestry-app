@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Star, StarHalf, Save } from "lucide-react";
+import { Save } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -14,8 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BackToDashboard } from "./BackToDashboard";
 import { motion } from "framer-motion";
-import { usePlayerContext } from "@/context/PlayerContext";
-import { Player } from "@/utils/types";
+import { usePlayerStore } from "@/stores/usePlayerStore";
+import { Player, Rating } from "@/utils/types";
+
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
@@ -32,365 +34,197 @@ const positions: Position = {
 };
 
 const PlayerForm = () => {
+  const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm } = usePlayerStore();
   const { toast } = useToast();
-  const { addPlayer } = usePlayerContext();
-  const [formData, setFormData] = useState({
-    name: "",
-    nickname: "",
-    birthDate: "",
-    isGuest: false,
-    sport: "futsal" as Sport,
-    selectedPositions: [] as string[],
-    rating: 0,
-    includeInDraw: false,
-  });
 
-  const [ratingSystem, setRatingSystem] = useState<string>(
-    localStorage.getItem("ratingSystem") || "stars"
-  );
-  const [guestHighlight, setGuestHighlight] = useState<string>(
-    localStorage.getItem("guestHighlight") || "orange"
-  );
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setNewPlayer({ [name]: type === "checkbox" ? checked : value });
+  };
 
-  const handleSave = () => {
-    const { name, selectedPositions } = formData;
+  const handleSelectChange = (value: string) => {
+    setNewPlayer({ sport: value as Sport, selectedPositions: [] });
+  };
 
-    if (!name || selectedPositions.length === 0) {
+  const handlePositionChange = (position: string) => {
+    setNewPlayer((prev) => ({
+      selectedPositions: prev.selectedPositions.includes(position)
+        ? prev.selectedPositions.filter((pos) => pos !== position)
+        : [...prev.selectedPositions, position],
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      name: newPlayer.name.trim() === "",
+      isGuest: newPlayer.isGuest === null,
+      selectedPositions: newPlayer.selectedPositions.length === 0,
+      rating: newPlayer.rating === 0 as Rating,
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some((error) => error);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) {
       toast({
         title: "Erro",
-        description: "Nome e pelo menos uma posição são obrigatórios",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+
         variant: "destructive",
       });
       return;
     }
-
-    const newPlayer: Player = {
-      ...formData,
+    const player: Player = {
+      ...newPlayer,
       id: Date.now(),
       createdAt: new Date().toISOString(),
-      present: false,
-      paid: false,
-      registered: true,
     };
-
-    addPlayer(newPlayer);
+    addPlayer(player);
 
     toast({
-      title: "Sucesso",
-      description: "Jogador salvo com sucesso!",
+      title: "Jogador Adicionado",
+      description: "Novo jogador foi adicionado com sucesso.",
     });
 
-    setFormData({
-      name: "",
-      nickname: "",
-      birthDate: "",
-      isGuest: false,
-      sport: "futsal",
-      selectedPositions: [],
-      rating: 0,
-      includeInDraw: false,
-    });
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
-  const handleCheckboxChange = (position: string, checked: boolean) => {
-    const updatedPositions = checked
-      ? [...formData.selectedPositions, position]
-      : formData.selectedPositions.filter((p) => p !== position);
-    setFormData({ ...formData, selectedPositions: updatedPositions });
-  };
-
-  const handleStarClick = (star: number, isHalf: boolean = false) => {
-    const currentRating = formData.rating;
-    let newRating = star;
-
-    if (ratingSystem === "halfStars") {
-      if (isHalf) {
-        newRating = star - 0.5;
-      } else if (currentRating === star) {
-        newRating = star - 0.5;
-      }
-    }
-
-    setFormData({ ...formData, rating: newRating });
-  };
-
-  const renderRatingInput = () => {
-    switch (ratingSystem) {
-      case "halfStars":
-        return (
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <div key={star} className="relative">
-                <button
-                  onClick={() => handleStarClick(star, true)}
-                  className="absolute left-0 w-1/2 h-full focus:outline-none transition-transform hover:scale-110"
-                />
-                <button
-                  onClick={() => handleStarClick(star)}
-                  className="focus:outline-none transition-transform hover:scale-110"
-                >
-                  {formData.rating >= star ? (
-                    <Star className="fill-primary text-primary" size={32} />
-                  ) : formData.rating >= star - 0.5 ? (
-                    <StarHalf className="fill-primary text-primary" size={32} />
-                  ) : (
-                    <Star className="fill-muted text-muted" size={32} />
-                  )}
-                </button>
-              </div>
-            ))}
-          </div>
-        );
-      case "stars":
-        return (
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => setFormData({ ...formData, rating: star })}
-                className="focus:outline-none transition-transform hover:scale-110"
-              >
-                <Star
-                  size={32}
-                  className={`${
-                    formData.rating >= star
-                      ? "fill-primary text-primary"
-                      : "fill-muted text-muted"
-                  } transition-colors`}
-                />
-              </button>
-            ))}
-          </div>
-        );
-      case "numeric 10":
-        return (
-          <div className="flex gap-2">
-            {[...Array(10)].map((_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => setFormData({ ...formData, rating: i + 1 })}
-                className={`w-8 h-8 rounded-full ${
-                  formData.rating >= i + 1
-                    ? i + 1 <= 3
-                      ? "bg-red-500"
-                      : i + 1 <= 7
-                      ? "bg-green-500"
-                      : "bg-blue-500"
-                    : "bg-gray-200"
-                } text-white transition-colors`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        );
-      case "numeric 5":
-        return (
-          <div className="flex gap-2">
-            {[...Array(5)].map((_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => setFormData({ ...formData, rating: i + 1 })}
-                className={`w-8 h-8 rounded-full ${
-                  formData.rating >= i + 1
-                    ? i + 1 <= 2
-                      ? "bg-red-500"
-                      : i + 1 <= 4
-                      ? "bg-green-500"
-                      : "bg-blue-500"
-                    : "bg-gray-200"
-                } text-white transition-colors`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        );
-      default:
-        return null;
-    }
+    resetForm();
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`min-h-screen p-4 transition-colors duration-300 ${
-        formData.isGuest ? `bg-${guestHighlight}-50` : "bg-background"
-      }`}
-    >
+    <div className="min-h-screen bg-gray-50 p-6">
       <BackToDashboard />
-      <div className="max-w-2xl mx-auto space-y-8">
-        <h1 className="text-xl font-semibold text-center">
-          {formData.isGuest
-            ? "Cadastrar Jogador Convidado"
-            : "Cadastrar Jogador"}
-        </h1>
-
-        <motion.div
-          className="space-y-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div>
-            <Label htmlFor="name" className="text-muted-foreground mb-2 block">
-              Nome *
-            </Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-              className="border-b border-primary/20 rounded-none px-0 focus-visible:ring-0"
-              placeholder="Digite o nome do jogador"
-              required
-            />
-          </div>
-
-          <div>
-            <Label
-              htmlFor="nickname"
-              className="text-muted-foreground mb-2 block"
-            >
-              Apelido
-            </Label>
-            <Input
-              id="nickname"
-              value={formData.nickname}
-              onChange={(e) => handleInputChange("nickname", e.target.value)}
-              className="border-b border-primary/20 rounded-none px-0 focus-visible:ring-0"
-              placeholder="Digite o apelido do jogador"
-            />
-          </div>
-
-          <div>
-            <Label
-              htmlFor="birthDate"
-              className="text-muted-foreground mb-2 block"
-            >
-              Data de Nascimento
-            </Label>
-            <Input
-              id="birthDate"
-              type="date"
-              value={formData.birthDate}
-              onChange={(e) => handleInputChange("birthDate", e.target.value)}
-              className="border-b border-primary/20 rounded-none px-0 focus-visible:ring-0"
-            />
-          </div>
-
-          <div>
-            <Label className="text-muted-foreground mb-4 block">Nível</Label>
-            {renderRatingInput()}
-          </div>
-
-          <div>
-            <Label className="text-muted-foreground mb-2 block">
-              Modalidade
-            </Label>
-            <Select
-              value={formData.sport}
-              onValueChange={(value) =>
-                setFormData({ ...formData, sport: value as Sport })
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione uma modalidade" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="futsal">Futsal</SelectItem>
-                <SelectItem value="futebol">Futebol</SelectItem>
-                <SelectItem value="volei">Vôlei</SelectItem>
-                <SelectItem value="basquete">Basquete</SelectItem>
-                <SelectItem value="handbol">Handbol</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label className="text-muted-foreground mb-2 block">
-              Posições *
-            </Label>
-            <div className="grid grid-cols-2 gap-4">
-              {positions[formData.sport].map((position) => (
-                <div key={position} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={position}
-                    checked={formData.selectedPositions.includes(position)}
-                    onCheckedChange={(checked) =>
-                      handleCheckboxChange(position, checked as boolean)
-                    }
-                  />
-                  <label
-                    htmlFor={position}
-                    className="text-sm font-medium leading-none"
-                  >
-                    {position}
-                  </label>
-                </div>
-              ))}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name">Nome</Label>
+              <Input
+                id="name"
+                name="name"
+                value={newPlayer.name}
+                onChange={handleChange}
+                placeholder="Nome do jogador"
+                className={errors.name ? "border-red-500" : ""}
+              />
+              {errors.name && <p className="text-red-500">Nome é obrigatório.</p>}
             </div>
-          </div>
+            <div>
+              <Label htmlFor="nickname">Apelido</Label>
+              <Input
+                id="nickname"
+                name="nickname"
+                value={newPlayer.nickname}
+                onChange={handleChange}
+                placeholder="Apelido do jogador"
+              />
+            </div>
+            <div>
+              <Label htmlFor="birthDate">Data de Nascimento</Label>
+              <Input
+                id="birthDate"
+                name="birthDate"
+                type="date"
+                value={newPlayer.birthDate}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label>É convidado?</Label>
+              <div className="flex gap-4">
+                <div className="flex items-center">
+                  <Checkbox
+                    id="isGuestYes"
+                    name="isGuest"
+                    checked={newPlayer.isGuest === true}
+                    onChange={() => setNewPlayer({ isGuest: true })}
+                    className={errors.isGuest ? "border-red-500" : ""}
+                  />
+                  <Label htmlFor="isGuestYes" className="ml-2">Sim</Label>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="guest"
-              checked={formData.isGuest}
-              onCheckedChange={(checked) => {
-                setFormData({ ...formData, isGuest: checked as boolean });
-                if (checked && formData.includeInDraw) {
-                  toast({
-                    title: "Sucesso",
-                    description: "Jogador convidado incluído no sorteio!",
-                  });
-                } else if (!formData.includeInDraw) {
-                  toast({
-                    title: "Aviso",
-                    description: "Jogador não incluído no sorteio.",
-                  });
-                }
-              }}
-            />
-            <label htmlFor="guest" className="text-sm font-medium leading-none">
-              Jogador Convidado *
-            </label>
-          </div>
+                </div>
+                <div className="flex items-center">
+                  <Checkbox
+                    id="isGuestNo"
+                    name="isGuest"
+                    checked={newPlayer.isGuest === false}
+                    onChange={() => setNewPlayer({ isGuest: false })}
+                    className={errors.isGuest ? "border-red-500" : ""}
+                  />
+                  <Label htmlFor="isGuestNo" className="ml-2">Não</Label>
+                </div>
+              </div>
+              {errors.isGuest && <p className="text-red-500">Marcar como convidado é obrigatório.</p>}
+            </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="includeInDraw"
-              checked={formData.includeInDraw}
-              onCheckedChange={(checked) =>
-                setFormData({ ...formData, includeInDraw: checked as boolean })
-              }
-            />
-            <label
-              htmlFor="includeInDraw"
-              className="text-sm font-medium leading-none"
-            >
-              Incluir no Sorteio de Times
-            </label>
-          </div>
+            <div>
+              <Label htmlFor="sport">Esporte</Label>
+              <Select
+                value={newPlayer.sport}
+                onValueChange={handleSelectChange}
 
-          <div className="flex justify-end pt-6">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={handleSave}
-                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
               >
-                <Save className="w-4 h-4" />
-                Salvar
-              </Button>
-            </motion.div>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um esporte" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(positions).map((sport) => (
+                    <SelectItem key={sport} value={sport}>
+                      {sport}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Posições</Label>
+              <div className="flex flex-wrap gap-2">
+                {positions[newPlayer.sport]?.map((position) => (
+                  <div key={position} className="flex items-center">
+                    <Checkbox
+                      id={position}
+                      name="selectedPositions"
+                      checked={newPlayer.selectedPositions.includes(position)}
+                      onChange={() => handlePositionChange(position)}
+                      className={errors.selectedPositions ? "border-red-500" : ""}
+                    />
+                    <Label htmlFor={position} className="ml-2">{position}</Label>
+                  </div>
+                ))}
+              </div>
+              {errors.selectedPositions && <p className="text-red-500">Escolher pelo menos uma posição é obrigatório.</p>}
+            </div>
+            <div>
+              <Label htmlFor="rating">Avaliação</Label>
+              <div className="flex items-center gap-2">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <Button
+                    key={rating}
+                    type="button"
+                    variant={newPlayer.rating === rating ? "default" : "outline"}
+                    onClick={() => setNewPlayer({ rating: rating as Rating })}
+                    className={errors.rating ? "border-red-500" : ""}
+                  >
+                    {rating}
+                  </Button>
+                ))}
+              </div>
+              {errors.rating && <p className="text-red-500">Avaliação é obrigatória.</p>}
+            </div>
+            <Button type="submit">
+              <Save className="mr-2 h-4 w-4" />
+              Salvar
+            </Button>
           </div>
-        </motion.div>
-      </div>
-    </motion.div>
+
+        </form>
+      </motion.div>
+    </div>
+
   );
 };
 

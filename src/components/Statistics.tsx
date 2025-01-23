@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+
 import { BackToDashboard } from './BackToDashboard';
 import { DynamicTitle } from './DynamicTitle';
 import { motion } from 'framer-motion';
@@ -7,86 +8,43 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Edit2, Save, Trash2 } from 'lucide-react';
-import { usePlayerContext } from "@/context/PlayerContext";
-
-interface PointRecord {
-  points: number;
-  date: string;
-}
-
-interface Statistic {
-  name: string;
-  date: string;
-  attendanceCount: number;
-  pointRecords: PointRecord[];
-  lastUpdated: string;
-}
+import { useStatisticsStore } from "@/stores/useStatisticsStore";
 
 const Statistics = () => {
-  const { players } = usePlayerContext();
-  const [statistics, setStatistics] = useState<Statistic[]>([]);
+  const { statistics, setStatistics, updateStatistic, addStatistic, removeStatistic } = useStatisticsStore();
+
   const [editingRecord, setEditingRecord] = useState<{index: number, recordIndex: number} | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Dados de exemplo - Início
-    const exampleStats = [
-      {
-        name: "Exemplo Jogador 1",
-        date: "2023-01-01",
-        attendanceCount: 5,
-        pointRecords: [{ points: 10, date: "2023-01-01" }],
-        lastUpdated: "2023-01-01"
-      },
-      {
-        name: "Exemplo Jogador 2",
-        date: "2023-01-02",
-        attendanceCount: 3,
-        pointRecords: [{ points: 5, date: "2023-01-02" }],
-        lastUpdated: "2023-01-02"
-      }
-    ];
-    // Dados de exemplo - Fim
-
-    const savedStats = players.map(player => ({
-      name: player.name,
-      date: player.createdAt,
-      attendanceCount: 0,
-      pointRecords: [],
-      lastUpdated: player.createdAt
-    }));
-
-    setStatistics([...exampleStats, ...savedStats]);
-  }, [players]);
-
-  const saveStatistics = (newStats: Statistic[]) => {
-    setStatistics(newStats);
+  const handleEdit = (index: number, recordIndex: number) => {
+    setEditingRecord({ index, recordIndex });
+    setEditValue(statistics[index].pointRecords[recordIndex].points.toString());
   };
 
-  const handlePointsChange = (index: number, value: number) => {
-    if (value < 0) {
+  const handleSave = () => {
+    if (editingRecord !== null) {
+      const { index, recordIndex } = editingRecord;
+      const updatedPointRecords = [...statistics[index].pointRecords];
+      updatedPointRecords[recordIndex].points = parseInt(editValue, 10);
+
+
+      updateStatistic(index, { pointRecords: updatedPointRecords });
+      setEditingRecord(null);
+      setEditValue('');
       toast({
-        title: "Erro",
-        description: "Os pontos não podem ser negativos.",
-        variant: "destructive",
+        title: "Registro atualizado",
+        description: "O registro de pontos foi atualizado com sucesso.",
       });
-      return;
     }
+  };
 
-    const newRecord = {
-      points: value,
-      date: new Date().toISOString(),
-    };
-
-    const updatedStatistics = [...statistics];
-    updatedStatistics[index].pointRecords.push(newRecord);
-    updatedStatistics[index].lastUpdated = new Date().toISOString();
-    saveStatistics(updatedStatistics);
+  const handleDelete = (index: number) => {
+    removeStatistic(index);
 
     toast({
-      title: "Pontos Atualizados",
-      description: "Os pontos foram atualizados com sucesso.",
+      title: "Estatística removida",
+      description: "A estatística foi removida com sucesso.",
     });
   };
 
@@ -124,91 +82,59 @@ const Statistics = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <BackToDashboard />
-      <div className="max-w-4xl mx-auto">
-        <DynamicTitle />
-        
-        <div className="grid gap-6 mt-6">
-          {statistics.length === 0 ? (
-            <p>Nenhuma estatística disponível.</p>
-          ) : (
-            statistics.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{stat.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span>Presenças: {stat.attendanceCount}</span>
-                        <Input
-                          type="number"
-                          placeholder="Adicionar pontos/gols"
-                          className="w-40"
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              const target = e.target as HTMLInputElement;
-                              handlePointsChange(index, Number(target.value));
-                              target.value = '';
-                            }
-                          }}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        {stat.pointRecords.map((record, recordIndex) => (
-                          <div key={recordIndex} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                            {editingRecord?.index === index && editingRecord?.recordIndex === recordIndex ? (
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  type="number"
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  className="w-20"
-                                />
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleSaveEdit(index, recordIndex)}
-                                >
-                                  <Save className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <>
-                                <span>{record.points} pontos/gols - {record.date}</span>
-                                <div className="flex items-center gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => handleEdit(index, recordIndex, record.points)}
-                                  >
-                                    <Edit2 className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => handleDelete(index, recordIndex)}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
-          )}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <DynamicTitle />
         </div>
-      </div>
+
+        <div className="space-y-4">
+          {statistics.map((stat, index) => (
+            <Card key={index}>
+              <CardHeader>
+                <CardTitle>{stat.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Data: {stat.date}</p>
+                <p>Presenças: {stat.attendanceCount}</p>
+                <p>Última atualização: {stat.lastUpdated}</p>
+                <div className="space-y-2">
+                  {stat.pointRecords.map((record, recordIndex) => (
+                    <div key={recordIndex} className="flex items-center gap-4">
+                      {editingRecord?.index === index && editingRecord.recordIndex === recordIndex ? (
+                        <>
+                          <Input
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            className="flex-1"
+                          />
+                          <Button onClick={handleSave}>
+                            <Save className="h-4 w-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <p>{record.points} pontos em {record.date}</p>
+                          <Button onClick={() => handleEdit(index, recordIndex)}>
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Button onClick={() => handleDelete(index)} variant="destructive">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </motion.div>
+
     </div>
   );
 };

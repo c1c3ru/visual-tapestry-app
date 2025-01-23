@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+
 import { motion } from "framer-motion";
 import { Check, DollarSign, UserCheck, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -6,21 +7,32 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
-import { usePlayerContext } from "@/context/PlayerContext";
-import { Player } from "@/utils/types";
+import { usePlayerStore } from "@/stores/usePlayerStore";
+import { Player, Rating } from "@/utils/types";
 
 const PresenceList = () => {
-  const { players, updatePlayer } = usePlayerContext();
-  const [newPlayerName, setNewPlayerName] = useState("");
+  const { players, addPlayer, updatePlayer } = usePlayerStore();
+
   const { toast } = useToast();
   const isAdmin = true; // Suponha que temos uma maneira de verificar se o usuário é administrador
 
   const handleAddPlayer = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const newPlayerName = e.target.elements.newPlayerName.value.trim();
+    if (!newPlayerName) {
+      toast({
+        title: "Erro",
+        description: "O nome do jogador não pode estar vazio.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const playerExists = players.find(
       (player) =>
-        player.name.toLowerCase() === newPlayerName.trim().toLowerCase()
+        player.name.toLowerCase() === newPlayerName.toLowerCase()
+
     );
 
     if (playerExists) {
@@ -34,23 +46,26 @@ const PresenceList = () => {
 
     const newPlayer: Player = {
       id: Date.now(),
-      name: newPlayerName.trim(),
+      name: newPlayerName,
+
       nickname: "",
       birthDate: "",
       isGuest: false,
       sport: "",
       selectedPositions: [],
-      rating: 0,
+      rating: 0 as Rating, // Garantir que o valor de rating seja do tipo Rating
+
       includeInDraw: false,
       createdAt: new Date().toISOString(),
       present: false,
       paid: false,
       registered: true,
+      selected: false,
     };
 
-    updatePlayer(newPlayer.id, newPlayer);
+    addPlayer(newPlayer);
 
-    setNewPlayerName("");
+
     toast({
       title: "Jogador Adicionado",
       description: "Novo jogador foi adicionado com sucesso.",
@@ -97,10 +112,9 @@ const PresenceList = () => {
           <form onSubmit={handleAddPlayer} className="mb-8">
             <div className="flex gap-4">
               <Input
-                value={newPlayerName}
-                onChange={(e) => setNewPlayerName(e.target.value)}
+                name="newPlayerName"
                 placeholder="Digite o nome do novo jogador..."
-                className="flex-1"
+
               />
               <Button type="submit">Adicionar Jogador</Button>
             </div>

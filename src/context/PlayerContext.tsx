@@ -1,18 +1,35 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Player } from '@/utils/types';
-import { usePlayerStore } from '@/stores/usePlayerStore';
 
-interface PlayerContextType {
+interface PlayerContextProps {
+
   players: Player[];
   addPlayer: (player: Player) => void;
   updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
   removePlayer: (id: number) => void;
 }
 
-const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
+const PlayerContext = createContext<PlayerContextProps | undefined>(undefined);
 
-export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { players, addPlayer, updatePlayer, removePlayer } = usePlayerStore();
+export const PlayerProvider = ({ children }: { children: ReactNode }) => {
+  const [players, setPlayers] = useState<Player[]>([]);
+
+  const addPlayer = (player: Player) => {
+    setPlayers((prevPlayers) => [...prevPlayers, player]);
+  };
+
+  const updatePlayer = (id: number, updatedPlayer: Partial<Player>) => {
+    setPlayers((prevPlayers) =>
+      prevPlayers.map((player) =>
+        player.id === id ? { ...player, ...updatedPlayer } : player
+      )
+    );
+  };
+
+  const removePlayer = (id: number) => {
+    setPlayers((prevPlayers) => prevPlayers.filter((player) => player.id !== id));
+  };
+
 
   return (
     <PlayerContext.Provider value={{ players, addPlayer, updatePlayer, removePlayer }}>
@@ -23,7 +40,8 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
 export const usePlayerContext = () => {
   const context = useContext(PlayerContext);
-  if (!context) {
+  if (context === undefined) {
+
     throw new Error('usePlayerContext must be used within a PlayerProvider');
   }
   return context;

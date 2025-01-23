@@ -1,24 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
 
-const BUTTON_CLASSES = "px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition";
-const BUTTON_LOADING_CLASSES = "px-6 py-3 bg-gray-300 text-white rounded-lg shadow-md cursor-not-allowed transition";
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/stores/useAuthStore';
+
+const BUTTON_CLASSES = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
+const BUTTON_LOADING_CLASSES = "bg-gray-500 text-white font-bold py-2 px-4 rounded cursor-not-allowed";
 
 const Login = () => {
+  const { isLoading, error, setLoading, setError } = useAuthStore();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleGoogleLogin = async () => {
-    setIsLoading(true);
+    setLoading(true);
+    setError(null);
     try {
-      // Lógica de autenticação com o Google
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('/dashboard');
+      // Simulação de login com Google
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Sucesso no login
+      setLoading(false);
+      navigate('/dashboard'); // Redirecionar para a página de dashboard
     } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
+      setError("Erro ao fazer login com Google");
+      setLoading(false);
+
     }
   };
 
