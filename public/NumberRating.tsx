@@ -1,5 +1,5 @@
-// NumberRating.tsx
 import React from 'react';
+import { Label } from "@/components/ui/label";
 
 interface NumberRatingProps {
   rating: number;
@@ -7,18 +7,24 @@ interface NumberRatingProps {
 }
 
 const NumberRating: React.FC<NumberRatingProps> = ({ rating, onRatingChange }) => {
-  const color = rating <= 3 ? 'red' : rating <= 7 ? 'green' : 'blue';
+  const color = rating <= 3 ? 'text-red-500' : rating <= 7 ? 'text-green-500' : 'text-blue-500';
 
   return (
-    <div>
+    <div className="space-y-2">
+      <Label htmlFor="rating">Avaliação (1-10)</Label>
       <input
+        id="rating"
         type="number"
         value={rating}
         min={1}
         max={10}
-        onChange={(e) => onRatingChange(Number(e.target.value))}
-        style={{ color }}
+        onChange={(e) => {
+          e.preventDefault();
+          onRatingChange(Number(e.target.value));
+        }}
+        className={`w-full p-2 border rounded-md ${color}`}
       />
+      <span className={`text-sm ${color}`}>Nota atual: {rating}</span>
     </div>
   );
 };

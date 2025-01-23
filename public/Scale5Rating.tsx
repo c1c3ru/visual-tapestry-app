@@ -1,5 +1,5 @@
-// Scale5Rating.tsx
 import React from 'react';
+import { Label } from "@/components/ui/label";
 
 interface Scale5RatingProps {
   rating: number;
@@ -7,18 +7,24 @@ interface Scale5RatingProps {
 }
 
 const Scale5Rating: React.FC<Scale5RatingProps> = ({ rating, onRatingChange }) => {
-  const color = rating <= 2 ? 'red' : rating <= 4 ? 'green' : 'blue';
+  const color = rating <= 2 ? 'text-red-500' : rating <= 4 ? 'text-green-500' : 'text-blue-500';
 
   return (
-    <div>
+    <div className="space-y-2">
+      <Label htmlFor="rating">Avaliação (1-5)</Label>
       <input
+        id="rating"
         type="number"
         value={rating}
         min={1}
         max={5}
-        onChange={(e) => onRatingChange(Number(e.target.value))}
-        style={{ color }}
+        onChange={(e) => {
+          e.preventDefault();
+          onRatingChange(Number(e.target.value));
+        }}
+        className={`w-full p-2 border rounded-md ${color}`}
       />
+      <span className={`text-sm ${color}`}>Nota atual: {rating}</span>
     </div>
   );
 };

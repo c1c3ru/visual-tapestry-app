@@ -2,14 +2,9 @@ import { Team, KnockoutMatches, Match, Group } from './types';
 
 export interface TournamentBracketProps {
   groups: Group[];
-  knockoutMatches?: {
-    roundOf16: Match[];
-    quarterFinals: Match[];
-    semiFinals: Match[];
-    final: Match;
-    thirdPlace: Match;
-  };
+  knockoutMatches?: KnockoutMatches;
 }
+
 export interface Tournament {
   id: string;
   name: string;
@@ -21,60 +16,66 @@ export interface Tournament {
 }
 
 export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
-  // Embaralha os times para criar confrontos aleatórios
   const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
-  
-  return {
-    roundOf16: Array(8).fill(null).map(() => ({
-      team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-      team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-    })),
-    quarterFinals: Array(4).fill(null).map(() => ({
-      team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-      team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-    })),
-    semiFinals: Array(2).fill(null).map(() => ({
-      team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-      team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-    })),
-    final: {
-      team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-      team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-    },
-    thirdPlace: {
-      team1: { id: 'tbd', name: 'A Definir', responsible: '' },
-      team2: { id: 'tbd', name: 'A Definir', responsible: '' }
-    }
+  const isHomeAndAway = teams.length <= 8;
+
+  const createMatch = (team1: Team, team2: Team): Match => ({
+    team1,
+    team2,
+    isHomeGame: isHomeAndAway,
+  });
+
+  const rounds = {
+    roundOf16: [] as Match[],
+    quarterFinals: [] as Match[],
+    semiFinals: [] as Match[],
+    final: {} as Match,
+    thirdPlace: {} as Match,
   };
+
+  if (teams.length > 16) {
+    for (let i = 0; i < 16; i += 2) {
+      rounds.roundOf16.push(createMatch(shuffledTeams[i], shuffledTeams[i + 1]));
+    }
+  }
+
+  const quarterTeams = teams.length <= 8 ? shuffledTeams : shuffledTeams.slice(0, 8);
+  for (let i = 0; i < quarterTeams.length; i += 2) {
+    rounds.quarterFinals.push(createMatch(quarterTeams[i], quarterTeams[i + 1]));
+  }
+
+  rounds.semiFinals = [
+    createMatch(shuffledTeams[0], shuffledTeams[1]),
+    createMatch(shuffledTeams[2], shuffledTeams[3]),
+  ];
+
+  rounds.final = createMatch(shuffledTeams[0], shuffledTeams[1]);
+  rounds.thirdPlace = createMatch(shuffledTeams[2], shuffledTeams[3]);
+
+  return rounds;
 };
 
-export const createTeamFromString = (name: string): Team => ({
-  id: name.toLowerCase().replace(/\s/g, '-'),
-  name: name,
-  responsible: ''
-});
-
-export const generateGroups = (teams: string[]): Group[] => {
+export const generateGroups = (teams: Team[]): Group[] => {
   const groups: Group[] = [];
-  const teamsPerGroup = Math.ceil(teams.length / 4);
+  const numGroups = Math.ceil(teams.length / 4);
+  const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
 
-  for (let i = 0; i < 4; i++) {
-    const groupTeams = teams.slice(i * teamsPerGroup, (i + 1) * teamsPerGroup)
-      .map(createTeamFromString);
+  for (let i = 0; i < numGroups; i++) {
+    const groupTeams = shuffledTeams.slice(i * 4, (i + 1) * 4);
     const matches: Match[] = [];
 
     for (let j = 0; j < groupTeams.length; j++) {
       for (let k = j + 1; k < groupTeams.length; k++) {
         matches.push({
           team1: groupTeams[j],
-          team2: groupTeams[k]
+          team2: groupTeams[k],
         });
       }
     }
 
     groups.push({
       name: `Grupo ${String.fromCharCode(65 + i)}`,
-      matches
+      matches,
     });
   }
 
@@ -84,20 +85,41 @@ export const generateGroups = (teams: string[]): Group[] => {
 export const generateTournamentMatches = (teams: Team[], tournamentType: string): Match[] => {
   const matches: Match[] = [];
 
-  if (tournamentType === "league") {
-    for (let i = 0; i < teams.length; i++) {
-      for (let j = i + 1; j < teams.length; j++) {
-        matches.push({ team1: teams[i], team2: teams[j] });
+  switch (tournamentType) {
+    case 'league':
+      for (let i = 0; i < teams.length; i++) {
+        for (let j = i + 1; j < teams.length; j++) {
+          matches.push({ 
+            team1: teams[i], 
+            team2: teams[j],
+            score1: 0,
+            score2: 0
+          });
+        }
       }
-    }
-  } else if (tournamentType === "knockout") {
-    // Lógica para torneio eliminatório
-    const knockoutMatches = generateKnockoutMatches(teams);
-    matches.push(...knockoutMatches.roundOf16);
-    matches.push(...knockoutMatches.quarterFinals);
-    matches.push(...knockoutMatches.semiFinals);
-    matches.push(knockoutMatches.final);
-    matches.push(knockoutMatches.thirdPlace);
+      break;
+
+    case 'worldCup':
+      const groups = generateGroups(teams);
+      groups.forEach(group => {
+        matches.push(...group.matches);
+      });
+      break;
+
+    case 'homeAway':
+      const knockoutMatches = generateKnockoutMatches(teams);
+      if (teams.length <= 8) {
+        matches.push(...knockoutMatches.quarterFinals.map(match => ({
+          ...match,
+          isHomeGame: true
+        })));
+      } else {
+        matches.push(...knockoutMatches.roundOf16);
+      }
+      matches.push(...knockoutMatches.semiFinals);
+      matches.push(knockoutMatches.final);
+      matches.push(knockoutMatches.thirdPlace);
+      break;
   }
 
   return matches;
