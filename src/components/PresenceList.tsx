@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Player, Rating } from "@/utils/types";
+import { useSettingsStore } from "@/stores/useSettingsStore";
+import { Player } from "@/utils/types";
+import clsx from "clsx";
 
 interface FormElements extends HTMLFormControlsCollection {
   newPlayerName: HTMLInputElement;
@@ -19,8 +21,21 @@ interface AddPlayerForm extends HTMLFormElement {
 
 const PresenceList = () => {
   const { players, addPlayer, updatePlayer } = usePlayerStore();
+  const { guestHighlight } = useSettingsStore();
   const { toast } = useToast();
-  const isAdmin = true; // Suponha que temos uma maneira de verificar se o usuário é administrador
+  const isAdmin = true;
+
+  const getGuestHighlightClass = (isGuest: boolean) => {
+    if (!isGuest) return "";
+    
+    return clsx({
+      'bg-orange-100': guestHighlight === 'orange',
+      'bg-purple-100': guestHighlight === 'purple',
+      'bg-pink-100': guestHighlight === 'pink',
+      'font-bold': guestHighlight === 'bold',
+      'italic': guestHighlight === 'italic',
+    });
+  };
 
   const handleAddPlayer = (e: React.FormEvent<AddPlayerForm>) => {
     e.preventDefault();
@@ -36,8 +51,7 @@ const PresenceList = () => {
     }
 
     const playerExists = players.find(
-      (player) =>
-        player.name.toLowerCase() === newPlayerName.toLowerCase()
+      (player) => player.name.toLowerCase() === newPlayerName.toLowerCase()
     );
 
     if (playerExists) {
@@ -57,7 +71,7 @@ const PresenceList = () => {
       isGuest: false,
       sport: "",
       selectedPositions: [],
-      rating: 0 as Rating, // Garantir que o valor de rating seja do tipo Rating
+      rating: 0,
       includeInDraw: false,
       createdAt: new Date().toISOString(),
       present: false,
@@ -67,7 +81,6 @@ const PresenceList = () => {
     };
 
     addPlayer(newPlayer);
-
     toast({
       title: "Jogador Adicionado",
       description: "Novo jogador foi adicionado com sucesso.",
@@ -78,7 +91,6 @@ const PresenceList = () => {
     const player = players.find((player) => player.id === id);
     if (player) {
       updatePlayer(id, { present: !player.present });
-
       toast({
         title: "Presença atualizada",
         description: "Status de presença foi atualizado com sucesso.",
@@ -90,7 +102,6 @@ const PresenceList = () => {
     const player = players.find((player) => player.id === id);
     if (player) {
       updatePlayer(id, { paid: !player.paid });
-
       toast({
         title: "Pagamento atualizado",
         description: "Status de pagamento foi atualizado com sucesso.",
@@ -99,13 +110,14 @@ const PresenceList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, type: "spring" }}
+      className="min-h-screen bg-gray-50 p-6"
+    >
       <BackToDashboard />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
-      >
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <DynamicTitle />
         </div>
@@ -128,7 +140,11 @@ const PresenceList = () => {
               key={player.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              transition={{ duration: 0.3 }}
+              className={clsx(
+                "flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors",
+                getGuestHighlightClass(player.isGuest)
+              )}
             >
               <div className="flex items-center gap-3">
                 <UserCheck
@@ -142,25 +158,19 @@ const PresenceList = () => {
               <div className="flex items-center gap-6">
                 {isAdmin ? (
                   <>
-                    <button
+                    <Button
                       onClick={() => togglePayment(player.id)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                        player.paid
-                          ? "bg-green-500 text-white hover:bg-green-600"
-                          : "bg-red-500 text-white hover:bg-red-600"
-                      }`}
+                      variant={player.paid ? "default" : "destructive"}
+                      className="flex items-center gap-2"
                     >
                       <DollarSign className="h-4 w-4" />
                       <span>{player.paid ? "Pago" : "Pendente"}</span>
-                    </button>
+                    </Button>
 
-                    <button
+                    <Button
                       onClick={() => togglePresence(player.id)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                        player.present
-                          ? "bg-primary text-white hover:bg-primary/90"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
+                      variant={player.present ? "default" : "secondary"}
+                      className="flex items-center gap-2"
                     >
                       {player.present ? (
                         <>
@@ -173,7 +183,7 @@ const PresenceList = () => {
                           <span>Ausente</span>
                         </>
                       )}
-                    </button>
+                    </Button>
                   </>
                 ) : (
                   <>
@@ -211,8 +221,8 @@ const PresenceList = () => {
             </motion.div>
           ))}
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
 
