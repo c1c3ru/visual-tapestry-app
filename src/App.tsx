@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/pages/Login';
-import { PlayerProvider } from './context/PlayerContext';
 import Dashboard from './components/pages/Dashboard';
 import PlayerForm from './components/PlayerForm';
 import PlayerList from './components/PlayerList';
@@ -12,7 +11,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const App = () => {
   return (
-    <PlayerProvider>
       <AnimatePresence mode="wait">
         <motion.div
           initial={{ opacity: 0 }}
@@ -34,7 +32,6 @@ const App = () => {
           </Routes>
         </motion.div>
       </AnimatePresence>
-    </PlayerProvider>
   );
 };
 
