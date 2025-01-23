@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Save } from "lucide-react";
@@ -17,7 +17,7 @@ import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { Player, Rating } from "@/utils/types";
 
-type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol" | "rugby" | "hockey" | "cricket" | "baseball";
+type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
 type Position = {
   [key in Sport]: string[];
@@ -29,55 +29,23 @@ const positions: Position = {
   volei: ["Levantador", "Líbero", "Central", "Ponteiro", "Oposto"],
   basquete: ["Armador", "Ala", "Ala-pivô", "Pivô"],
   handbol: ["Goleiro", "Ponta", "Central", "Pivô"],
-  rugby: ["Pilar", "Hooker", "Segunda linha", "Asa", "Número 8", "Scrum-half", "Abertura", "Centro", "Ponta", "Fullback"],
-  hockey: ["Goleiro", "Defensor", "Atacante"],
-  cricket: ["Batedor", "Arremessador", "Wicket-keeper", "All-rounder"],
-  baseball: ["Arremessador", "Receptor", "Primeira base", "Segunda base", "Terceira base", "Interbases", "Campista esquerdo", "Campista central", "Campista direito"],
 };
 
 const PlayerForm = () => {
-  const { addPlayer } = usePlayerStore();
-  const [newPlayer, setNewPlayer] = useState<Omit<Player, 'id' | 'createdAt'>>({
-    name: "",
-    nickname: "",
-    birthDate: "",
-    isGuest: false,
-    sport: "futebol",
-    selectedPositions: [],
-    rating: 0 as Rating,
-    includeInDraw: false,
-    present: false,
-    paid: false,
-    registered: true,
-    selected: false,
-  });
-  const [errors, setErrors] = useState({
-    name: false,
-    isGuest: false,
-    selectedPositions: false,
-    rating: false,
-  });
+  const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm } = usePlayerStore();
   const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setNewPlayer((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setNewPlayer({ [name]: type === "checkbox" ? checked : value });
   };
 
   const handleSelectChange = (value: string) => {
-    setNewPlayer((prev) => ({
-      ...prev,
-      sport: value as Sport,
-      selectedPositions: [],
-    }));
+    setNewPlayer({ sport: value as Sport, selectedPositions: [] });
   };
 
   const handlePositionChange = (position: string) => {
     setNewPlayer((prev) => ({
-      ...prev,
       selectedPositions: prev.selectedPositions.includes(position)
         ? prev.selectedPositions.filter((pos) => pos !== position)
         : [...prev.selectedPositions, position],
@@ -115,26 +83,7 @@ const PlayerForm = () => {
       title: "Jogador Adicionado",
       description: "Novo jogador foi adicionado com sucesso.",
     });
-    setNewPlayer({
-      name: "",
-      nickname: "",
-      birthDate: "",
-      isGuest: false,
-      sport: "futebol",
-      selectedPositions: [],
-      rating: 0 as Rating,
-      includeInDraw: false,
-      present: false,
-      paid: false,
-      registered: true,
-      selected: false,
-    });
-    setErrors({
-      name: false,
-      isGuest: false,
-      selectedPositions: false,
-      rating: false,
-    });
+    resetForm();
   };
 
   return (
@@ -180,14 +129,29 @@ const PlayerForm = () => {
               />
             </div>
             <div>
-              <Label htmlFor="isGuest">É convidado?</Label>
-              <Checkbox
-                id="isGuest"
-                name="isGuest"
-                checked={newPlayer.isGuest}
-                onChange={(e) => handleChange(e as React.ChangeEvent<HTMLInputElement>)}
-                className={errors.isGuest ? "border-red-500" : ""}
-              />
+              <Label>É convidado?</Label>
+              <div className="flex gap-4">
+                <div className="flex items-center">
+                  <Checkbox
+                    id="isGuestYes"
+                    name="isGuest"
+                    checked={newPlayer.isGuest === true}
+                    onChange={() => setNewPlayer({ isGuest: true })}
+                    className={errors.isGuest ? "border-red-500" : ""}
+                  />
+                  <Label htmlFor="isGuestYes" className="ml-2">Sim</Label>
+                </div>
+                <div className="flex items-center">
+                  <Checkbox
+                    id="isGuestNo"
+                    name="isGuest"
+                    checked={newPlayer.isGuest === false}
+                    onChange={() => setNewPlayer({ isGuest: false })}
+                    className={errors.isGuest ? "border-red-500" : ""}
+                  />
+                  <Label htmlFor="isGuestNo" className="ml-2">Não</Label>
+                </div>
+              </div>
               {errors.isGuest && <p className="text-red-500">Marcar como convidado é obrigatório.</p>}
             </div>
             <div>
@@ -211,17 +175,17 @@ const PlayerForm = () => {
             <div>
               <Label>Posições</Label>
               <div className="flex flex-wrap gap-2">
-                {positions[newPlayer.sport].map((position) => (
-                  <Checkbox
-                    key={position}
-                    id={position}
-                    name="selectedPositions"
-                    checked={newPlayer.selectedPositions.includes(position)}
-                    onChange={() => handlePositionChange(position)}
-                    className={errors.selectedPositions ? "border-red-500" : ""}
-                  >
-                    {position}
-                  </Checkbox>
+                {positions[newPlayer.sport]?.map((position) => (
+                  <div key={position} className="flex items-center">
+                    <Checkbox
+                      id={position}
+                      name="selectedPositions"
+                      checked={newPlayer.selectedPositions.includes(position)}
+                      onChange={() => handlePositionChange(position)}
+                      className={errors.selectedPositions ? "border-red-500" : ""}
+                    />
+                    <Label htmlFor={position} className="ml-2">{position}</Label>
+                  </div>
                 ))}
               </div>
               {errors.selectedPositions && <p className="text-red-500">Escolher pelo menos uma posição é obrigatório.</p>}
@@ -234,7 +198,7 @@ const PlayerForm = () => {
                     key={rating}
                     type="button"
                     variant={newPlayer.rating === rating ? "default" : "outline"}
-                    onClick={() => setNewPlayer((prev) => ({ ...prev, rating: rating as Rating }))}
+                    onClick={() => setNewPlayer({ rating: rating as Rating })}
                     className={errors.rating ? "border-red-500" : ""}
                   >
                     {rating}

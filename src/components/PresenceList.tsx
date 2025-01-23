@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { Check, DollarSign, UserCheck, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -11,21 +11,28 @@ import { Player, Rating } from "@/utils/types";
 
 const PresenceList = () => {
   const { players, addPlayer, updatePlayer } = usePlayerStore();
-  const [newPlayerName, setNewPlayerName] = useState("");
-  const [nameError, setNameError] = useState<string | null>(null);
   const { toast } = useToast();
   const isAdmin = true; // Suponha que temos uma maneira de verificar se o usuário é administrador
 
   const handleAddPlayer = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const newPlayerName = e.target.elements.newPlayerName.value.trim();
+    if (!newPlayerName) {
+      toast({
+        title: "Erro",
+        description: "O nome do jogador não pode estar vazio.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const playerExists = players.find(
       (player) =>
-        player.name.toLowerCase() === newPlayerName.trim().toLowerCase()
+        player.name.toLowerCase() === newPlayerName.toLowerCase()
     );
 
     if (playerExists) {
-      setNameError("Jogador já está cadastrado.");
       toast({
         title: "Erro",
         description: "Jogador já está cadastrado.",
@@ -36,7 +43,7 @@ const PresenceList = () => {
 
     const newPlayer: Player = {
       id: Date.now(),
-      name: newPlayerName.trim(),
+      name: newPlayerName,
       nickname: "",
       birthDate: "",
       isGuest: false,
@@ -53,8 +60,6 @@ const PresenceList = () => {
 
     addPlayer(newPlayer);
 
-    setNewPlayerName("");
-    setNameError(null);
     toast({
       title: "Jogador Adicionado",
       description: "Novo jogador foi adicionado com sucesso.",
@@ -101,16 +106,11 @@ const PresenceList = () => {
           <form onSubmit={handleAddPlayer} className="mb-8">
             <div className="flex gap-4">
               <Input
-                value={newPlayerName}
-                onChange={(e) => setNewPlayerName(e.target.value)}
+                name="newPlayerName"
                 placeholder="Digite o nome do novo jogador..."
-                className={`flex-1 ${nameError ? 'border-red-500' : ''}`}
               />
               <Button type="submit">Adicionar Jogador</Button>
             </div>
-            {nameError && (
-              <p className="text-red-500 mt-2">{nameError}</p>
-            )}
           </form>
         )}
 

@@ -16,12 +16,27 @@ export interface Player {
   paid: boolean;
   registered: boolean;
 }
+
 export interface PlayerState {
   players: Player[];
-  setPlayers: (players: Player[]) => void;
-  updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
+  newPlayer: Omit<Player, 'id' | 'createdAt'>;
+  errors: {
+    name: boolean;
+    isGuest: boolean;
+    selectedPositions: boolean;
+    rating: boolean;
+  };
+  editingPlayer: { id: number } | null;
+  editValue: string;
   addPlayer: (player: Player) => void;
+  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
+  setErrors: (errors: Partial<PlayerState['errors']>) => void;
+  resetForm: () => void;
+  updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
   removePlayer: (id: number) => void;
+  setPlayers: (players: Player[]) => void;
+  setEditingPlayer: (player: { id: number } | null) => void;
+  setEditValue: (value: string) => void;
 }
 
 export interface Match {

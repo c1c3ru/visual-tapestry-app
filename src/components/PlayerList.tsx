@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Star, Check, Search, ArrowUpDown } from "lucide-react";
+import React from "react";
+import { Star, Check, Search, ArrowUpDown, Edit2, Save, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
@@ -7,15 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Edit2, Save, Trash2 } from 'lucide-react';
 import { usePlayerStore } from "@/stores/usePlayerStore";
 
 type Rating = 1 | 2 | 3 | 4 | 5;
 
 const PlayerList = () => {
-  const { players, setPlayers, updatePlayer, addPlayer, removePlayer } = usePlayerStore();
-  const [editingPlayer, setEditingPlayer] = useState<{ id: number } | null>(null);
-  const [editValue, setEditValue] = useState<string>('');
+  const { players, updatePlayer, removePlayer, editingPlayer, setEditingPlayer, editValue, setEditValue } = usePlayerStore();
   const { toast } = useToast();
 
   const handleEdit = (id: number) => {
@@ -32,7 +29,7 @@ const PlayerList = () => {
       setEditingPlayer(null);
       setEditValue('');
       toast({
-        title: "Jogador atualizado",
+        title: "Jogador Atualizado",
         description: "O nome do jogador foi atualizado com sucesso.",
       });
     }
@@ -41,7 +38,7 @@ const PlayerList = () => {
   const handleDelete = (id: number) => {
     removePlayer(id);
     toast({
-      title: "Jogador removido",
+      title: "Jogador Removido",
       description: "O jogador foi removido com sucesso.",
     });
   };
