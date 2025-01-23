@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { BackToDashboard } from './BackToDashboard';
 import { DynamicTitle } from './DynamicTitle';
 import { motion } from 'framer-motion';
@@ -11,6 +12,7 @@ import { useStatisticsStore } from "@/stores/useStatisticsStore";
 
 const Statistics = () => {
   const { statistics, setStatistics, updateStatistic, addStatistic, removeStatistic } = useStatisticsStore();
+
   const [editingRecord, setEditingRecord] = useState<{index: number, recordIndex: number} | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const { toast } = useToast();
@@ -26,6 +28,7 @@ const Statistics = () => {
       const updatedPointRecords = [...statistics[index].pointRecords];
       updatedPointRecords[recordIndex].points = parseInt(editValue, 10);
 
+
       updateStatistic(index, { pointRecords: updatedPointRecords });
       setEditingRecord(null);
       setEditValue('');
@@ -38,9 +41,41 @@ const Statistics = () => {
 
   const handleDelete = (index: number) => {
     removeStatistic(index);
+
     toast({
       title: "Estatística removida",
       description: "A estatística foi removida com sucesso.",
+    });
+  };
+
+  const handleEdit = (index: number, recordIndex: number, currentPoints: number) => {
+    setEditingRecord({ index, recordIndex });
+    setEditValue(currentPoints.toString());
+  };
+
+  const handleSaveEdit = (index: number, recordIndex: number) => {
+    const updatedStatistics = [...statistics];
+    updatedStatistics[index].pointRecords[recordIndex].points = Number(editValue);
+    updatedStatistics[index].lastUpdated = new Date().toISOString();
+    saveStatistics(updatedStatistics);
+    setEditingRecord(null);
+    setEditValue('');
+
+    toast({
+      title: "Registro Atualizado",
+      description: "O registro foi atualizado com sucesso.",
+    });
+  };
+
+  const handleDelete = (index: number, recordIndex: number) => {
+    const updatedStatistics = [...statistics];
+    updatedStatistics[index].pointRecords.splice(recordIndex, 1);
+    updatedStatistics[index].lastUpdated = new Date().toISOString();
+    saveStatistics(updatedStatistics);
+
+    toast({
+      title: "Registro Excluído",
+      description: "O registro foi excluído com sucesso.",
     });
   };
 
@@ -99,6 +134,7 @@ const Statistics = () => {
           ))}
         </div>
       </motion.div>
+
     </div>
   );
 };

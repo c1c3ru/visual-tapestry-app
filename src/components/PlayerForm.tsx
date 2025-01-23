@@ -2,6 +2,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Save } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -16,6 +17,7 @@ import { BackToDashboard } from "./BackToDashboard";
 import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { Player, Rating } from "@/utils/types";
+
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
@@ -69,6 +71,7 @@ const PlayerForm = () => {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos obrigatórios.",
+
         variant: "destructive",
       });
       return;
@@ -79,10 +82,12 @@ const PlayerForm = () => {
       createdAt: new Date().toISOString(),
     };
     addPlayer(player);
+
     toast({
       title: "Jogador Adicionado",
       description: "Novo jogador foi adicionado com sucesso.",
     });
+
     resetForm();
   };
 
@@ -140,6 +145,7 @@ const PlayerForm = () => {
                     className={errors.isGuest ? "border-red-500" : ""}
                   />
                   <Label htmlFor="isGuestYes" className="ml-2">Sim</Label>
+
                 </div>
                 <div className="flex items-center">
                   <Checkbox
@@ -154,11 +160,13 @@ const PlayerForm = () => {
               </div>
               {errors.isGuest && <p className="text-red-500">Marcar como convidado é obrigatório.</p>}
             </div>
+
             <div>
               <Label htmlFor="sport">Esporte</Label>
               <Select
                 value={newPlayer.sport}
                 onValueChange={handleSelectChange}
+
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um esporte" />
@@ -212,9 +220,11 @@ const PlayerForm = () => {
               Salvar
             </Button>
           </div>
+
         </form>
       </motion.div>
     </div>
+
   );
 };
 

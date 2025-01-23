@@ -70,4 +70,5 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   setPlayers: (players) => set({ players }),
   setEditingPlayer: (editingPlayer) => set({ editingPlayer }),
   setEditValue: (editValue) => set({ editValue }),
+
 }));

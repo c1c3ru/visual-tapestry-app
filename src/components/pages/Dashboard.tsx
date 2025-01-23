@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { DashboardHeader } from '../dashboard/DashboardHeader';
 import { DashboardSettings } from '../dashboard/DashboardSettings';
 import { DashboardMenu } from '../dashboard/DashboardMenu';
@@ -13,6 +14,7 @@ const Dashboard = () => {
     setDashboardTitle, 
     setIsAdmin 
   } = useDashboardStore();
+
   const { 
     ratingSystem, 
     guestHighlight, 
@@ -26,6 +28,7 @@ const Dashboard = () => {
       setDashboardTitle(storedTitle);
     }
   }, [setDashboardTitle]);
+
 
   return (
     <motion.div 
@@ -41,12 +44,14 @@ const Dashboard = () => {
           setDashboardTitle={setDashboardTitle}
         />
         <DashboardSettings
+
           selectedRatingSystem={ratingSystem}
           setSelectedRatingSystem={setRatingSystem}
           guestHighlight={guestHighlight}
           setGuestHighlight={setGuestHighlight}
         />
         <DashboardMenu  />
+
       </div>
     </motion.div>
   );

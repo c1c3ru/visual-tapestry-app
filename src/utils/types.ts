@@ -1,5 +1,6 @@
 export type Rating = 1 | 2 | 3 | 4 | 5;
 
+
 export interface Player {
   id: number;
   name: string;
@@ -37,6 +38,7 @@ export interface PlayerState {
   setPlayers: (players: Player[]) => void;
   setEditingPlayer: (player: { id: number } | null) => void;
   setEditValue: (value: string) => void;
+
 }
 
 export interface Match {
@@ -95,4 +97,5 @@ export interface DashboardHeaderProps {
   isAdmin: boolean;
   setDashboardTitle: (title: string) => void;
 }
+
 

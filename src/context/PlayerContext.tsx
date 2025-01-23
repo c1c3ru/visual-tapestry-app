@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Player } from '@/utils/types';
 
 interface PlayerContextProps {
+
   players: Player[];
   addPlayer: (player: Player) => void;
   updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
@@ -29,6 +30,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     setPlayers((prevPlayers) => prevPlayers.filter((player) => player.id !== id));
   };
 
+
   return (
     <PlayerContext.Provider value={{ players, addPlayer, updatePlayer, removePlayer }}>
       {children}
@@ -39,6 +41,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 export const usePlayerContext = () => {
   const context = useContext(PlayerContext);
   if (context === undefined) {
+
     throw new Error('usePlayerContext must be used within a PlayerProvider');
   }
   return context;

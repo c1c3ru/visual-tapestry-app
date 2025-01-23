@@ -3,11 +3,13 @@ import { Star, Check, Search, ArrowUpDown, Edit2, Save, Trash2 } from "lucide-re
 import { motion } from "framer-motion";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
+
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { usePlayerStore } from "@/stores/usePlayerStore";
+
 
 type Rating = 1 | 2 | 3 | 4 | 5;
 
@@ -21,6 +23,7 @@ const PlayerList = () => {
     if (player) {
       setEditValue(player.name);
     }
+
   };
 
   const handleSave = () => {

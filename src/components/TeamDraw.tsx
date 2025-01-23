@@ -26,6 +26,7 @@ const TeamDraw = () => {
     setNamingOption,
     setMatchups,
   } = useTeamDrawStore();
+
   const { toast } = useToast();
   const MAX_ATTEMPTS = 10;
 
@@ -35,6 +36,7 @@ const TeamDraw = () => {
   }, [setPlayers]);
 
   // Funções para manipular o estado dos jogadores e equipes...
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -46,6 +48,7 @@ const TeamDraw = () => {
       >
         {/* Conteúdo do componente TeamDraw */}
       </motion.div>
+
     </div>
   );
 };
