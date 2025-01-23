@@ -18,9 +18,9 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { Player, Rating } from "@/utils/types";
 import { RatingInput } from "./player/RatingInput";
-import NumberRating from "@/public/NumberRating";
-import Scale5Rating from "@/public/Scale5Rating";
-import StarRating from "@/public/StarRating";
+import NumberRating from "../../public/NumberRating";
+import Scale5Rating from "../../public/Scale5Rating";
+import StarRating from "../../public/StarRating";
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
