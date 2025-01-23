@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TournamentBracket } from '../TournamentBracket';
-import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
-import { generateKnockoutMatches, generateTournamentMatches, generateGroups } from '@/utils/tournament';
+import { Team } from '@/utils/types';
 import TournamentHeader from '../tournament/TournamentHeader';
 import { TournamentForm } from '../tournament/TournamentForm';
 import TeamList from '../tournament/TeamList';
@@ -81,16 +80,17 @@ const Championship = () => {
   };
 
   const handleGenerateMatches = () => {
-    if (teams.length < 4) {
+    const result = generateMatches();
+    
+    if (!result.success) {
       toast({
         title: "Erro",
-        description: "Mínimo de 4 times necessário para gerar partidas.",
+        description: result.error || "Erro ao gerar partidas.",
         variant: "destructive"
       });
       return;
     }
 
-    generateMatches();
     toast({
       title: "Sucesso",
       description: "Partidas geradas com sucesso!",

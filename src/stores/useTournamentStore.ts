@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
 import { generateTournamentMatches, generateGroups, generateKnockoutMatches } from '@/utils/tournament';
-import { useToast } from '@/hooks/use-toast';
 
 interface TournamentState {
   tournamentName: string;
@@ -17,7 +16,7 @@ interface TournamentState {
   setResponsible: (name: string) => void;
   addTeam: (team: Team) => void;
   removeTeam: (id: string) => void;
-  generateMatches: () => void;
+  generateMatches: () => { success: boolean; error?: string };
 }
 
 export const useTournamentStore = create<TournamentState>((set, get) => ({
@@ -36,40 +35,39 @@ export const useTournamentStore = create<TournamentState>((set, get) => ({
   removeTeam: (id) => set((state) => ({ teams: state.teams.filter((team) => team.id !== id) })),
   generateMatches: () => {
     const { teams, tournamentType } = get();
-    const toast = useToast();
 
     if (teams.length < 4) {
-      toast.toast({
-        title: "Erro",
-        description: "Mínimo de 4 times necessário para gerar partidas.",
-        variant: "destructive"
-      });
-      return;
+      return {
+        success: false,
+        error: "Mínimo de 4 times necessário para gerar partidas."
+      };
     }
 
     if (teams.length > 64) {
-      toast.toast({
-        title: "Erro",
-        description: "Máximo de 64 times permitido.",
-        variant: "destructive"
-      });
-      return;
+      return {
+        success: false,
+        error: "Máximo de 64 times permitido."
+      };
     }
 
-    if (tournamentType === 'worldCup') {
-      const groups = generateGroups(teams);
-      set({ groups });
-    } else if (tournamentType === 'homeAway') {
-      const knockoutMatches = generateKnockoutMatches(teams);
-      set({ knockoutMatches });
-    } else {
-      const matches = generateTournamentMatches(teams, tournamentType);
-      set({ groups: [{ name: 'Liga', matches }] });
-    }
+    try {
+      if (tournamentType === 'worldCup') {
+        const groups = generateGroups(teams);
+        set({ groups });
+      } else if (tournamentType === 'homeAway') {
+        const knockoutMatches = generateKnockoutMatches(teams);
+        set({ knockoutMatches });
+      } else {
+        const matches = generateTournamentMatches(teams, tournamentType);
+        set({ groups: [{ name: 'Liga', matches }] });
+      }
 
-    toast.toast({
-      title: "Sucesso",
-      description: "Partidas geradas com sucesso!",
-    });
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: "Erro ao gerar partidas. Tente novamente."
+      };
+    }
   },
 }));
