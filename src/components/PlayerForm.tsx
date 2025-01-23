@@ -55,6 +55,10 @@ const PlayerForm = () => {
     setNewPlayer({ selectedPositions: updatedPositions } as Partial<Omit<Player, "id" | "createdAt">>);
   };
 
+  const handleRatingChange = (newRating: Rating) => {
+    setNewPlayer({ rating: newRating });
+  };
+
   const validateForm = () => {
     const newErrors = {
       name: newPlayer.name.trim() === "",
@@ -205,7 +209,7 @@ const PlayerForm = () => {
             <RatingInput
               ratingSystem={ratingSystem}
               rating={newPlayer.rating}
-              onRatingChange={(rating) => setNewPlayer({ rating: rating as Rating })}
+              onRatingChange={handleRatingChange}
             />
             {errors.rating && <p className="text-red-500">Avaliação é obrigatória.</p>}
           </div>
