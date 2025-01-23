@@ -71,7 +71,7 @@ const PresenceList = () => {
       isGuest: false,
       sport: "",
       selectedPositions: [],
-      rating: 0,
+      rating: 1 as Rating, // Changed from 0 to 1 to match Rating type
       includeInDraw: false,
       createdAt: new Date().toISOString(),
       present: false,

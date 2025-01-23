@@ -144,7 +144,7 @@ const PlayerForm = () => {
                   id="isGuestYes"
                   name="isGuest"
                   checked={newPlayer.isGuest === true}
-                  onCheckedChange={(checked) => setNewPlayer({ isGuest: checked })}
+                  onCheckedChange={(checked: boolean) => setNewPlayer({ isGuest: checked })}
                   className={errors.isGuest ? "border-red-500" : ""}
                 />
                 <Label htmlFor="isGuestYes" className="ml-2">Sim</Label>
@@ -154,7 +154,7 @@ const PlayerForm = () => {
                   id="isGuestNo"
                   name="isGuest"
                   checked={newPlayer.isGuest === false}
-                  onCheckedChange={(checked) => setNewPlayer({ isGuest: !checked })}
+                  onCheckedChange={(checked: boolean) => setNewPlayer({ isGuest: !checked })}
                   className={errors.isGuest ? "border-red-500" : ""}
                 />
                 <Label htmlFor="isGuestNo" className="ml-2">Não</Label>
