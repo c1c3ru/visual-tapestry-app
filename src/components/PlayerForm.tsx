@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Save } from "lucide-react";
+import { Edit2, Trash2 } from "lucide-react";
 
 import {
   Select,
@@ -228,4 +229,76 @@ const PlayerForm = () => {
   );
 };
 
+const Statistics = ({ statistics, updateStatistic, removeStatistic, saveStatistics }) => {
+  const [editingRecord, setEditingRecord] = useState<{ index: number; recordIndex: number } | null>(null);
+  const [editValue, setEditValue] = useState<string>('');
+  const { toast } = useToast();
+
+  const handleEdit = (index: number, recordIndex: number) => {
+    setEditingRecord({ index, recordIndex });
+    setEditValue(statistics[index].pointRecords[recordIndex].points.toString());
+  };
+
+  const handleSave = () => {
+    if (editingRecord !== null) {
+      const { index, recordIndex } = editingRecord;
+      const updatedPointRecords = [...statistics[index].pointRecords];
+      updatedPointRecords[recordIndex].points = parseInt(editValue, 10);
+
+      updateStatistic(index, { pointRecords: updatedPointRecords });
+      setEditingRecord(null);
+      setEditValue('');
+      toast({
+        title: "Registro atualizado",
+        description: "O registro de pontos foi atualizado com sucesso.",
+      });
+    }
+  };
+
+  const handleDelete = (index: number) => {
+    removeStatistic(index);
+
+    toast({
+      title: "Estatística removida",
+      description: "A estatística foi removida com sucesso.",
+    });
+  };
+
+  return (
+    <div>
+      {statistics.map((statistic, index) => (
+        <div key={index}>
+          <h3>{statistic.name}</h3>
+          {statistic.pointRecords.map((record, recordIndex) => (
+            <div key={recordIndex}>
+              <p>{record.points} pontos em {record.date}</p>
+              <Button onClick={() => handleEdit(index, recordIndex)}>
+                <Edit2 className="h-4 w-4" />
+              </Button>
+              <Button onClick={() => handleDelete(index)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      ))}
+      {editingRecord && (
+        <div>
+          <Input
+            type="number"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            placeholder="Novo valor"
+          />
+          <Button onClick={handleSave}>
+            <Save className="mr-2 h-4 w-4" />
+            Salvar
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default PlayerForm;
+export { Statistics };
