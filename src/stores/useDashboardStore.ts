@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { types } from 'util';
 import { DashboardState } from '../types/types';
 
 
@@ -7,8 +6,16 @@ import { DashboardState } from '../types/types';
 
 
 export const useDashboardStore = create<DashboardState>((set) => ({
-  dashboardTitle: 'Dashboard',
+  id: '',
+  dashboardTitle: 'Menu Inicial',
   isAdmin: true,
+  isEditing: false,
+  newTitle: '',
+  menuItems: [],
   setDashboardTitle: (title) => set({ dashboardTitle: title }),
+  setIsEditing: (isEditing) => set({ isEditing }),
+  setNewTitle: (newTitle) => set({ newTitle }),
+
   setIsAdmin: (isAdmin) => set({ isAdmin }),
 }));
+

@@ -170,9 +170,13 @@ export interface DashboardState {
   id: string;
   dashboardTitle: string;
   isAdmin: boolean;
+  isEditing: boolean;
+  newTitle: string,
   menuItems: { title: string; route: string }[];
+  setIsEditing: (isEditing: boolean) => void;
   setDashboardTitle: (title: string) => void;
   setIsAdmin: (isAdmin: boolean) => void;
+  setNewTitle: (title: string) => void;
 }
 
 // Define the DashboardSettingsState interface

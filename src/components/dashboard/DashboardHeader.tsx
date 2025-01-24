@@ -3,8 +3,7 @@ import { Edit2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
-
+import { useDashboardStore } from '@/stores/useDashboardStore';
 
 interface DashboardHeaderProps {
   isAdmin: boolean;
@@ -13,8 +12,7 @@ interface DashboardHeaderProps {
 }
 
 export const DashboardHeader = ({ isAdmin, dashboardTitle, setDashboardTitle }: DashboardHeaderProps) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [newTitle, setNewTitle] = useState(dashboardTitle);
+  const { isEditing, newTitle, setIsEditing, setNewTitle } = useDashboardStore();
 
   const handleTitleEdit = () => {
     if (!isAdmin) {
