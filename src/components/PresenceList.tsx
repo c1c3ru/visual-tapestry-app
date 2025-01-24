@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { BackToDashboard } from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Player, Rating } from "@/utils/types";
+import { Player, Rating } from "@/types/types";
 
 const PresenceList = () => {
   const { players, addPlayer, updatePlayer } = usePlayerStore();

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
-import { Player } from "@/utils/types";
+import { Player } from "@/types/types";
 
 interface PlayerContextProps {
   players: Player[];

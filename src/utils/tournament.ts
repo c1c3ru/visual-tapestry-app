@@ -1,4 +1,4 @@
-import { Team, KnockoutMatches, Match, Group } from './types';
+import { Team, KnockoutMatches, Match, Group } from '../types/types';
 
 export interface TournamentBracketProps {
   groups: Group[];

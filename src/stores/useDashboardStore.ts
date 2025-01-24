@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { types } from 'util';
-import { DashboardState } from '../utils/types';
+import { DashboardState } from '../types/types';
 
 
 

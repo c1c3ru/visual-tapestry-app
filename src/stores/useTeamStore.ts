@@ -1,12 +1,6 @@
 import { create } from 'zustand';
+import { Player } from '@/types/types';
 
-interface Player {
-  id: number;
-  name: string;
-  rating: number;
-  position: string;
-  includeInDraw: boolean;
-}
 
 interface TeamState {
   players: Player[];

@@ -2,21 +2,11 @@ import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Team } from '@/utils/types';
+import { useTournamentStore } from '@/stores/useTournamentStore';
 
-interface TournamentFormProps {
-  tournamentName: string;
-  tournamentType: 'league' | 'worldCup' | 'homeAway';
-  onTournamentNameChange: (value: string) => void;
-  onTournamentTypeChange: (value: 'league' | 'worldCup' | 'homeAway') => void;
-}
+export const TournamentForm: React.FC = () => {
+  const { tournamentName, tournamentType, setTournamentName, setTournamentType } = useTournamentStore();
 
-export const TournamentForm: React.FC<TournamentFormProps> = ({
-  tournamentName,
-  tournamentType,
-  onTournamentNameChange,
-  onTournamentTypeChange,
-}) => {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -24,7 +14,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
         <Input
           id="tournamentName"
           value={tournamentName}
-          onChange={(e) => onTournamentNameChange(e.target.value)}
+          onChange={(e) => setTournamentName(e.target.value)}
           placeholder="Digite o nome do torneio"
         />
       </div>
@@ -33,7 +23,7 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
         <Label>Tipo de Torneio</Label>
         <RadioGroup
           value={tournamentType}
-          onValueChange={onTournamentTypeChange}
+          onValueChange={setTournamentType}
           className="flex flex-col space-y-2"
         >
           <div className="flex items-center space-x-2">

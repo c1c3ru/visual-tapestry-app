@@ -1,16 +1,7 @@
 import { create } from 'zustand';
-interface PointRecord {
-  points: number;
-  date: string;
-}
+import type { Statistic } from '@/types/types';
 
-interface Statistic {
-  name: string;
-  date: string;
-  attendanceCount: number;
-  pointRecords: PointRecord[];
-  lastUpdated: string;
-}
+
 
 interface StatisticsState {
   statistics: Statistic[];
@@ -37,4 +28,5 @@ export const useStatisticsStore = create<StatisticsState>((set) => ({
     set((state) => ({
       statistics: state.statistics.filter((_, i) => i !== index),
     })),
+   
 }));

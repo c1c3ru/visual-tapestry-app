@@ -17,7 +17,7 @@ const Statistics = () => {
   const [editValue, setEditValue] = useState<string>('');
   const { toast } = useToast();
 
-  const handleEdit = (index: number, recordIndex: number) => {
+  const handleEditRecord = (index: number, recordIndex: number) => {
     setEditingRecord({ index, recordIndex });
     setEditValue(statistics[index].pointRecords[recordIndex].points.toString());
   };
@@ -39,7 +39,7 @@ const Statistics = () => {
     }
   };
 
-  const handleDelete = (index: number) => {
+  const handleDeleteRecord = (index: number) => {
     removeStatistic(index);
 
     toast({
@@ -57,7 +57,7 @@ const Statistics = () => {
     const updatedStatistics = [...statistics];
     updatedStatistics[index].pointRecords[recordIndex].points = Number(editValue);
     updatedStatistics[index].lastUpdated = new Date().toISOString();
-    saveStatistics(updatedStatistics);
+    setStatistics(updatedStatistics);
     setEditingRecord(null);
     setEditValue('');
 
@@ -71,7 +71,7 @@ const Statistics = () => {
     const updatedStatistics = [...statistics];
     updatedStatistics[index].pointRecords.splice(recordIndex, 1);
     updatedStatistics[index].lastUpdated = new Date().toISOString();
-    saveStatistics(updatedStatistics);
+    setStatistics(updatedStatistics);
 
     toast({
       title: "Registro Excluído",
@@ -118,7 +118,7 @@ const Statistics = () => {
                       ) : (
                         <>
                           <p>{record.points} pontos em {record.date}</p>
-                          <Button onClick={() => handleEdit(index, recordIndex)}>
+                          <Button onClick={() => handleEditRecord(index, recordIndex)}>
                             <Edit2 className="h-4 w-4" />
                           </Button>
                         </>
@@ -126,7 +126,7 @@ const Statistics = () => {
                     </div>
                   ))}
                 </div>
-                <Button onClick={() => handleDelete(index)} variant="destructive">
+                <Button onClick={() => handleDeleteRecord(index)} variant="destructive">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </CardContent>

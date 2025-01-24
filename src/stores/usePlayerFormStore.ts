@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Player, Rating } from '@/utils/types';
+import { Player, Rating } from '@/types/types';
 
 interface PlayerFormState {
   newPlayer: Omit<Player, 'id' | 'createdAt'>;

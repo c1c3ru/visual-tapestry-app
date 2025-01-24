@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Match, Group } from '@/utils/types';
+import { Match, Group } from '@/types/types';
 import { TournamentBracketProps } from '@/utils/tournament';
 
 

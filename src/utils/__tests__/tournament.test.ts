@@ -1,5 +1,5 @@
 import { generateKnockoutMatches } from '../tournament';
-import { Team, Match } from '../types';
+import { Team, Match } from '../../types/types';
 import '@testing-library/jest-dom';
 
 describe('Tournament Utils', () => {

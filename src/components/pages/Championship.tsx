@@ -1,26 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Save, Trophy, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TournamentBracket } from '../TournamentBracket';
-import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
-import { generateKnockoutMatches, generateTournamentMatches } from '@/utils/tournament';
-import TournamentHeader from '../tournament/TournamentHeader';
-import { TournamentForm } from '../tournament/TournamentForm';
-import TeamList from '../tournament/TeamList';
-import { BackToDashboard } from '../BackToDashboard';
+
 import { useToast } from "@/hooks/use-toast";
 import { useTournamentStore } from '@/stores/useTournamentStore';
+import { BackToDashboard } from '@/components/BackToDashboard';
+import TournamentHeader from '@/components/tournament/TournamentHeader';
+import { TournamentForm } from '@/components/tournament/TournamentForm';
+import TeamList from '@/components/tournament/TeamList';
 
 const Championship = () => {
-  const [tournamentName, setTournamentName] = useState('');
-  const [tournamentType, setTournamentType] = useState<'league' | 'worldCup' | 'homeAway'>('league');
   const [teamName, setTeamName] = useState('');
   const [responsible, setResponsible] = useState('');
   const { toast } = useToast();
-  const { teams, groups, knockoutMatches, addTeam, removeTeam, generateMatches } = useTournamentStore();
+  const {  
+    addTeam,  
+    generateMatches,
+    teams,
+    groups,
+    knockoutMatches,
+    tournamentType
+  } = useTournamentStore((state) => ({
+    addTeam: state.addTeam,
+    editTeam: state.editTeam, 
+    removeTeam: state.removeTeam,
+    generateMatches: state.generateMatches,
+    teams: state.teams,
+    groups: state.groups,
+    knockoutMatches: state.knockoutMatches,
+    tournamentType: state.tournament?.type
+  }));
 
   const handleAddTeam = () => {
     if (!teamName || !responsible) {
@@ -31,11 +44,11 @@ const Championship = () => {
       });
       return;
     }
-
-    const newTeam: Team = { 
+  
+    const newTeam = { 
       id: Date.now().toString(), 
       name: teamName, 
-      responsible 
+      responsible,
     };
     
     addTeam(newTeam);
@@ -51,7 +64,7 @@ const Championship = () => {
     if (tournamentType === 'worldCup' && teams.length > 0) {
       generateMatches(teams, tournamentType);
     }
-  }, [tournamentType, teams]);
+  }, [tournamentType, teams, generateMatches]);
 
   return (
     <div className="container mx-auto p-4 space-y-8">
@@ -64,12 +77,7 @@ const Championship = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <TournamentForm
-            tournamentName={tournamentName}
-            tournamentType={tournamentType}
-            onTournamentNameChange={setTournamentName}
-            onTournamentTypeChange={setTournamentType}
-          />
+          <TournamentForm />
 
           <div className="space-y-4">
             <Label>Adicionar Time</Label>
@@ -98,7 +106,7 @@ const Championship = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <TeamList teams={teams} onRemoveTeam={removeTeam} />
+          <TeamList />
 
           <div className="flex gap-4 flex-wrap">
             <Button onClick={handleGenerateMatches} className="gap-2" disabled={teams.length < 2}>

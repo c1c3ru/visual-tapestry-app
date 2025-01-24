@@ -5,8 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Star, StarHalf } from 'lucide-react';
 import { toast } from "sonner";
 import clsx from 'clsx';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 
-interface DashboardSettingsProps {
+interface DashboardSettingsState {
   selectedRatingSystem: string;
   setSelectedRatingSystem: (value: string) => void;
   guestHighlight: string;
@@ -55,12 +56,14 @@ const guestHighlights: GuestHighlight[] = [
   { value: 'italic', label: 'Itálico' },
 ];
 
-export const DashboardSettings = ({
-  selectedRatingSystem,
-  setSelectedRatingSystem,
-  guestHighlight,
-  setGuestHighlight
-}: DashboardSettingsProps) => {
+export const DashboardSettings = ({ settings }: { settings: DashboardSettingsState }) => {
+  const { 
+    selectedRatingSystem, 
+    setSelectedRatingSystem, 
+    guestHighlight, 
+    setGuestHighlight 
+  } = settings;
+
   const handleRatingSystemChange = (value: string) => {
     setSelectedRatingSystem(value);
     localStorage.setItem('ratingSystem', value);

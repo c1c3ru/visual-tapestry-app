@@ -1,11 +1,6 @@
 import React from 'react';
 import { Star, StarHalf } from 'lucide-react';
-
-interface RatingInputProps {
-  ratingSystem: string;
-  rating: number;
-  onRatingChange: (rating: number) => void;
-}
+import useRatingStore from '@/stores/useRatingStore';
 
 const ratingSystems = {
   stars: {
@@ -115,16 +110,13 @@ const ratingSystems = {
   },
 };
 
-export const RatingInput: React.FC<RatingInputProps> = ({
-  ratingSystem,
-  rating,
-  onRatingChange,
-}) => {
+export const RatingInput: React.FC = () => {
+  const { ratingSystem, rating, setRating } = useRatingStore();
   const ratingSystemConfig = ratingSystems[ratingSystem];
 
   if (!ratingSystemConfig) {
     return null;
   }
 
-  return ratingSystemConfig.renderRating(rating, onRatingChange);
+  return ratingSystemConfig.renderRating(rating, setRating);
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { usePlayerStore } from '@/stores/usePlayerStore';
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
@@ -16,20 +17,8 @@ const positions: Position = {
   handbol: ["Goleiro", "Ponta", "Central", "Pivô"]
 };
 
-interface PlayerPositionsProps {
-  sport: Sport;
-  selectedPositions: string[];
-  onPositionChange: (position: string, checked: boolean) => void;
-}
-
-export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
-  sport,
-  selectedPositions,
-  onPositionChange
-}) => {
-  const handlePositionChange = (checked: boolean, position: string) => {
-    onPositionChange(position, checked);
-  };
+export const PlayerPositions: React.FC = () => {
+  const { sport, selectedPositions, togglePosition } = usePlayerStore();
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -38,7 +27,7 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
           <Checkbox
             id={position}
             checked={selectedPositions.includes(position)}
-            onCheckedChange={(checked) => handlePositionChange(checked as boolean, position)}
+            onCheckedChange={(checked) => togglePosition(position, checked as boolean)}
           />
           <Label htmlFor={position} className="text-sm font-medium leading-none">
             {position}

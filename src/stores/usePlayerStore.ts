@@ -1,9 +1,11 @@
 import {create} from 'zustand';
-import { Player, Rating, PlayerState } from '@/utils/types';
+import { Player, Rating, PlayerState } from '@/types/types';
 
 export const usePlayerStore = create<PlayerState>((set) => ({
+  id: '',
   players: [],
   newPlayer: {
+    id: '',
     name: "",
     nickname: "",
     birthDate: "",

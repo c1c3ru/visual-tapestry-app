@@ -2,14 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Trophy } from 'lucide-react';
-import { Team } from '@/utils/types';
+import { useTournamentStore } from '@/stores/useTournamentStore';
 
-interface TeamListProps {
-  teams: Team[];
-  onRemoveTeam: (teamId: string) => void;
-}
+const TeamList: React.FC = () => {
+  const { teams, removeTeam } = useTournamentStore();
 
-const TeamList: React.FC<TeamListProps> = ({ teams, onRemoveTeam }) => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-xl font-semibold mb-4">Times Cadastrados</h2>
@@ -28,7 +25,7 @@ const TeamList: React.FC<TeamListProps> = ({ teams, onRemoveTeam }) => {
             <Button
               variant="destructive"
               size="icon"
-              onClick={() => onRemoveTeam(team.id)}
+              onClick={() => removeTeam(team.id)}
             >
               <Trophy className="h-4 w-4" />
             </Button>

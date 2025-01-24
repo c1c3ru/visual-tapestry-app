@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Player } from '@/utils/types';
+import { Player } from '@/types/types';
 
 interface PlayerContextProps {
 

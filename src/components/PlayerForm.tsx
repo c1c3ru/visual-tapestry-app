@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { BackToDashboard } from "./BackToDashboard";
 import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Player, Rating } from "@/utils/types";
+import { Player, Rating } from "@/types/types";
 
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
@@ -54,6 +54,10 @@ const PlayerForm = () => {
         : [...prev.selectedPositions, position],
     }));
   };
+
+  const updatePlayer = (prev: any) => ({
+    selectedPositions: prev.selectedPositions,
+  });
 
   const validateForm = () => {
     const newErrors = {
