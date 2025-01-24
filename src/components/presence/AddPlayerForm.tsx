@@ -3,21 +3,26 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Player, Rating } from "@/utils/types";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface AddPlayerFormProps {
   onAddPlayer: (player: Player) => void;
   players: Player[];
 }
 
-interface FormValues {
-  playerName: string;
-}
+const formSchema = z.object({
+  playerName: z.string().min(1, "O nome do jogador é obrigatório"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, players }) => {
   const { toast } = useToast();
   const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       playerName: "",
     },
