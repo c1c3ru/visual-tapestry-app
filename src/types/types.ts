@@ -1,5 +1,3 @@
-import { DashboardSettings } from "../components/dashboard/DashboardSettings";
-
 // Define a type for the rating system
 export type Rating = 1 | 2 | 3 | 4 | 5;
 
@@ -44,7 +42,43 @@ export interface PlayerState {
   setEditingPlayer: (player: { id: number } | null) => void;
   setEditValue: (value: string) => void;
 }
+export interface Team {
+  id: string;
+  name: string;
+  responsible: string;
+}
 
+export interface TeamState {
+  player: Player[];
+
+  goalkeepers: Player[];
+
+  teams: Team[];
+
+  playersPerTeam: number;
+
+  namingOption: string;
+
+  matchups: Match[];
+
+  setPlayers: (players: Player[]) => void;
+
+  setGoalkeepers: (goalkeepers: Player[]) => void;
+
+  setTeams: (teams: Team[]) => void;
+
+  setPlayersPerTeam: (playersPerTeam: number) => void;
+
+  setNamingOption: (namingOption: string) => void;
+
+  setMatchups: (matchups: Match[]) => void;
+
+  addTeam: (team: Team) => void;
+
+  editTeam: (index: number, team: Team) => void;
+
+  removeTeam: (id: string) => void;
+}
 // Define the Match interface
 export interface Match {
   id: string;
@@ -65,11 +99,17 @@ export interface Group {
 // Define the Team interface
 export interface Team {
   id: string;
+
   name: string;
+
   responsible: string;
-  addTeam: (team: Team) => void;
-  editTeam: (id: string, updatedTeam: Partial<Team>) => void;
-  removeTeam: (id: string) => void;
+
+  addTeam?: () => void;
+
+  editTeam?: () => void;
+
+  removeTeam?: () => void;
+
 }
 
 // Define the KnockoutMatches interface
@@ -97,7 +137,10 @@ export interface Tournament {
   removeTeam: (id: string) => void;
   setTournamentName: (name: string) => void;
   setTournamentType: (type: string) => void;
-  generateMatches: (teams: Team[], type: 'league' | 'worldCup' | 'homeAway') => void;
+  generateMatches: (
+    teams: Team[],
+    type: "league" | "worldCup" | "homeAway"
+  ) => void;
   updateMatch: (matchId: string, score1: number, score2: number) => void;
 }
 
@@ -115,7 +158,10 @@ export interface TournamentState {
   removeTeam: (id: string) => void;
   setTournamentName: (name: string) => void;
   setTournamentType: (type: string) => void;
-  generateMatches: (teams: Team[], type: 'league' | 'worldCup' | 'homeAway') => void;
+  generateMatches: (
+    teams: Team[],
+    type: "league" | "worldCup" | "homeAway"
+  ) => void;
   updateMatch: (matchId: string, score1: number, score2: number) => void;
 }
 

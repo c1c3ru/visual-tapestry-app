@@ -12,6 +12,7 @@ import { BackToDashboard } from '@/components/BackToDashboard';
 import TournamentHeader from '@/components/tournament/TournamentHeader';
 import { TournamentForm } from '@/components/tournament/TournamentForm';
 import TeamList from '@/components/tournament/TeamList';
+import { Team } from '@/types/types';
 
 const Championship = () => {
   const [teamName, setTeamName] = useState('');
@@ -45,13 +46,14 @@ const Championship = () => {
       return;
     }
   
-    const newTeam = { 
+    // Criação do objeto newTeam
+    const newTeam: Team = { 
       id: Date.now().toString(), 
       name: teamName, 
-      responsible,
+      responsible
     };
     
-    addTeam(newTeam);
+    addTeam(newTeam); // Adiciona o time no estado global
     setTeamName("");
     setResponsible("");
   };

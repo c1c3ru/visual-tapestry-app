@@ -1,33 +1,28 @@
 import { create } from 'zustand';
-import { Player } from '@/types/types';
+import { Team, TeamState, Player } from '@/types/types';
 
 
-interface TeamState {
-  players: Player[];
-  goalkeepers: Player[];
-  teams: Player[][];
-  playersPerTeam: number;
-  namingOption: string;
-  matchups: string[];
-  setPlayers: (players: Player[]) => void;
-  setGoalkeepers: (goalkeepers: Player[]) => void;
-  setTeams: (teams: Player[][]) => void;
-  setPlayersPerTeam: (playersPerTeam: number) => void;
-  setNamingOption: (namingOption: string) => void;
-  setMatchups: (matchups: string[]) => void;
-}
 
 export const useTeamStore = create<TeamState>((set) => ({
-  players: [],
+  player: [],
   goalkeepers: [],
   teams: [],
   playersPerTeam: 5,
   namingOption: "numeric",
   matchups: [],
-  setPlayers: (players) => set({ players }),
+  setPlayers: (player) => set({ player }),
   setGoalkeepers: (goalkeepers) => set({ goalkeepers }),
   setTeams: (teams) => set({ teams }),
   setPlayersPerTeam: (playersPerTeam) => set({ playersPerTeam }),
   setNamingOption: (namingOption) => set({ namingOption }),
   setMatchups: (matchups) => set({ matchups }),
+  addTeam: (team: Team) => set((state) => ({ teams: [...state.teams, team] })),
+  editTeam: (index, team) => set((state) => {
+    const newTeams = [...state.teams];
+    newTeams[index] = team;
+    return { teams: newTeams };
+  }),
+  removeTeam: (id: string) => set((state) => ({
+    teams: state.teams.filter((team) => team.id !== id)
+  })),
 }));
