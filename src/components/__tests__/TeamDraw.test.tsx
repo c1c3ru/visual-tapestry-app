@@ -31,8 +31,8 @@ describe('TeamDraw', () => {
   };
 
   beforeEach(() => {
-    (mockUsePlayerStore as jest.Mock).mockImplementation(() => mockPlayerStore);
-    (mockUseTeamDrawStore as jest.Mock).mockImplementation(() => mockTeamDrawStore);
+    mockUsePlayerStore.mockReturnValue(mockPlayerStore as PlayerState);
+    mockUseTeamDrawStore.mockReturnValue(mockTeamDrawStore as TeamDrawState);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -87,8 +87,8 @@ describe('TeamDraw', () => {
 
   test('displays generated teams', () => {
     const mockTeams = [
-      [mockPlayerStore.players[0]],
-      [mockPlayerStore.players[1]]
+      [{ id: 1, name: 'João', rating: 5 }],
+      [{ id: 2, name: 'Maria', rating: 4 }]
     ];
     
     (mockUseTeamDrawStore as jest.Mock).mockReturnValue({
@@ -103,6 +103,6 @@ describe('TeamDraw', () => {
     expect(screen.getByText('Time 1')).toBeInTheDocument();
     expect(screen.getByText('Time 2')).toBeInTheDocument();
     expect(screen.getByText('João')).toBeInTheDocument();
-    expect(screen.getByText('Pedro')).toBeInTheDocument();
+    expect(screen.getByText('Maria')).toBeInTheDocument();
   });
 });

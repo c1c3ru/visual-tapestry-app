@@ -5,6 +5,7 @@ import { act } from 'react-dom/test-utils';
 import Statistics from '../Statistics';
 import { useStatisticsStore } from '@/stores/useStatisticsStore';
 import { useToast } from '@/hooks/use-toast';
+import { StatisticsState } from '@/utils/types';
 
 jest.mock('@/stores/useStatisticsStore');
 jest.mock('@/hooks/use-toast');
@@ -12,16 +13,26 @@ jest.mock('@/hooks/use-toast');
 const mockUseStatisticsStore = useStatisticsStore as jest.MockedFunction<typeof useStatisticsStore>;
 
 describe('Statistics', () => {
-  const mockStore = {
-    statistics: [],
+  const mockStore: StatisticsState = {
+    statistics: [
+      {
+        id: 1,
+        name: 'Torneio 1',
+        date: '2024-01-01',
+        attendanceCount: 10,
+        lastUpdated: '2024-01-02',
+        pointRecords: [
+          { points: 3, date: '2024-01-01' },
+          { points: 2, date: '2024-01-02' },
+        ],
+      },
+    ],
     updateStatistic: jest.fn(),
     removeStatistic: jest.fn(),
-    setStatistics: jest.fn(),
-    addStatistic: jest.fn(),
   };
 
   beforeEach(() => {
-    (mockUseStatisticsStore as jest.Mock).mockImplementation(() => mockStore);
+    mockUseStatisticsStore.mockReturnValue(mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

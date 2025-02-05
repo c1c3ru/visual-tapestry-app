@@ -5,7 +5,7 @@ import PresenceList from '../PresenceList';
 import { usePlayerStore } from '@/stores/usePlayerStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useToast } from '@/hooks/use-toast';
-import { PlayerState, SettingsState } from '@/utils/types';
+import { PlayerState, SettingsState, Player } from '@/utils/types';
 
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/stores/useSettingsStore');
@@ -14,9 +14,30 @@ jest.mock('@/hooks/use-toast');
 const mockUsePlayerStore = usePlayerStore as jest.MockedFunction<typeof usePlayerStore>;
 const mockUseSettingsStore = useSettingsStore as jest.MockedFunction<typeof useSettingsStore>;
 
+const mockPlayers: Player[] = [
+  {
+    id: 1,
+    name: 'João',
+    nickname: 'Jo',
+    birthDate: '1990-01-01',
+    isGuest: false,
+    sport: 'futsal',
+    selectedPositions: ['Goleiro'],
+    rating: 5,
+    includeInDraw: true,
+    createdAt: '2024-01-01',
+    selected: false,
+    present: true,
+    paid: true,
+    registered: true
+  }
+];
+
+const mockToast = jest.fn();
+
 describe('PresenceList', () => {
   const mockPlayerStore: Partial<PlayerState> = {
-    players: [],
+    players: mockPlayers,
     updatePlayer: jest.fn(),
     removePlayer: jest.fn(),
   };
@@ -27,10 +48,10 @@ describe('PresenceList', () => {
   };
 
   beforeEach(() => {
-    (mockUsePlayerStore as jest.Mock).mockImplementation(() => mockPlayerStore);
-    (mockUseSettingsStore as jest.Mock).mockImplementation(() => mockSettingsStore);
+    mockUsePlayerStore.mockReturnValue(mockPlayerStore as PlayerState);
+    mockUseSettingsStore.mockReturnValue(mockSettingsStore as SettingsState);
     (useToast as jest.Mock).mockReturnValue({
-      toast: jest.fn(),
+      toast: mockToast,
     });
   });
 

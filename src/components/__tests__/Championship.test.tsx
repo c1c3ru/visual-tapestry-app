@@ -7,11 +7,9 @@ import { useTournamentStore } from '@/stores/useTournamentStore';
 import { useToast } from '@/hooks/use-toast';
 import { TournamentState } from '@/utils/types';
 
-// Mock the modules
 jest.mock('@/stores/useTournamentStore');
 jest.mock('@/hooks/use-toast');
 
-// Type the mock store
 const mockUseTournamentStore = useTournamentStore as jest.MockedFunction<typeof useTournamentStore>;
 
 describe('Championship', () => {
@@ -33,7 +31,7 @@ describe('Championship', () => {
   };
 
   beforeEach(() => {
-    (mockUseTournamentStore as jest.Mock).mockImplementation(() => mockStore);
+    mockUseTournamentStore.mockReturnValue(mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

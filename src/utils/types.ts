@@ -99,3 +99,53 @@ export interface DashboardHeaderProps {
 }
 
 
+
+export interface TournamentState {
+  tournamentName: string;
+  tournamentType: 'league' | 'worldCup' | 'homeAway';
+  teamName: string;
+  responsible: string;
+  teams: Team[];
+  groups: Group[];
+  knockoutMatches: KnockoutMatches | null;
+  setTournamentName: (name: string) => void;
+  setTournamentType: (type: 'league' | 'worldCup' | 'homeAway') => void;
+  setTeamName: (name: string) => void;
+  setResponsible: (name: string) => void;
+  addTeam: (team: Team) => void;
+  removeTeam: (id: string) => void;
+  generateMatches: () => { success: boolean; error?: string };
+}
+
+export interface SettingsState {
+  guestHighlight: string;
+  ratingSystem: string;
+  setGuestHighlight: (highlight: string) => void;
+  setRatingSystem: (system: string) => void;
+}
+
+export interface StatisticsState {
+  statistics: Array<{
+    id: number;
+    name: string;
+    date: string;
+    attendanceCount: number;
+    lastUpdated: string;
+    pointRecords: Array<{
+      points: number;
+      date: string;
+    }>;
+  }>;
+  updateStatistic: (index: number, statistic: any) => void;
+  removeStatistic: (index: number) => void;
+}
+
+export interface TeamDrawState {
+  playersPerTeam: number;
+  teams: Player[][];
+  setTeams: (teams: Player[][]) => void;
+  setPlayersPerTeam: (count: number) => void;
+  namingOption: string;
+  matchups: string[];
+  setMatchups: (matchups: string[]) => void;
+}
