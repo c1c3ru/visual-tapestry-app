@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { AddPlayerForm } from '../AddPlayerForm';
+import { AddPlayerForm } from '../presence/AddPlayerForm';
 import { useToast } from '@/hooks/use-toast';
 import { Player } from '@/utils/types';
 

@@ -1,5 +1,5 @@
-import { generateKnockoutMatches, generateGroups, generateTournamentMatches } from '../tournament';
-import { Team } from '../types';
+import { generateKnockoutMatches, generateGroups, generateTournamentMatches } from '../../utils/tournament';
+import { Team } from '../../utils/types';
 
 describe('Tournament Utils', () => {
   const mockTeams: Team[] = [
