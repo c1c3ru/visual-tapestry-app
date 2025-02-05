@@ -5,7 +5,7 @@ import { act } from 'react-dom/test-utils';
 import Championship from '../pages/Championship';
 import { useTournamentStore } from '@/stores/useTournamentStore';
 import { useToast } from '@/hooks/use-toast';
-import { Tournament } from '@/utils/types';
+import { Tournament, TournamentState } from '@/utils/types';
 
 jest.mock('@/stores/useTournamentStore');
 jest.mock('@/hooks/use-toast');
@@ -31,7 +31,8 @@ describe('Championship', () => {
   };
 
   beforeEach(() => {
-    (mockUseTournamentStore as jest.Mock).mockImplementation(() => mockStore as unknown as Tournament);
+    jest.resetAllMocks();
+    (mockUseTournamentStore as jest.Mock).mockReturnValue(mockStore as TournamentState);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

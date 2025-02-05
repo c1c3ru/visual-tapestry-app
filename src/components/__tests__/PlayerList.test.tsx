@@ -5,7 +5,7 @@ import PlayerList from '../PlayerList';
 import { usePlayerStore } from '@/stores/usePlayerStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useToast } from '@/hooks/use-toast';
-import { PlayerState } from '@/utils/types';
+import { PlayerState, SettingsState } from '@/utils/types';
 
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/stores/useSettingsStore');
@@ -40,13 +40,14 @@ describe('PlayerList', () => {
     setEditingPlayer: jest.fn(),
     editValue: '',
     setEditValue: jest.fn(),
-  } as unknown as PlayerState;
+  };
 
   beforeEach(() => {
-    (mockUsePlayerStore as jest.Mock).mockImplementation(() => mockPlayerStore);
-    (mockUseSettingsStore as jest.Mock).mockImplementation(() => ({
+    jest.resetAllMocks();
+    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore as PlayerState);
+    (mockUseSettingsStore as jest.Mock).mockReturnValue({
       guestHighlight: 'orange',
-    }));
+    } as SettingsState);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -60,14 +61,11 @@ describe('PlayerList', () => {
 
   test('edits player name', async () => {
     const mockSetEditingPlayer = jest.fn();
-    (usePlayerStore as jest.Mock).mockReturnValue({
-      players: mockPlayers,
-      updatePlayer: mockPlayerStore.updatePlayer,
+    (mockUsePlayerStore as jest.Mock).mockReturnValue({
+      ...mockPlayerStore,
       editingPlayer: { id: 1 },
       setEditingPlayer: mockSetEditingPlayer,
-      editValue: 'Test Player',
-      setEditValue: jest.fn(),
-    });
+    } as PlayerState);
 
     render(<PlayerList />);
     
@@ -80,14 +78,10 @@ describe('PlayerList', () => {
 
   test('removes player', async () => {
     const mockRemovePlayer = jest.fn();
-    (usePlayerStore as jest.Mock).mockReturnValue({
-      players: mockPlayers,
+    (mockUsePlayerStore as jest.Mock).mockReturnValue({
+      ...mockPlayerStore,
       removePlayer: mockRemovePlayer,
-      editingPlayer: null,
-      setEditingPlayer: jest.fn(),
-      editValue: '',
-      setEditValue: jest.fn(),
-    });
+    } as PlayerState);
 
     render(<PlayerList />);
     

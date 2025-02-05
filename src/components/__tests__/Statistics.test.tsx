@@ -29,10 +29,11 @@ describe('Statistics', () => {
     ],
     updateStatistic: jest.fn(),
     removeStatistic: jest.fn(),
-  } as unknown as StatisticsState;
+  };
 
   beforeEach(() => {
-    (mockUseStatisticsStore as jest.Mock).mockImplementation(() => mockStore);
+    jest.resetAllMocks();
+    (mockUseStatisticsStore as jest.Mock).mockReturnValue(mockStore as StatisticsState);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -46,10 +47,10 @@ describe('Statistics', () => {
 
   test('edits point record', async () => {
     const mockUpdateStatistic = jest.fn();
-    (useStatisticsStore as jest.Mock).mockReturnValue({
-      statistics: mockStore.statistics,
+    (mockUseStatisticsStore as jest.Mock).mockReturnValue({
+      ...mockStore,
       updateStatistic: mockUpdateStatistic,
-    });
+    } as StatisticsState);
 
     render(<Statistics />);
     
@@ -70,10 +71,10 @@ describe('Statistics', () => {
 
   test('removes statistic', async () => {
     const mockRemoveStatistic = jest.fn();
-    (useStatisticsStore as jest.Mock).mockReturnValue({
-      statistics: mockStore.statistics,
+    (mockUseStatisticsStore as jest.Mock).mockReturnValue({
+      ...mockStore,
       removeStatistic: mockRemoveStatistic,
-    });
+    } as StatisticsState);
 
     render(<Statistics />);
     
