@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import PlayerList from '../PlayerList';
 import { usePlayerStore } from '@/stores/usePlayerStore';
@@ -10,6 +9,9 @@ import { useToast } from '@/hooks/use-toast';
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/stores/useSettingsStore');
 jest.mock('@/hooks/use-toast');
+
+const mockUsePlayerStore = usePlayerStore as jest.MockedFunction<typeof usePlayerStore>;
+const mockUseSettingsStore = useSettingsStore as jest.MockedFunction<typeof useSettingsStore>;
 
 describe('PlayerList', () => {
   const mockPlayers = [
@@ -32,7 +34,7 @@ describe('PlayerList', () => {
   ];
 
   beforeEach(() => {
-    (usePlayerStore as jest.Mock).mockReturnValue({
+    mockUsePlayerStore.mockReturnValue({
       players: mockPlayers,
       updatePlayer: jest.fn(),
       removePlayer: jest.fn(),
@@ -41,9 +43,14 @@ describe('PlayerList', () => {
       editValue: '',
       setEditValue: jest.fn(),
     });
-    (useSettingsStore as jest.Mock).mockReturnValue({
+
+    mockUseSettingsStore.mockReturnValue({
       guestHighlight: 'orange',
+      ratingSystem: 'stars',
+      setGuestHighlight: jest.fn(),
+      setRatingSystem: jest.fn(),
     });
+
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

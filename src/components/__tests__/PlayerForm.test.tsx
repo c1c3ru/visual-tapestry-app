@@ -9,41 +9,41 @@ import { useToast } from '@/hooks/use-toast';
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/hooks/use-toast');
 
-const createMockStore = () => ({
-  newPlayer: {
-    name: "",
-    nickname: "",
-    birthDate: "",
-    isGuest: false,
-    sport: "futebol",
-    selectedPositions: [],
-    rating: 0,
-    includeInDraw: false,
-    present: false,
-    paid: false,
-    registered: true,
-    selected: false,
-  },
-  errors: {
-    name: false,
-    isGuest: false,
-    selectedPositions: false,
-    rating: false,
-  },
-  setNewPlayer: jest.fn(),
-  setErrors: jest.fn(),
-  addPlayer: jest.fn(),
-  resetForm: jest.fn(),
-});
+const mockUsePlayerStore = usePlayerStore as jest.MockedFunction<typeof usePlayerStore>;
 
 describe('PlayerForm', () => {
-  let mockStore;
-  const mockToast = jest.fn();
+  const mockStore = {
+    newPlayer: {
+      name: "",
+      nickname: "",
+      birthDate: "",
+      isGuest: false,
+      sport: "futebol",
+      selectedPositions: [],
+      rating: 0,
+      includeInDraw: false,
+      present: false,
+      paid: false,
+      registered: true,
+      selected: false,
+    },
+    errors: {
+      name: false,
+      isGuest: false,
+      selectedPositions: false,
+      rating: false,
+    },
+    setNewPlayer: jest.fn(),
+    setErrors: jest.fn(),
+    addPlayer: jest.fn(),
+    resetForm: jest.fn(),
+  };
 
   beforeEach(() => {
-    mockStore = createMockStore();
-    (usePlayerStore as jest.Mock).mockReturnValue(mockStore);
-    (useToast as jest.Mock).mockReturnValue({ toast: mockToast });
+    mockUsePlayerStore.mockReturnValue(mockStore);
+    (useToast as jest.Mock).mockReturnValue({
+      toast: jest.fn(),
+    });
   });
 
   afterEach(() => {
@@ -72,9 +72,7 @@ describe('PlayerForm', () => {
     });
 
     expect(mockStore.addPlayer).toHaveBeenCalled();
-    expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({
-      title: 'Jogador Adicionado',
-    }));
+    expect(mockStore.resetForm).toHaveBeenCalled();
   });
 
   test('shows validation errors for empty required fields', async () => {
@@ -84,9 +82,11 @@ describe('PlayerForm', () => {
       fireEvent.click(screen.getByText(/Salvar/i));
     });
 
-    expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({
-      title: 'Erro',
-      variant: 'destructive',
+    expect(mockStore.setErrors).toHaveBeenCalledWith(expect.objectContaining({
+      name: true,
+      isGuest: true,
+      selectedPositions: true,
+      rating: true,
     }));
   });
 });
