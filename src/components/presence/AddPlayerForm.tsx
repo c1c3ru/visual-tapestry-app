@@ -59,7 +59,7 @@ export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, playe
       nickname: "",
       birthDate: "",
       isGuest: false,
-      sport: "",
+      sport: "futebol",
       selectedPositions: [],
       rating: 1 as Rating,
       includeInDraw: false,
@@ -72,6 +72,11 @@ export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, playe
 
     onAddPlayer(newPlayer);
     form.reset();
+    
+    toast({
+      title: "Sucesso",
+      description: "Jogador adicionado com sucesso!",
+    });
   };
 
   return (
