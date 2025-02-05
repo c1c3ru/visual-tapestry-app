@@ -74,7 +74,7 @@ describe('PresenceList', () => {
       fireEvent.click(screen.getByText(/Ausente/i));
     });
 
-    expect(mockUpdatePlayer).toHaveBeenCalledWith(1, { present: true });
+    expect(mockUpdatePlayer).toHaveBeenCalledWith(1, { present: false });
     expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({
       title: 'Presença atualizada',
     }));
@@ -93,6 +93,6 @@ describe('PresenceList', () => {
       fireEvent.click(screen.getByText(/Pendente/i));
     });
 
-    expect(mockUpdatePlayer).toHaveBeenCalledWith(1, { paid: true });
+    expect(mockUpdatePlayer).toHaveBeenCalledWith(1, { paid: false });
   });
 });

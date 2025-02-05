@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import Statistics from '../Statistics';
 import { useStatisticsStore } from '@/stores/useStatisticsStore';
@@ -31,14 +32,10 @@ describe('Statistics', () => {
   } as unknown as StatisticsState;
 
   beforeEach(() => {
-    (mockUseStatisticsStore as jest.Mock).mockReturnValue(mockStore);
+    (mockUseStatisticsStore as jest.Mock).mockImplementation(() => mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   test('renders statistics correctly', () => {

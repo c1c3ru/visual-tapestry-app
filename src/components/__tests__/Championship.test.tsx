@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import Championship from '../pages/Championship';
 import { useTournamentStore } from '@/stores/useTournamentStore';
@@ -31,14 +30,10 @@ describe('Championship', () => {
   };
 
   beforeEach(() => {
-    (mockUseTournamentStore as jest.Mock).mockReturnValue(mockStore);
+    (mockUseTournamentStore as jest.Mock).mockImplementation(() => mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   test('renders championship form', () => {

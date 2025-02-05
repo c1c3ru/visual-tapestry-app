@@ -24,21 +24,14 @@ describe('TeamDraw', () => {
     teams: [],
     setTeams: jest.fn(),
     setPlayersPerTeam: jest.fn(),
-    namingOption: "numeric",
-    matchups: [],
-    setMatchups: jest.fn(),
   } as unknown as TeamDrawState;
 
   beforeEach(() => {
-    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore);
-    (mockUseTeamDrawStore as jest.Mock).mockReturnValue(mockTeamDrawStore);
+    (mockUsePlayerStore as jest.Mock).mockImplementation(() => mockPlayerStore);
+    (mockUseTeamDrawStore as jest.Mock).mockImplementation(() => mockTeamDrawStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   test('renders team draw interface', () => {

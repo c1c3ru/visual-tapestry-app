@@ -5,7 +5,7 @@ import PlayerList from '../PlayerList';
 import { usePlayerStore } from '@/stores/usePlayerStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useToast } from '@/hooks/use-toast';
-import { PlayerState, SettingsState } from '@/utils/types';
+import { PlayerState } from '@/utils/types';
 
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/stores/useSettingsStore');
@@ -38,21 +38,14 @@ describe('PlayerList', () => {
     removePlayer: jest.fn(),
   } as unknown as PlayerState;
 
-  const mockSettingsStore = {
-    guestHighlight: 'orange',
-    ratingSystem: 'stars',
-  } as unknown as SettingsState;
-
   beforeEach(() => {
-    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore);
-    (mockUseSettingsStore as jest.Mock).mockReturnValue(mockSettingsStore);
+    (mockUsePlayerStore as jest.Mock).mockImplementation(() => mockPlayerStore);
+    (mockUseSettingsStore as jest.Mock).mockImplementation(() => ({
+      guestHighlight: 'orange',
+    }));
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   test('renders player list correctly', () => {
