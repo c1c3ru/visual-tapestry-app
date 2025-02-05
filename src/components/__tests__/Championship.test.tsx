@@ -32,7 +32,7 @@ describe('Championship', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (mockUseTournamentStore as jest.Mock).mockReturnValue(mockStore as TournamentState);
+    (mockUseTournamentStore as unknown as jest.Mock).mockReturnValue(mockStore as TournamentState);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

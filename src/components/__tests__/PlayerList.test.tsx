@@ -44,8 +44,8 @@ describe('PlayerList', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore as PlayerState);
-    (mockUseSettingsStore as jest.Mock).mockReturnValue({
+    (mockUsePlayerStore as unknown as jest.Mock).mockReturnValue(mockPlayerStore as unknown as PlayerState);
+    (mockUseSettingsStore as unknown as jest.Mock).mockReturnValue({
       guestHighlight: 'orange',
     } as SettingsState);
     (useToast as jest.Mock).mockReturnValue({
@@ -61,11 +61,11 @@ describe('PlayerList', () => {
 
   test('edits player name', async () => {
     const mockSetEditingPlayer = jest.fn();
-    (mockUsePlayerStore as jest.Mock).mockReturnValue({
+    (mockUsePlayerStore as unknown as jest.Mock).mockReturnValue({
       ...mockPlayerStore,
       editingPlayer: { id: 1 },
       setEditingPlayer: mockSetEditingPlayer,
-    } as PlayerState);
+    } as unknown as PlayerState);
 
     render(<PlayerList />);
     
@@ -78,10 +78,10 @@ describe('PlayerList', () => {
 
   test('removes player', async () => {
     const mockRemovePlayer = jest.fn();
-    (mockUsePlayerStore as jest.Mock).mockReturnValue({
+    (mockUsePlayerStore as unknown as jest.Mock).mockReturnValue({
       ...mockPlayerStore,
       removePlayer: mockRemovePlayer,
-    } as PlayerState);
+    } as unknown as PlayerState);
 
     render(<PlayerList />);
     

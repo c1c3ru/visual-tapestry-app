@@ -40,8 +40,8 @@ describe('PresenceList', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore as PlayerState);
-    (mockUseSettingsStore as jest.Mock).mockReturnValue({
+    (mockUsePlayerStore as unknown as jest.Mock).mockReturnValue(mockPlayerStore as unknown as PlayerState);
+    (mockUseSettingsStore as unknown as jest.Mock).mockReturnValue({
       guestHighlight: 'orange',
     } as SettingsState);
     (useToast as jest.Mock).mockReturnValue({
@@ -56,10 +56,10 @@ describe('PresenceList', () => {
 
   test('toggles player presence', async () => {
     const mockUpdatePlayer = jest.fn();
-    (mockUsePlayerStore as jest.Mock).mockReturnValue({
+    (mockUsePlayerStore as unknown as jest.Mock).mockReturnValue({
       ...mockPlayerStore,
       updatePlayer: mockUpdatePlayer,
-    } as PlayerState);
+    } as unknown as PlayerState);
 
     render(<PresenceList />);
     
@@ -72,10 +72,10 @@ describe('PresenceList', () => {
 
   test('toggles payment status', async () => {
     const mockUpdatePlayer = jest.fn();
-    (mockUsePlayerStore as jest.Mock).mockReturnValue({
+    (mockUsePlayerStore as unknown as jest.Mock).mockReturnValue({
       ...mockPlayerStore,
       updatePlayer: mockUpdatePlayer,
-    } as PlayerState);
+    } as unknown as PlayerState);
 
     render(<PresenceList />);
     

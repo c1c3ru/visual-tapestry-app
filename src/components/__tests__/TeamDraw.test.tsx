@@ -28,8 +28,8 @@ describe('TeamDraw', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore as PlayerState);
-    (mockUseTeamDrawStore as jest.Mock).mockReturnValue(mockTeamDrawStore as TeamDrawState);
+    (mockUsePlayerStore as unknown as jest.Mock).mockReturnValue(mockPlayerStore as PlayerState);
+    (mockUseTeamDrawStore as unknown as jest.Mock).mockReturnValue(mockTeamDrawStore as unknown as TeamDrawState);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -43,10 +43,10 @@ describe('TeamDraw', () => {
 
   test('generates teams', async () => {
     const mockSetTeams = jest.fn();
-    (mockUseTeamDrawStore as jest.Mock).mockReturnValue({
+    (mockUseTeamDrawStore as unknown as jest.Mock).mockReturnValue({
       ...mockTeamDrawStore,
       setTeams: mockSetTeams,
-    } as TeamDrawState);
+    } as unknown as TeamDrawState);
 
     render(<TeamDraw />);
     
@@ -59,10 +59,10 @@ describe('TeamDraw', () => {
 
   test('changes players per team', async () => {
     const mockSetPlayersPerTeam = jest.fn();
-    (mockUseTeamDrawStore as jest.Mock).mockReturnValue({
+    (mockUseTeamDrawStore as unknown as jest.Mock).mockReturnValue({
       ...mockTeamDrawStore,
       setPlayersPerTeam: mockSetPlayersPerTeam,
-    } as TeamDrawState);
+    } as unknown as TeamDrawState);
 
     render(<TeamDraw />);
     
