@@ -2,6 +2,7 @@ import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 interface NumberRatingProps {
   rating: number;
@@ -9,7 +10,11 @@ interface NumberRatingProps {
 }
 
 const NumberRating: React.FC<NumberRatingProps> = ({ rating, onRatingChange }) => {
-  const color = rating <= 3 ? 'text-destructive' : rating <= 7 ? 'text-primary' : 'text-blue-500';
+  const getProgressColor = (rating: number) => {
+    if (rating <= 3) return 'bg-destructive';
+    if (rating <= 6) return 'bg-primary';
+    return 'bg-blue-500';
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -21,7 +26,7 @@ const NumberRating: React.FC<NumberRatingProps> = ({ rating, onRatingChange }) =
   return (
     <Card>
       <CardContent className="pt-6">
-        <div className="space-y-2">
+        <div className="space-y-4">
           <Label htmlFor="rating">Avaliação (1-10)</Label>
           <Input
             id="rating"
@@ -30,9 +35,17 @@ const NumberRating: React.FC<NumberRatingProps> = ({ rating, onRatingChange }) =
             min={1}
             max={10}
             onChange={handleChange}
-            className={color}
+            className={rating <= 3 ? 'text-destructive' : rating <= 6 ? 'text-primary' : 'text-blue-500'}
           />
-          <span className={`text-sm ${color}`}>Nota atual: {rating}</span>
+          <div className="w3-light-grey rounded-lg overflow-hidden">
+            <div 
+              className={`h-6 ${getProgressColor(rating)}`} 
+              style={{ width: `${(rating / 10) * 100}%` }}
+            />
+          </div>
+          <span className={rating <= 3 ? 'text-destructive' : rating <= 6 ? 'text-primary' : 'text-blue-500'}>
+            Nota atual: {rating}
+          </span>
         </div>
       </CardContent>
     </Card>
