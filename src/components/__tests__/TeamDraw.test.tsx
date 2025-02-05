@@ -6,60 +6,40 @@ import TeamDraw from '../TeamDraw';
 import { useTeamDrawStore } from '@/stores/useTeamDrawStore';
 import { usePlayerStore } from '@/stores/usePlayerStore';
 import { useToast } from '@/hooks/use-toast';
+import { PlayerState, TeamDrawState } from '@/utils/types';
 
 jest.mock('@/stores/useTeamDrawStore');
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/hooks/use-toast');
 
+const mockUseTeamDrawStore = useTeamDrawStore as jest.MockedFunction<typeof useTeamDrawStore>;
+const mockUsePlayerStore = usePlayerStore as jest.MockedFunction<typeof usePlayerStore>;
+
 describe('TeamDraw', () => {
-  const mockPlayers = [
-    {
-      id: 1,
-      name: 'João',
-      selectedPositions: ['Goleiro'],
-      rating: 5,
-      includeInDraw: true,
-      isGuest: false,
-      nickname: '',
-      birthDate: '',
-      sport: 'futebol',
-      createdAt: '',
-      present: true,
-      paid: true,
-      registered: true,
-      selected: false,
-    },
-    {
-      id: 2,
-      name: 'Pedro',
-      selectedPositions: ['Atacante'],
-      rating: 4,
-      includeInDraw: true,
-      isGuest: false,
-      nickname: '',
-      birthDate: '',
-      sport: 'futebol',
-      createdAt: '',
-      present: true,
-      paid: true,
-      registered: true,
-      selected: false,
-    }
-  ];
+  const mockPlayerStore: Partial<PlayerState> = {
+    players: [],
+  };
+
+  const mockTeamDrawStore: Partial<TeamDrawState> = {
+    playersPerTeam: 5,
+    teams: [],
+    setTeams: jest.fn(),
+    setPlayersPerTeam: jest.fn(),
+    namingOption: "numeric",
+    matchups: [],
+    setMatchups: jest.fn(),
+  };
 
   beforeEach(() => {
-    (usePlayerStore as jest.Mock).mockReturnValue({
-      players: mockPlayers,
-    });
-    (useTeamDrawStore as jest.Mock).mockReturnValue({
-      playersPerTeam: 5,
-      teams: [],
-      setTeams: jest.fn(),
-      setPlayersPerTeam: jest.fn(),
-    });
+    (mockUsePlayerStore as jest.Mock).mockImplementation(() => mockPlayerStore);
+    (mockUseTeamDrawStore as jest.Mock).mockImplementation(() => mockTeamDrawStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   test('renders team draw interface', () => {
@@ -70,7 +50,7 @@ describe('TeamDraw', () => {
 
   test('generates teams', async () => {
     const mockSetTeams = jest.fn();
-    (useTeamDrawStore as jest.Mock).mockReturnValue({
+    (mockUseTeamDrawStore as jest.Mock).mockReturnValue({
       playersPerTeam: 2,
       teams: [],
       setTeams: mockSetTeams,
@@ -88,7 +68,7 @@ describe('TeamDraw', () => {
 
   test('changes players per team', async () => {
     const mockSetPlayersPerTeam = jest.fn();
-    (useTeamDrawStore as jest.Mock).mockReturnValue({
+    (mockUseTeamDrawStore as jest.Mock).mockReturnValue({
       playersPerTeam: 5,
       teams: [],
       setTeams: jest.fn(),
@@ -107,11 +87,11 @@ describe('TeamDraw', () => {
 
   test('displays generated teams', () => {
     const mockTeams = [
-      [mockPlayers[0]],
-      [mockPlayers[1]]
+      [mockPlayerStore.players[0]],
+      [mockPlayerStore.players[1]]
     ];
     
-    (useTeamDrawStore as jest.Mock).mockReturnValue({
+    (mockUseTeamDrawStore as jest.Mock).mockReturnValue({
       playersPerTeam: 1,
       teams: mockTeams,
       setTeams: jest.fn(),

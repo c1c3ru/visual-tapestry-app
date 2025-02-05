@@ -9,28 +9,26 @@ import { useToast } from '@/hooks/use-toast';
 jest.mock('@/stores/useStatisticsStore');
 jest.mock('@/hooks/use-toast');
 
+const mockUseStatisticsStore = useStatisticsStore as jest.MockedFunction<typeof useStatisticsStore>;
+
 describe('Statistics', () => {
-  const mockStatistics = [
-    {
-      name: 'Torneio 1',
-      date: '2024-01-01',
-      attendanceCount: 10,
-      pointRecords: [
-        { points: 3, date: '2024-01-01' }
-      ],
-      lastUpdated: '2024-01-01',
-    }
-  ];
+  const mockStore = {
+    statistics: [],
+    updateStatistic: jest.fn(),
+    removeStatistic: jest.fn(),
+    setStatistics: jest.fn(),
+    addStatistic: jest.fn(),
+  };
 
   beforeEach(() => {
-    (useStatisticsStore as jest.Mock).mockReturnValue({
-      statistics: mockStatistics,
-      updateStatistic: jest.fn(),
-      removeStatistic: jest.fn(),
-    });
+    (mockUseStatisticsStore as jest.Mock).mockImplementation(() => mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   test('renders statistics correctly', () => {
@@ -42,7 +40,7 @@ describe('Statistics', () => {
   test('edits point record', async () => {
     const mockUpdateStatistic = jest.fn();
     (useStatisticsStore as jest.Mock).mockReturnValue({
-      statistics: mockStatistics,
+      statistics: mockStore.statistics,
       updateStatistic: mockUpdateStatistic,
     });
 
@@ -66,7 +64,7 @@ describe('Statistics', () => {
   test('removes statistic', async () => {
     const mockRemoveStatistic = jest.fn();
     (useStatisticsStore as jest.Mock).mockReturnValue({
-      statistics: mockStatistics,
+      statistics: mockStore.statistics,
       removeStatistic: mockRemoveStatistic,
     });
 

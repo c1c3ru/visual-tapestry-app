@@ -1,48 +1,41 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import PresenceList from '../PresenceList';
 import { usePlayerStore } from '@/stores/usePlayerStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useToast } from '@/hooks/use-toast';
+import { PlayerState, SettingsState } from '@/utils/types';
 
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/stores/useSettingsStore');
 jest.mock('@/hooks/use-toast');
 
-describe('PresenceList', () => {
-  const mockPlayers = [
-    {
-      id: 1,
-      name: 'João',
-      present: false,
-      paid: false,
-      isGuest: false,
-      nickname: '',
-      birthDate: '',
-      sport: 'futebol',
-      selectedPositions: [],
-      rating: 1,
-      includeInDraw: false,
-      createdAt: '',
-      registered: true,
-      selected: false,
-    }
-  ];
+const mockUsePlayerStore = usePlayerStore as jest.MockedFunction<typeof usePlayerStore>;
+const mockUseSettingsStore = useSettingsStore as jest.MockedFunction<typeof useSettingsStore>;
 
-  const mockToast = jest.fn();
+describe('PresenceList', () => {
+  const mockPlayerStore: Partial<PlayerState> = {
+    players: [],
+    updatePlayer: jest.fn(),
+    removePlayer: jest.fn(),
+  };
+
+  const mockSettingsStore: Partial<SettingsState> = {
+    guestHighlight: 'orange',
+    ratingSystem: 'stars',
+  };
 
   beforeEach(() => {
-    (usePlayerStore as jest.Mock).mockReturnValue({
-      players: mockPlayers,
-      updatePlayer: jest.fn(),
-      addPlayer: jest.fn(),
+    (mockUsePlayerStore as jest.Mock).mockImplementation(() => mockPlayerStore);
+    (mockUseSettingsStore as jest.Mock).mockImplementation(() => mockSettingsStore);
+    (useToast as jest.Mock).mockReturnValue({
+      toast: jest.fn(),
     });
-    (useSettingsStore as jest.Mock).mockReturnValue({
-      guestHighlight: 'orange',
-    });
-    (useToast as jest.Mock).mockReturnValue({ toast: mockToast });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   test('renders player list correctly', () => {
