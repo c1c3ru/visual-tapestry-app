@@ -53,7 +53,10 @@ describe('AddPlayerForm', () => {
     fireEvent.click(submitButton);
     
     await waitFor(() => {
-      expect(mockOnAddPlayer).toHaveBeenCalled();
+      expect(mockOnAddPlayer).toHaveBeenCalledWith(expect.objectContaining({
+        name: 'Novo Jogador',
+        sport: 'futebol',
+      }));
     });
   });
 
@@ -88,6 +91,22 @@ describe('AddPlayerForm', () => {
       expect(toast).toHaveBeenCalledWith(expect.objectContaining({
         title: "Erro",
         description: "O nome do jogador não pode estar vazio.",
+      }));
+    });
+  });
+
+  it('trims whitespace from player names', async () => {
+    render(<AddPlayerForm onAddPlayer={mockOnAddPlayer} players={[]} />);
+    
+    const input = screen.getByPlaceholderText('Digite o nome do novo jogador...');
+    fireEvent.change(input, { target: { value: '  Novo Jogador  ' } });
+    
+    const submitButton = screen.getByRole('button', { name: /adicionar jogador/i });
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(mockOnAddPlayer).toHaveBeenCalledWith(expect.objectContaining({
+        name: 'Novo Jogador',
       }));
     });
   });
