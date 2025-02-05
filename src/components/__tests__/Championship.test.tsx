@@ -4,38 +4,49 @@ import userEvent from '@testing-library/user-event';
 import Championship from '../pages/Championship';
 import { useTournamentStore } from '@/stores/useTournamentStore';
 import { useToast } from '@/hooks/use-toast';
+import { act } from 'react-dom/test-utils';
 
-// Mock dos hooks
-jest.mock('@/stores/useTournamentStore');
-jest.mock('@/hooks/use-toast');
+// Properly type the mock store
+const createMockStore = () => ({
+  tournamentName: '',
+  tournamentType: 'league' as const,
+  teamName: '',
+  responsible: '',
+  teams: [],
+  groups: [],
+  knockoutMatches: null,
+  setTournamentName: jest.fn(),
+  setTournamentType: jest.fn(),
+  setTeamName: jest.fn(),
+  setResponsible: jest.fn(),
+  addTeam: jest.fn(),
+  removeTeam: jest.fn(),
+  generateMatches: jest.fn(),
+});
+
+// Mock the hooks
+jest.mock('@/hooks/use-toast', () => ({
+  useToast: jest.fn(),
+}));
+
+jest.mock('@/stores/useTournamentStore', () => ({
+  useTournamentStore: jest.fn(),
+}));
 
 describe('Championship Component', () => {
+  let mockStore: ReturnType<typeof createMockStore>;
   const mockToast = jest.fn();
-  const mockAddTeam = jest.fn();
-  const mockRemoveTeam = jest.fn();
-  const mockGenerateMatches = jest.fn();
 
   beforeEach(() => {
-    (useTournamentStore as jest.Mock).mockReturnValue({
-      tournamentName: '',
-      tournamentType: 'league',
-      teamName: '',
-      responsible: '',
-      teams: [],
-      groups: [],
-      knockoutMatches: null,
-      setTournamentName: jest.fn(),
-      setTournamentType: jest.fn(),
-      setTeamName: jest.fn(),
-      setResponsible: jest.fn(),
-      addTeam: mockAddTeam,
-      removeTeam: mockRemoveTeam,
-      generateMatches: mockGenerateMatches,
-    });
-
+    mockStore = createMockStore();
     (useToast as jest.Mock).mockReturnValue({
       toast: mockToast,
     });
+    (useTournamentStore as jest.Mock).mockReturnValue(mockStore);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   test('renders championship form', () => {
@@ -60,11 +71,13 @@ describe('Championship Component', () => {
     const responsibleInput = screen.getByLabelText(/Responsável/i);
     const addButton = screen.getByText(/Adicionar Time/i);
 
-    await userEvent.type(teamNameInput, 'Time Teste');
-    await userEvent.type(responsibleInput, 'Responsável Teste');
-    fireEvent.click(addButton);
+    await act(async () => {
+      await userEvent.type(teamNameInput, 'Time Teste');
+      await userEvent.type(responsibleInput, 'Responsável Teste');
+      fireEvent.click(addButton);
+    });
 
-    expect(mockAddTeam).toHaveBeenCalled();
+    expect(mockStore.addTeam).toHaveBeenCalled();
     expect(mockToast).toHaveBeenCalledWith({
       title: 'Time Adicionado',
       description: 'Novo time foi adicionado com sucesso.',
@@ -72,15 +85,45 @@ describe('Championship Component', () => {
   });
 
   test('generates matches with minimum teams', async () => {
+    const mockTeams = Array(4).fill({ id: '1', name: 'Time', responsible: 'Resp' });
+    mockStore.teams = mockTeams;
     (useTournamentStore as jest.Mock).mockReturnValue({
-      ...useTournamentStore(),
-      teams: Array(4).fill({ id: '1', name: 'Time', responsible: 'Resp' }),
+      ...mockStore,
+      teams: mockTeams,
     });
 
     render(<Championship />);
     const generateButton = screen.getByText(/Gerar Partidas/i);
-    fireEvent.click(generateButton);
+    
+    await act(async () => {
+      fireEvent.click(generateButton);
+    });
 
-    expect(mockGenerateMatches).toHaveBeenCalled();
+    expect(mockStore.generateMatches).toHaveBeenCalled();
+  });
+
+  test('prevents adding team when fields are empty', async () => {
+    render(<Championship />);
+    const addButton = screen.getByText(/Adicionar Time/i);
+
+    await act(async () => {
+      fireEvent.click(addButton);
+    });
+
+    expect(mockToast).toHaveBeenCalledWith({
+      title: 'Erro ao adicionar time',
+      description: 'Preencha todos os campos obrigatórios.',
+      variant: 'destructive',
+    });
+    expect(mockStore.addTeam).not.toHaveBeenCalled();
+  });
+
+  test('shows validation error when teams count is invalid', async () => {
+    mockStore.teams = Array(3).fill({ id: '1', name: 'Time', responsible: 'Resp' });
+    (useTournamentStore as jest.Mock).mockReturnValue(mockStore);
+
+    render(<Championship />);
+    
+    expect(screen.getByText(/Mínimo de 4 times necessário/i)).toBeInTheDocument();
   });
 });
