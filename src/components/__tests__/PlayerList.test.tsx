@@ -36,6 +36,10 @@ describe('PlayerList', () => {
     players: mockPlayers,
     updatePlayer: jest.fn(),
     removePlayer: jest.fn(),
+    editingPlayer: null,
+    setEditingPlayer: jest.fn(),
+    editValue: '',
+    setEditValue: jest.fn(),
   } as unknown as PlayerState;
 
   beforeEach(() => {
@@ -55,11 +59,10 @@ describe('PlayerList', () => {
   });
 
   test('edits player name', async () => {
-    const mockUpdatePlayer = jest.fn();
     const mockSetEditingPlayer = jest.fn();
     (usePlayerStore as jest.Mock).mockReturnValue({
       players: mockPlayers,
-      updatePlayer: mockUpdatePlayer,
+      updatePlayer: mockPlayerStore.updatePlayer,
       editingPlayer: { id: 1 },
       setEditingPlayer: mockSetEditingPlayer,
       editValue: 'Test Player',
