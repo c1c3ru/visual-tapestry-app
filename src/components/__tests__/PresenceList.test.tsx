@@ -5,7 +5,7 @@ import PresenceList from '../PresenceList';
 import { usePlayerStore } from '@/stores/usePlayerStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useToast } from '@/hooks/use-toast';
-import { PlayerState, SettingsState, Player } from '@/utils/types';
+import { PlayerState, SettingsState } from '@/utils/types';
 
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/stores/useSettingsStore');
@@ -13,13 +13,14 @@ jest.mock('@/hooks/use-toast');
 
 const mockUsePlayerStore = usePlayerStore as jest.MockedFunction<typeof usePlayerStore>;
 const mockUseSettingsStore = useSettingsStore as jest.MockedFunction<typeof useSettingsStore>;
+const mockToast = jest.fn();
 
-const mockPlayers: Player[] = [
-  {
+describe('PresenceList', () => {
+  const mockPlayers = [{
     id: 1,
-    name: 'João',
-    nickname: 'Jo',
-    birthDate: '1990-01-01',
+    name: 'Test Player',
+    nickname: 'Test',
+    birthDate: '2000-01-01',
     isGuest: false,
     sport: 'futsal',
     selectedPositions: ['Goleiro'],
@@ -30,26 +31,22 @@ const mockPlayers: Player[] = [
     present: true,
     paid: true,
     registered: true
-  }
-];
+  }];
 
-const mockToast = jest.fn();
-
-describe('PresenceList', () => {
-  const mockPlayerStore: Partial<PlayerState> = {
+  const mockPlayerStore = {
     players: mockPlayers,
     updatePlayer: jest.fn(),
     removePlayer: jest.fn(),
-  };
+  } as unknown as PlayerState;
 
-  const mockSettingsStore: Partial<SettingsState> = {
+  const mockSettingsStore = {
     guestHighlight: 'orange',
     ratingSystem: 'stars',
-  };
+  } as unknown as SettingsState;
 
   beforeEach(() => {
-    mockUsePlayerStore.mockReturnValue(mockPlayerStore as PlayerState);
-    mockUseSettingsStore.mockReturnValue(mockSettingsStore as SettingsState);
+    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore);
+    (mockUseSettingsStore as jest.Mock).mockReturnValue(mockSettingsStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: mockToast,
     });
@@ -61,7 +58,7 @@ describe('PresenceList', () => {
 
   test('renders player list correctly', () => {
     render(<PresenceList />);
-    expect(screen.getByText('João')).toBeInTheDocument();
+    expect(screen.getByText('Test Player')).toBeInTheDocument();
   });
 
   test('toggles player presence', async () => {

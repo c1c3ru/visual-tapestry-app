@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import TeamDraw from '../TeamDraw';
 import { useTeamDrawStore } from '@/stores/useTeamDrawStore';
@@ -16,11 +15,11 @@ const mockUseTeamDrawStore = useTeamDrawStore as jest.MockedFunction<typeof useT
 const mockUsePlayerStore = usePlayerStore as jest.MockedFunction<typeof usePlayerStore>;
 
 describe('TeamDraw', () => {
-  const mockPlayerStore: Partial<PlayerState> = {
+  const mockPlayerStore = {
     players: [],
-  };
+  } as unknown as PlayerState;
 
-  const mockTeamDrawStore: Partial<TeamDrawState> = {
+  const mockTeamDrawStore = {
     playersPerTeam: 5,
     teams: [],
     setTeams: jest.fn(),
@@ -28,11 +27,11 @@ describe('TeamDraw', () => {
     namingOption: "numeric",
     matchups: [],
     setMatchups: jest.fn(),
-  };
+  } as unknown as TeamDrawState;
 
   beforeEach(() => {
-    mockUsePlayerStore.mockReturnValue(mockPlayerStore as PlayerState);
-    mockUseTeamDrawStore.mockReturnValue(mockTeamDrawStore as TeamDrawState);
+    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore);
+    (mockUseTeamDrawStore as jest.Mock).mockReturnValue(mockTeamDrawStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

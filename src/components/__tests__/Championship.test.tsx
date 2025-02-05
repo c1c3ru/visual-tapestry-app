@@ -13,9 +13,9 @@ jest.mock('@/hooks/use-toast');
 const mockUseTournamentStore = useTournamentStore as jest.MockedFunction<typeof useTournamentStore>;
 
 describe('Championship', () => {
-  const mockStore: TournamentState = {
+  const mockStore = {
     tournamentName: '',
-    tournamentType: 'league',
+    tournamentType: 'league' as const,
     teamName: '',
     responsible: '',
     teams: [],
@@ -31,7 +31,7 @@ describe('Championship', () => {
   };
 
   beforeEach(() => {
-    mockUseTournamentStore.mockReturnValue(mockStore);
+    (mockUseTournamentStore as jest.Mock).mockReturnValue(mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

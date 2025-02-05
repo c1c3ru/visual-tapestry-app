@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import Statistics from '../Statistics';
 import { useStatisticsStore } from '@/stores/useStatisticsStore';
@@ -13,7 +12,7 @@ jest.mock('@/hooks/use-toast');
 const mockUseStatisticsStore = useStatisticsStore as jest.MockedFunction<typeof useStatisticsStore>;
 
 describe('Statistics', () => {
-  const mockStore: StatisticsState = {
+  const mockStore = {
     statistics: [
       {
         id: 1,
@@ -29,10 +28,10 @@ describe('Statistics', () => {
     ],
     updateStatistic: jest.fn(),
     removeStatistic: jest.fn(),
-  };
+  } as unknown as StatisticsState;
 
   beforeEach(() => {
-    mockUseStatisticsStore.mockReturnValue(mockStore);
+    (mockUseStatisticsStore as jest.Mock).mockReturnValue(mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

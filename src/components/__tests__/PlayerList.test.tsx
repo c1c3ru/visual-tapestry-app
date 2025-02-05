@@ -5,7 +5,7 @@ import PlayerList from '../PlayerList';
 import { usePlayerStore } from '@/stores/usePlayerStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useToast } from '@/hooks/use-toast';
-import { PlayerState, SettingsState, Player } from '@/utils/types';
+import { PlayerState, SettingsState } from '@/utils/types';
 
 jest.mock('@/stores/usePlayerStore');
 jest.mock('@/stores/useSettingsStore');
@@ -14,12 +14,12 @@ jest.mock('@/hooks/use-toast');
 const mockUsePlayerStore = usePlayerStore as jest.MockedFunction<typeof usePlayerStore>;
 const mockUseSettingsStore = useSettingsStore as jest.MockedFunction<typeof useSettingsStore>;
 
-const mockPlayers: Player[] = [
-  {
+describe('PlayerList', () => {
+  const mockPlayers = [{
     id: 1,
-    name: 'João',
-    nickname: 'Jo',
-    birthDate: '1990-01-01',
+    name: 'Test Player',
+    nickname: 'Test',
+    birthDate: '2000-01-01',
     isGuest: false,
     sport: 'futsal',
     selectedPositions: ['Goleiro'],
@@ -30,24 +30,22 @@ const mockPlayers: Player[] = [
     present: true,
     paid: true,
     registered: true
-  }
-];
+  }];
 
-describe('PlayerList', () => {
-  const mockPlayerStore: Partial<PlayerState> = {
+  const mockPlayerStore = {
     players: mockPlayers,
     updatePlayer: jest.fn(),
     removePlayer: jest.fn(),
-  };
+  } as unknown as PlayerState;
 
-  const mockSettingsStore: Partial<SettingsState> = {
+  const mockSettingsStore = {
     guestHighlight: 'orange',
     ratingSystem: 'stars',
-  };
+  } as unknown as SettingsState;
 
   beforeEach(() => {
-    mockUsePlayerStore.mockReturnValue(mockPlayerStore as PlayerState);
-    mockUseSettingsStore.mockReturnValue(mockSettingsStore as SettingsState);
+    (mockUsePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore);
+    (mockUseSettingsStore as jest.Mock).mockReturnValue(mockSettingsStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -59,7 +57,7 @@ describe('PlayerList', () => {
 
   test('renders player list correctly', () => {
     render(<PlayerList />);
-    expect(screen.getByText('João')).toBeInTheDocument();
+    expect(screen.getByText('Test Player')).toBeInTheDocument();
     expect(screen.getByText(/Goleiro/i)).toBeInTheDocument();
   });
 
@@ -71,7 +69,7 @@ describe('PlayerList', () => {
       updatePlayer: mockUpdatePlayer,
       editingPlayer: { id: 1 },
       setEditingPlayer: mockSetEditingPlayer,
-      editValue: 'João Silva',
+      editValue: 'Test Player',
       setEditValue: jest.fn(),
     });
 
