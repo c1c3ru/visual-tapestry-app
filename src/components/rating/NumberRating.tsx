@@ -1,8 +1,8 @@
+
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 
 interface NumberRatingProps {
   rating: number;
@@ -37,7 +37,7 @@ const NumberRating: React.FC<NumberRatingProps> = ({ rating, onRatingChange }) =
             onChange={handleChange}
             className={rating <= 3 ? 'text-destructive' : rating <= 6 ? 'text-primary' : 'text-blue-500'}
           />
-          <div className="w3-light-grey rounded-lg overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-lg overflow-hidden">
             <div 
               className={`h-6 ${getProgressColor(rating)}`} 
               style={{ width: `${(rating / 10) * 100}%` }}

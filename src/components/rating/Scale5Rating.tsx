@@ -1,8 +1,8 @@
+
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 
 interface Scale5RatingProps {
   rating: number;
@@ -37,7 +37,7 @@ const Scale5Rating: React.FC<Scale5RatingProps> = ({ rating, onRatingChange }) =
             onChange={handleChange}
             className={rating <= 2 ? 'text-destructive' : rating <= 4 ? 'text-primary' : 'text-blue-500'}
           />
-          <div className="w3-light-grey rounded-lg overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-lg overflow-hidden">
             <div 
               className={`h-6 ${getProgressColor(rating)}`} 
               style={{ width: `${(rating / 5) * 100}%` }}

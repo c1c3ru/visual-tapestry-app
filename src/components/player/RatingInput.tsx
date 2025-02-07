@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Star, StarHalf } from 'lucide-react';
 import { Rating } from '@/utils/types';
-import NumberRating from '../../../public/NumberRating';
-import Scale5Rating from '../../../public/Scale5Rating';
-import StarRating from '../../../public/StarRating';
+import NumberRating from '../rating/NumberRating';
+import Scale5Rating from '../rating/Scale5Rating';
+import StarRating from '../rating/StarRating';
 
 interface RatingInputProps {
   ratingSystem: string;
