@@ -20,7 +20,7 @@ export const BackToDashboard = () => {
             className="flex items-center gap-2"
           >
             <ChevronLeft className="h-4 w-4" />
-            <span>Back to Dashboard</span>
+            <span>Volta ao Menu</span>
           </Button>
         </Link>
       </Card>

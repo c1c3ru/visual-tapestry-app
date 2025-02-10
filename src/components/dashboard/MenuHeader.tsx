@@ -1,16 +1,16 @@
 
 import React from 'react';
 
-interface DashboardHeaderProps {
-  dashboardTitle: string;
+interface MenuHeaderProps {
+  menuTitle: string;
   isAdmin: boolean;
-  setDashboardTitle: (title: string) => void;
+  setMenuTitle: (title: string) => void;
 }
 
-export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
-  dashboardTitle,
+export const MenuHeader: React.FC<MenuHeaderProps> = ({
+  menuTitle,
   isAdmin,
-  setDashboardTitle,
+  setMenuTitle,
 }) => {
   return (
     <div className="mb-8">
@@ -18,12 +18,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         {isAdmin ? (
           <input
             type="text"
-            value={dashboardTitle}
-            onChange={(e) => setDashboardTitle(e.target.value)}
+            value={menuTitle}
+            onChange={(e) => setMenuTitle(e.target.value)}
             className="bg-transparent border-b border-transparent hover:border-gray-300 focus:border-gray-500 focus:outline-none"
           />
         ) : (
-          dashboardTitle
+          menuTitle
         )}
       </h1>
     </div>

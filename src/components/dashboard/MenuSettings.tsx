@@ -3,14 +3,14 @@ import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 
-interface DashboardSettingsProps {
+interface MenuSettingsProps {
   selectedRatingSystem: string;
   setSelectedRatingSystem: (system: string) => void;
   guestHighlight: string;
   setGuestHighlight: (highlight: string) => void;
 }
 
-export const DashboardSettings: React.FC<DashboardSettingsProps> = ({
+export const MenuSettings: React.FC<MenuSettingsProps> = ({
   selectedRatingSystem,
   setSelectedRatingSystem,
   guestHighlight,
