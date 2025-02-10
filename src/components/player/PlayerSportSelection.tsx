@@ -8,12 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
+import { Sport } from "@/utils/types";
 
 interface PlayerSportSelectionProps {
   sport: Sport;
-  onSportChange: (value: string) => void;
+  onSportChange: (value: Sport) => void;
 }
 
 export const PlayerSportSelection = ({

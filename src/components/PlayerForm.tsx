@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { Player, Rating } from "@/utils/types";
+import { Player, Rating, Sport } from "@/utils/types";
 import { RatingInput } from "./player/RatingInput";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
@@ -27,8 +27,8 @@ const PlayerForm = () => {
     });
   };
 
-  const handleSelectChange = (value: string) => {
-    setNewPlayer({ sport: value as any, selectedPositions: [] });
+  const handleSelectChange = (value: Sport) => {
+    setNewPlayer({ sport: value, selectedPositions: [] });
     toast({
       title: "Esporte Selecionado",
       description: `${value} foi selecionado como esporte.`,
@@ -114,13 +114,13 @@ const PlayerForm = () => {
           />
 
           <PlayerSportSelection
-            sport={newPlayer.sport}
+            sport={newPlayer.sport as Sport}
             onSportChange={handleSelectChange}
           />
 
           <div>
             <PlayerPositions
-              sport={newPlayer.sport}
+              sport={newPlayer.sport as Sport}
               selectedPositions={newPlayer.selectedPositions}
               onPositionChange={handlePositionChange}
             />
