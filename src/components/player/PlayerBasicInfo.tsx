@@ -1,69 +1,94 @@
+
 import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface PlayerBasicInfoProps {
-  form: any;
+  name: string;
+  nickname: string;
+  birthDate: string;
+  isGuest: boolean | null;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onGuestChange: (checked: boolean) => void;
+  errors: {
+    name: boolean;
+    isGuest: boolean;
+  };
 }
 
-export const PlayerBasicInfo: React.FC<PlayerBasicInfoProps> = ({ form }) => {
+export const PlayerBasicInfo = ({
+  name,
+  nickname,
+  birthDate,
+  isGuest,
+  onChange,
+  onGuestChange,
+  errors
+}: PlayerBasicInfoProps) => {
   return (
     <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Nome</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder="Nome do jogador" />
-            </FormControl>
-          </FormItem>
-        )}
-      />
+      <div>
+        <Label htmlFor="name">Nome</Label>
+        <Input
+          id="name"
+          name="name"
+          value={name}
+          onChange={onChange}
+          placeholder="Nome do jogador"
+          className={errors.name ? "border-red-500" : ""}
+        />
+        {errors.name && <p className="text-red-500">Nome é obrigatório.</p>}
+      </div>
 
-      <FormField
-        control={form.control}
-        name="nickname"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Apelido</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder="Apelido do jogador" />
-            </FormControl>
-          </FormItem>
-        )}
-      />
+      <div>
+        <Label htmlFor="nickname">Apelido</Label>
+        <Input
+          id="nickname"
+          name="nickname"
+          value={nickname}
+          onChange={onChange}
+          placeholder="Apelido do jogador"
+        />
+      </div>
 
-      <FormField
-        control={form.control}
-        name="birthDate"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Data de Nascimento</FormLabel>
-            <FormControl>
-              <Input type="date" {...field} />
-            </FormControl>
-          </FormItem>
-        )}
-      />
+      <div>
+        <Label htmlFor="birthDate">Data de Nascimento</Label>
+        <Input
+          id="birthDate"
+          name="birthDate"
+          type="date"
+          value={birthDate}
+          onChange={onChange}
+        />
+      </div>
 
-      <FormField
-        control={form.control}
-        name="isGuest"
-        render={({ field }) => (
-          <FormItem className="flex items-center space-x-2">
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-            </FormControl>
-            <FormLabel>Convidado</FormLabel>
-          </FormItem>
-        )}
-      />
+      <div>
+        <Label>É convidado?</Label>
+        <div className="flex gap-4">
+          <div className="flex items-center">
+            <Checkbox
+              id="isGuestYes"
+              name="isGuest"
+              checked={isGuest === true}
+              onCheckedChange={(checked) => onGuestChange(checked as boolean)}
+              className={errors.isGuest ? "border-red-500" : ""}
+            />
+            <Label htmlFor="isGuestYes" className="ml-2">Sim</Label>
+          </div>
+          <div className="flex items-center">
+            <Checkbox
+              id="isGuestNo"
+              name="isGuest"
+              checked={isGuest === false}
+              onCheckedChange={(checked) => onGuestChange(!checked as boolean)}
+              className={errors.isGuest ? "border-red-500" : ""}
+            />
+            <Label htmlFor="isGuestNo" className="ml-2">Não</Label>
+          </div>
+        </div>
+        {errors.isGuest && <p className="text-red-500">Marcar como convidado é obrigatório.</p>}
+      </div>
     </div>
   );
 };
