@@ -1,56 +1,23 @@
+
 import React from "react";
-import { Star, Check, Search, ArrowUpDown, Edit2, Save, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import BackToDashboard from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useToast } from "@/hooks/use-toast";
-import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import clsx from "clsx";
+import { PlayerListContainer } from "./player/PlayerListContainer";
 
 const PlayerList = () => {
   const { players, updatePlayer, removePlayer, editingPlayer, setEditingPlayer, editValue, setEditValue } = usePlayerStore();
   const { guestHighlight } = useSettingsStore();
   const { toast } = useToast();
 
-  const getGuestHighlightClass = (isGuest: boolean) => {
-    if (!isGuest) return "";
-    
-    return clsx({
-      'bg-orange-100': guestHighlight === 'orange',
-      'bg-purple-100': guestHighlight === 'purple',
-      'bg-pink-100': guestHighlight === 'pink',
-      'font-bold': guestHighlight === 'bold',
-      'italic': guestHighlight === 'italic',
-    });
-  };
-
   const handleEdit = (id: number) => {
     const player = players.find((p) => p.id === id);
     if (player) {
       setEditingPlayer({ id });
       setEditValue(player.name);
-    }
-  };
-
-  const handleSave = () => {
-    if (editingPlayer && editValue.trim()) {
-      const playerToUpdate = players.find(p => p.id === editingPlayer.id);
-      if (playerToUpdate) {
-        updatePlayer(editingPlayer.id, { 
-          ...playerToUpdate,
-          name: editValue 
-        });
-        setEditingPlayer(null);
-        setEditValue('');
-        toast({
-          title: "Sucesso!",
-          description: "Informações do jogador atualizadas com sucesso!",
-        });
-      }
     }
   };
 
@@ -75,42 +42,12 @@ const PlayerList = () => {
           <DynamicTitle />
         </div>
 
-        <div className="space-y-4">
-          {players.map((player) => (
-            <motion.div
-              key={player.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className={getGuestHighlightClass(player.isGuest)}>
-                <CardHeader>
-                  <CardTitle>{player.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <p>Apelido: {player.nickname}</p>
-                    <p>Esporte: {player.sport}</p>
-                    <p>Posições: {player.selectedPositions.join(", ")}</p>
-                    <p>Avaliação: {player.rating}</p>
-                    <p>Status: {player.isGuest ? "Convidado" : "Membro"}</p>
-                    
-                    <div className="flex gap-2 mt-4">
-                      <Button onClick={() => handleEdit(player.id)}>
-                        <Edit2 className="h-4 w-4 mr-2" />
-                        Editar
-                      </Button>
-                      <Button onClick={() => handleDelete(player.id)} variant="destructive">
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Remover
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        <PlayerListContainer
+          players={players}
+          guestHighlight={guestHighlight}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </div>
     </motion.div>
   );
