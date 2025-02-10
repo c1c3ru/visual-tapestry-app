@@ -3,7 +3,6 @@ import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
 
 interface PlayerBasicInfoProps {
   name: string;
@@ -27,18 +26,6 @@ export const PlayerBasicInfo = ({
   onGuestChange,
   errors
 }: PlayerBasicInfoProps) => {
-  const { toast } = useToast();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e);
-    if (e.target.name === 'name' && e.target.value) {
-      toast({
-        title: "Informação salva",
-        description: "Nome do jogador atualizado.",
-      });
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div>
@@ -47,7 +34,7 @@ export const PlayerBasicInfo = ({
           id="name"
           name="name"
           value={name}
-          onChange={handleChange}
+          onChange={onChange}
           placeholder="Nome do jogador"
           className={errors.name ? "border-red-500" : ""}
         />

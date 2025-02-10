@@ -1,6 +1,5 @@
 export type Rating = 1 | 2 | 3 | 4 | 5;
 
-export type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
 export interface Player {
   id: number;
@@ -8,7 +7,7 @@ export interface Player {
   nickname: string;
   birthDate: string;
   isGuest: boolean;
-  sport: Sport;
+  sport: string;
   selectedPositions: string[];
   rating: Rating;
   includeInDraw: boolean;
@@ -39,6 +38,7 @@ export interface PlayerState {
   setPlayers: (players: Player[]) => void;
   setEditingPlayer: (player: { id: number } | null) => void;
   setEditValue: (value: string) => void;
+
 }
 
 export interface Match {
@@ -97,6 +97,8 @@ export interface DashboardHeaderProps {
   isAdmin: boolean;
   setDashboardTitle: (title: string) => void;
 }
+
+
 
 export interface TournamentState {
   tournamentName: string;
