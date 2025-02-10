@@ -1,62 +1,45 @@
+
 import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Sport } from "@/utils/types";
 import { PlayerPositions } from './PlayerPositions';
+import { PlayerSportSelection } from './PlayerSportSelection';
 
 interface PlayerSportInfoProps {
-  form: any;
+  sport: Sport;
+  selectedPositions: string[];
+  onSportChange: (value: string) => void;
+  onPositionChange: (position: string, checked: boolean) => void;
+  errors: {
+    selectedPositions: boolean;
+  };
 }
 
-export const PlayerSportInfo: React.FC<PlayerSportInfoProps> = ({ form }) => {
+export const PlayerSportInfo: React.FC<PlayerSportInfoProps> = ({
+  sport,
+  selectedPositions,
+  onSportChange,
+  onPositionChange,
+  errors
+}) => {
   return (
     <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name="sport"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Esporte</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um esporte" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="futsal">Futsal</SelectItem>
-                <SelectItem value="futebol">Futebol</SelectItem>
-                <SelectItem value="volei">Vôlei</SelectItem>
-                <SelectItem value="basquete">Basquete</SelectItem>
-                <SelectItem value="handbol">Handbol</SelectItem>
-              </SelectContent>
-            </Select>
-          </FormItem>
-        )}
+      <PlayerSportSelection
+        sport={sport}
+        onSportChange={onSportChange}
       />
-
-      <FormField
-        control={form.control}
-        name="selectedPositions"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Posições</FormLabel>
-            <FormControl>
-              <PlayerPositions
-                sport={form.watch("sport")}
-                selectedPositions={field.value}
-                onPositionChange={(position, checked) => {
-                  const currentPositions = field.value || [];
-                  if (checked) {
-                    field.onChange([...currentPositions, position]);
-                  } else {
-                    field.onChange(currentPositions.filter((p: string) => p !== position));
-                  }
-                }}
-              />
-            </FormControl>
-          </FormItem>
+      
+      <div>
+        <Label>Posições</Label>
+        <PlayerPositions
+          sport={sport}
+          selectedPositions={selectedPositions}
+          onPositionChange={onPositionChange}
+        />
+        {errors.selectedPositions && (
+          <p className="text-red-500">Escolher pelo menos uma posição é obrigatório.</p>
         )}
-      />
+      </div>
     </div>
   );
 };

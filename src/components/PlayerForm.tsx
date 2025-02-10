@@ -7,11 +7,10 @@ import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { Player, Rating } from "@/utils/types";
-import { RatingInput } from "./player/RatingInput";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
-import { PlayerSportSelection } from "./player/PlayerSportSelection";
-import { PlayerPositions } from "./player/PlayerPositions";
+import { PlayerSportInfo } from "./player/PlayerSportInfo";
+import { PlayerRating } from "./player/PlayerRating";
 
 const PlayerForm = () => {
   const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm } = usePlayerStore();
@@ -113,30 +112,20 @@ const PlayerForm = () => {
             errors={errors}
           />
 
-          <PlayerSportSelection
+          <PlayerSportInfo
             sport={newPlayer.sport}
+            selectedPositions={newPlayer.selectedPositions}
             onSportChange={handleSelectChange}
+            onPositionChange={handlePositionChange}
+            errors={errors}
           />
 
-          <div>
-            <PlayerPositions
-              sport={newPlayer.sport}
-              selectedPositions={newPlayer.selectedPositions}
-              onPositionChange={handlePositionChange}
-            />
-            {errors.selectedPositions && (
-              <p className="text-red-500">Escolher pelo menos uma posição é obrigatório.</p>
-            )}
-          </div>
-
-          <div>
-            <RatingInput
-              ratingSystem={ratingSystem}
-              rating={newPlayer.rating}
-              onRatingChange={handleRatingChange}
-            />
-            {errors.rating && <p className="text-red-500">Avaliação é obrigatória.</p>}
-          </div>
+          <PlayerRating
+            rating={newPlayer.rating}
+            ratingSystem={ratingSystem}
+            onRatingChange={handleRatingChange}
+            error={errors.rating}
+          />
 
           <Button 
             type="submit"
