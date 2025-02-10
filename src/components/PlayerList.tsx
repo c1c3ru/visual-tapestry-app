@@ -1,7 +1,7 @@
 import React from "react";
 import { Star, Check, Search, ArrowUpDown, Edit2, Save, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { BackToDashboard } from "./BackToDashboard";
+import BackToDashboard from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useToast } from "@/hooks/use-toast";

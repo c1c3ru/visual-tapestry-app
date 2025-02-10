@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-import { BackToDashboard } from './BackToDashboard';
+import BackToDashboard from './BackToDashboard';
 import { DynamicTitle } from './DynamicTitle';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';

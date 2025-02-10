@@ -12,15 +12,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { BackToDashboard } from "./BackToDashboard";
+import BackToDashboard from "./BackToDashboard";
 import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { Player, Rating } from "@/utils/types";
 import { RatingInput } from "./player/RatingInput";
-import NumberRating from "../../public/NumberRating";
-import Scale5Rating from "../../public/Scale5Rating";
-import StarRating from "../../public/StarRating";
 
 type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 

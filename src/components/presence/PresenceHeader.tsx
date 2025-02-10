@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { DynamicTitle } from '../DynamicTitle';
-import { BackToDashboard } from '../BackToDashboard';
+import BackToDashboard from '../BackToDashboard';
 
 export const PresenceHeader = () => {
   return (
@@ -10,3 +11,4 @@ export const PresenceHeader = () => {
     </div>
   );
 };
+

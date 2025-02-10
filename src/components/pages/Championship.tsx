@@ -10,7 +10,7 @@ import { TournamentBracket } from '../TournamentBracket';
 import TournamentHeader from '../tournament/TournamentHeader';
 import { TournamentForm } from '../tournament/TournamentForm';
 import TeamList from '../tournament/TeamList';
-import { BackToDashboard } from '../BackToDashboard';
+import BackToDashboard from '../BackToDashboard';
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTournamentStore } from '@/stores/useTournamentStore';
