@@ -23,7 +23,9 @@ const TeamDraw = () => {
   };
 
   const generateTeams = () => {
-    if (players.length < playersPerTeam) {
+    const availablePlayers = players.filter(p => p.includeInDraw);
+    
+    if (availablePlayers.length < playersPerTeam) {
       toast({
         title: "Erro no Sorteio",
         description: "Não há jogadores suficientes para formar times.",
@@ -32,48 +34,46 @@ const TeamDraw = () => {
       return;
     }
 
-    // Separar goleiros
-    const availableGoalkeepers = players.filter(p => 
-      p.selectedPositions.includes("Goleiro") && p.includeInDraw
+    // Separate goalkeepers
+    const availableGoalkeepers = availablePlayers.filter(p => 
+      p.selectedPositions.includes("Goleiro")
     );
     setGoalkeepers(availableGoalkeepers);
 
-    // Demais jogadores
-    const fieldPlayers = players.filter(p => 
-      !p.selectedPositions.includes("Goleiro") && p.includeInDraw
+    // Other players
+    const fieldPlayers = availablePlayers.filter(p => 
+      !p.selectedPositions.includes("Goleiro")
     );
 
-    // Embaralhar jogadores
+    // Shuffle players
     const shuffledPlayers = [...fieldPlayers].sort(() => Math.random() - 0.5);
     
-    // Calcular número de times possíveis
+    // Calculate possible teams
     const numTeams = Math.floor(shuffledPlayers.length / playersPerTeam);
     const newTeams: Array<typeof players> = Array(numTeams).fill([]).map(() => []);
     
-    // Distribuir goleiros primeiro
+    // Distribute goalkeepers first
     availableGoalkeepers.forEach((goalkeeper, index) => {
       if (index < numTeams) {
-        newTeams[index].push(goalkeeper);
+        newTeams[index] = [goalkeeper];
       }
     });
 
-    // Distribuir demais jogadores
-    let currentTeam = 0;
+    // Distribute other players
+    let currentIndex = 0;
     shuffledPlayers.forEach(player => {
-      if (newTeams[currentTeam].length < playersPerTeam) {
-        newTeams[currentTeam].push(player);
+      if (newTeams[currentIndex].length < playersPerTeam) {
+        newTeams[currentIndex].push(player);
       } else {
-        currentTeam++;
-        if (currentTeam < numTeams) {
-          newTeams[currentTeam].push(player);
+        currentIndex++;
+        if (currentIndex < numTeams) {
+          newTeams[currentIndex].push(player);
         }
       }
     });
 
-    // Verificar jogadores restantes para time incompleto
-    const remainingPlayers = shuffledPlayers.slice(numTeams * playersPerTeam);
-    setIncompleteTeam(remainingPlayers);
     setTeams(newTeams);
+    setIncompleteTeam(shuffledPlayers.slice(numTeams * playersPerTeam));
 
     toast({
       title: "Times Gerados",

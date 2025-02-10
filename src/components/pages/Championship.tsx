@@ -50,17 +50,18 @@ const Championship = () => {
   const handleAddTeam = () => {
     if (!teamName || !responsible) {
       toast({
-        title: "Erro ao adicionar time",
+        title: "Erro",
         description: "Preencha todos os campos obrigatórios.",
         variant: "destructive"
       });
       return;
     }
 
-    if (teams.length >= 64) {
+    const teamExists = teams.some(team => team.name.toLowerCase() === teamName.toLowerCase());
+    if (teamExists) {
       toast({
-        title: "Limite excedido",
-        description: "Máximo de 64 times permitido.",
+        title: "Erro",
+        description: "Já existe um time com este nome.",
         variant: "destructive"
       });
       return;
@@ -82,8 +83,16 @@ const Championship = () => {
   };
 
   const handleGenerateMatches = () => {
+    if (teams.length < 4) {
+      toast({
+        title: "Erro",
+        description: "Mínimo de 4 times necessário para gerar partidas.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const result = generateMatches();
-    
     if (!result.success) {
       toast({
         title: "Erro",

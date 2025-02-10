@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Star, StarHalf } from 'lucide-react';
 import { toast } from "sonner";
 import clsx from 'clsx';
+import { useToast } from "@/components/ui/use-toast";
 
 interface DashboardSettingsProps {
   selectedRatingSystem: string;
@@ -62,16 +63,24 @@ export const DashboardSettings = ({
   guestHighlight,
   setGuestHighlight
 }: DashboardSettingsProps) => {
+  const { toast } = useToast();
+
   const handleRatingSystemChange = (value: string) => {
     setSelectedRatingSystem(value);
     localStorage.setItem('ratingSystem', value);
-    toast.success("Sistema de avaliação atualizado!");
+    toast({
+      title: "Sistema de avaliação atualizado!",
+      description: "As alterações foram salvas com sucesso.",
+    });
   };
 
   const handleGuestHighlightChange = (value: string) => {
     setGuestHighlight(value);
     localStorage.setItem('guestHighlight', value);
-    toast.success("Estilo de destaque para convidados atualizado!");
+    toast({
+      title: "Destaque de convidados atualizado!",
+      description: "As alterações foram salvas com sucesso.",
+    });
   };
 
   const guestHighlightClass = clsx({

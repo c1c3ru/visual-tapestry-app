@@ -29,22 +29,28 @@ const PlayerList = () => {
   };
 
   const handleEdit = (id: number) => {
-    setEditingPlayer({ id });
-    const player = players.find((player) => player.id === id);
+    const player = players.find((p) => p.id === id);
     if (player) {
+      setEditingPlayer({ id });
       setEditValue(player.name);
     }
   };
 
   const handleSave = () => {
-    if (editingPlayer !== null) {
-      updatePlayer(editingPlayer.id, { name: editValue });
-      setEditingPlayer(null);
-      setEditValue('');
-      toast({
-        title: "Jogador Atualizado",
-        description: "O nome do jogador foi atualizado com sucesso.",
-      });
+    if (editingPlayer && editValue.trim()) {
+      const playerToUpdate = players.find(p => p.id === editingPlayer.id);
+      if (playerToUpdate) {
+        updatePlayer(editingPlayer.id, { 
+          ...playerToUpdate,
+          name: editValue 
+        });
+        setEditingPlayer(null);
+        setEditValue('');
+        toast({
+          title: "Sucesso!",
+          description: "Informações do jogador atualizadas com sucesso!",
+        });
+      }
     }
   };
 

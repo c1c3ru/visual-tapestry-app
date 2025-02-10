@@ -56,14 +56,10 @@ const PlayerForm = () => {
   };
 
   const handlePositionChange = (position: string) => {
-    const updatedPositions = newPlayer.selectedPositions.includes(position)
-      ? newPlayer.selectedPositions.filter((pos) => pos !== position)
-      : [...newPlayer.selectedPositions, position];
-    
-    setNewPlayer({ selectedPositions: updatedPositions } as Partial<Omit<Player, "id" | "createdAt">>);
+    setNewPlayer({ selectedPositions: [position] });
     toast({
-      title: "Posições Atualizadas",
-      description: "As posições foram atualizadas com sucesso.",
+      title: "Posição selecionada",
+      description: `${position} foi selecionada como posição.`,
     });
   };
 
@@ -96,19 +92,21 @@ const PlayerForm = () => {
       });
       return;
     }
+
     const player: Player = {
       ...newPlayer,
       id: Date.now(),
       createdAt: new Date().toISOString(),
     };
+    
     addPlayer(player);
-
-    toast({
-      title: "Jogador Adicionado",
-      description: "Novo jogador foi adicionado com sucesso.",
-    });
-
     resetForm();
+    
+    toast({
+      title: "Sucesso!",
+      description: "Jogador cadastrado com sucesso!",
+      variant: "default",
+    });
   };
 
   return (
