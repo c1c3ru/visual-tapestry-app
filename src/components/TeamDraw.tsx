@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import BackToDashboard from "./BackToDashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Button } from "./ui/button";
@@ -13,10 +12,7 @@ import clsx from "clsx";
 const TeamDraw = () => {
   const { players } = usePlayerStore();
   const { toast } = useToast();
-  const [playersPerTeam, setPlayersPerTeam] = useState(5);
-  const [teams, setTeams] = useState<Array<typeof players>>([]);
-  const [goalkeepers, setGoalkeepers] = useState<typeof players>([]);
-  const [incompleteTeam, setIncompleteTeam] = useState<typeof players>([]);
+  const { playersPerTeam, setPlayersPerTeam, teams, setTeams } = useTeamDrawStore();
 
   const calculateTeamStrength = (team: typeof players) => {
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;
@@ -35,10 +31,9 @@ const TeamDraw = () => {
     }
 
     // Separate goalkeepers
-    const availableGoalkeepers = availablePlayers.filter(p => 
+    const goalkeepers = availablePlayers.filter(p => 
       p.selectedPositions.includes("Goleiro")
     );
-    setGoalkeepers(availableGoalkeepers);
 
     // Other players
     const fieldPlayers = availablePlayers.filter(p => 
@@ -53,7 +48,7 @@ const TeamDraw = () => {
     const newTeams: Array<typeof players> = Array(numTeams).fill([]).map(() => []);
     
     // Distribute goalkeepers first
-    availableGoalkeepers.forEach((goalkeeper, index) => {
+    goalkeepers.forEach((goalkeeper, index) => {
       if (index < numTeams) {
         newTeams[index] = [goalkeeper];
       }
@@ -73,8 +68,6 @@ const TeamDraw = () => {
     });
 
     setTeams(newTeams);
-    setIncompleteTeam(shuffledPlayers.slice(numTeams * playersPerTeam));
-
     toast({
       title: "Times Gerados",
       description: "Os times foram sorteados com sucesso!",
@@ -88,7 +81,6 @@ const TeamDraw = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gray-50 p-6"
     >
-      <BackToDashboard />
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow">
           <h1 className="text-2xl font-bold">Sorteio de Times</h1>
@@ -115,90 +107,44 @@ const TeamDraw = () => {
           </div>
         </div>
 
-        {goalkeepers.length > 0 && (
-          <Card className="bg-blue-50">
-            <CardHeader>
-              <CardTitle>Goleiros Disponíveis</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {goalkeepers.map((player) => (
-                <div
-                  key={player.id}
-                  className="p-4 bg-white rounded-lg shadow"
-                >
-                  <h3 className="font-semibold">{player.name}</h3>
-                  <p className="text-sm text-gray-600">Rating: {player.rating}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle className="flex justify-between">
-                  Time {index + 1}
-                  <span className="text-sm">
-                    Força: {calculateTeamStrength(team).toFixed(1)}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {team.map((player) => (
-                    <div
-                      key={player.id}
-                      className={clsx(
-                        "p-3 rounded-lg",
-                        player.selectedPositions.includes("Goleiro")
-                          ? "bg-blue-50"
-                          : "bg-gray-50"
-                      )}
-                    >
-                      <div className="font-medium">{player.name}</div>
-                      <div className="text-sm text-gray-600">
-                        {player.selectedPositions.join(", ")}
+        {teams.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {teams.map((team, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <CardTitle className="flex justify-between">
+                    Time {index + 1}
+                    <span className="text-sm">
+                      Força: {calculateTeamStrength(team).toFixed(1)}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {team.map((player) => (
+                      <div
+                        key={player.id}
+                        className={clsx(
+                          "p-3 rounded-lg",
+                          player.selectedPositions.includes("Goleiro")
+                            ? "bg-blue-50"
+                            : "bg-gray-50"
+                        )}
+                      >
+                        <div className="font-medium">{player.name}</div>
+                        <div className="text-sm text-gray-600">
+                          {player.selectedPositions.join(", ")}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Rating: {player.rating}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        Rating: {player.rating}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {incompleteTeam.length > 0 && (
-          <Card className="bg-yellow-50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5" />
-                Time Incompleto
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {incompleteTeam.map((player) => (
-                  <div
-                    key={player.id}
-                    className="p-4 bg-white rounded-lg shadow"
-                  >
-                    <h3 className="font-semibold">{player.name}</h3>
-                    <p className="text-sm text-gray-600">
-                      {player.selectedPositions.join(", ")}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Rating: {player.rating}
-                    </p>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
     </motion.div>
