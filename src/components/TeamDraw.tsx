@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Button } from "./ui/button";
-import { Shuffle, Users, AlertCircle } from "lucide-react";
+import { Shuffle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTeamDrawStore } from "@/stores/useTeamDrawStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
+import BackToDashboard from "./BackToDashboard";
 import clsx from "clsx";
 
 const TeamDraw = () => {
@@ -24,7 +25,7 @@ const TeamDraw = () => {
     if (availablePlayers.length < playersPerTeam) {
       toast({
         title: "Erro no Sorteio",
-        description: "Não há jogadores suficientes para formar times.",
+        description: `São necessários no mínimo ${playersPerTeam} jogadores selecionados para formar times.`,
         variant: "destructive",
       });
       return;
@@ -41,28 +42,29 @@ const TeamDraw = () => {
     );
 
     // Shuffle players
-    const shuffledPlayers = [...fieldPlayers].sort(() => Math.random() - 0.5);
+    const shuffledFieldPlayers = [...fieldPlayers].sort(() => Math.random() - 0.5);
+    const shuffledGoalkeepers = [...goalkeepers].sort(() => Math.random() - 0.5);
     
-    // Calculate possible teams
-    const numTeams = Math.floor(shuffledPlayers.length / playersPerTeam);
-    const newTeams: Array<typeof players> = Array(numTeams).fill([]).map(() => []);
-    
+    // Calculate number of teams
+    const numTeams = Math.floor(availablePlayers.length / playersPerTeam);
+    let newTeams: typeof players[] = Array(numTeams).fill(null).map(() => []);
+
     // Distribute goalkeepers first
-    goalkeepers.forEach((goalkeeper, index) => {
+    shuffledGoalkeepers.forEach((goalkeeper, index) => {
       if (index < numTeams) {
-        newTeams[index] = [goalkeeper];
+        newTeams[index].push(goalkeeper);
       }
     });
 
-    // Distribute other players
-    let currentIndex = 0;
-    shuffledPlayers.forEach(player => {
-      if (newTeams[currentIndex].length < playersPerTeam) {
-        newTeams[currentIndex].push(player);
+    // Distribute remaining players
+    let currentTeamIndex = 0;
+    shuffledFieldPlayers.forEach(player => {
+      if (newTeams[currentTeamIndex].length < playersPerTeam) {
+        newTeams[currentTeamIndex].push(player);
       } else {
-        currentIndex++;
-        if (currentIndex < numTeams) {
-          newTeams[currentIndex].push(player);
+        currentTeamIndex = (currentTeamIndex + 1) % numTeams;
+        if (currentTeamIndex < numTeams) {
+          newTeams[currentTeamIndex].push(player);
         }
       }
     });
@@ -70,7 +72,7 @@ const TeamDraw = () => {
     setTeams(newTeams);
     toast({
       title: "Times Gerados",
-      description: "Os times foram sorteados com sucesso!",
+      description: `${numTeams} times foram sorteados com sucesso!`,
     });
   };
 
@@ -81,6 +83,7 @@ const TeamDraw = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gray-50 p-6"
     >
+      <BackToDashboard />
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow">
           <h1 className="text-2xl font-bold">Sorteio de Times</h1>

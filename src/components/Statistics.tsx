@@ -1,6 +1,6 @@
+
 import React, { useState } from 'react';
 import BackToDashboard from './BackToDashboard';
-import { DynamicTitle } from './DynamicTitle';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useToast } from "@/hooks/use-toast";
@@ -75,7 +75,7 @@ const Statistics = () => {
         className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <DynamicTitle />
+          <h1 className="text-2xl font-bold">Estatísticas</h1>
         </div>
 
         <div className="space-y-4">
