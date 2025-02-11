@@ -9,7 +9,15 @@ import { useSettingsStore } from "@/stores/useSettingsStore";
 import { PlayerListContainer } from "./player/PlayerListContainer";
 
 const PlayerList = () => {
-  const { players, updatePlayer, removePlayer, editingPlayer, setEditingPlayer, editValue, setEditValue } = usePlayerStore();
+  const { 
+    players, 
+    updatePlayer, 
+    removePlayer, 
+    editingPlayer, 
+    setEditingPlayer, 
+    editValue, 
+    setEditValue 
+  } = usePlayerStore();
   const { guestHighlight } = useSettingsStore();
   const { toast } = useToast();
 
@@ -27,6 +35,18 @@ const PlayerList = () => {
       title: "Jogador Removido",
       description: "O jogador foi removido com sucesso.",
     });
+  };
+
+  const handleEditSave = (id: number, newValue: string) => {
+    if (newValue.trim()) {
+      updatePlayer(id, { name: newValue.trim() });
+      setEditingPlayer(null);
+      setEditValue('');
+      toast({
+        title: "Sucesso",
+        description: "Nome do jogador atualizado com sucesso.",
+      });
+    }
   };
 
   return (
@@ -47,6 +67,10 @@ const PlayerList = () => {
           guestHighlight={guestHighlight}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          editingPlayer={editingPlayer}
+          editValue={editValue}
+          onEditSave={handleEditSave}
+          setEditValue={setEditValue}
         />
       </div>
     </motion.div>
