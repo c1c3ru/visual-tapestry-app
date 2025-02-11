@@ -10,6 +10,7 @@ interface TeamDrawState {
   namingOption: string;
   matchups: string[];
   setMatchups: (matchups: string[]) => void;
+  clearTeams: () => void;
 }
 
 export const useTeamDrawStore = create<TeamDrawState>((set) => ({
@@ -20,4 +21,5 @@ export const useTeamDrawStore = create<TeamDrawState>((set) => ({
   setTeams: (teams) => set({ teams }),
   setPlayersPerTeam: (playersPerTeam) => set({ playersPerTeam }),
   setMatchups: (matchups) => set({ matchups }),
+  clearTeams: () => set({ teams: [] }),
 }));
