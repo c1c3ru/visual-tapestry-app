@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { Player } from '@/utils/types';
 
@@ -25,7 +26,7 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
   generateTeams: (players) => {
     const { playersPerTeam } = get();
     
-    // Filter available players
+    // Filtrar apenas jogadores disponíveis
     const availablePlayers = players.filter(p => p.includeInDraw && p.present);
     
     if (availablePlayers.length < playersPerTeam * 2) {
@@ -35,7 +36,7 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
       };
     }
 
-    // Separate goalkeepers and field players
+    // Separar goleiros e jogadores de linha
     const goalkeepers = availablePlayers.filter(p => 
       p.selectedPositions.includes("Goleiro")
     );
@@ -43,30 +44,68 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
       !p.selectedPositions.includes("Goleiro")
     );
 
-    // Shuffle players
+    // Embaralhar jogadores
     const shuffledFieldPlayers = [...fieldPlayers].sort(() => Math.random() - 0.5);
     const shuffledGoalkeepers = [...goalkeepers].sort(() => Math.random() - 0.5);
     
-    // Calculate number of teams
+    // Calcular número de times possíveis
     const numTeams = Math.floor(availablePlayers.length / playersPerTeam);
+    
+    if (numTeams < 2) {
+      return {
+        success: false,
+        error: "Número insuficiente de jogadores para formar times"
+      };
+    }
+    
+    // Inicializar times vazios
     let newTeams: Player[][] = Array(numTeams).fill(null).map(() => []);
 
-    // Distribute goalkeepers first
+    // Distribuir goleiros primeiro
     shuffledGoalkeepers.forEach((goalkeeper, index) => {
       if (index < numTeams) {
         newTeams[index].push(goalkeeper);
       }
     });
 
-    // Distribute remaining players
+    // Distribuir jogadores de linha de forma equilibrada
     let currentTeamIndex = 0;
+    const maxPlayersPerTeam = Math.floor(availablePlayers.length / numTeams);
+
     shuffledFieldPlayers.forEach(player => {
-      while (newTeams[currentTeamIndex].length >= playersPerTeam) {
-        currentTeamIndex = (currentTeamIndex + 1) % numTeams;
+      // Encontrar o time com menos jogadores
+      currentTeamIndex = newTeams.findIndex(team => team.length < maxPlayersPerTeam);
+      if (currentTeamIndex === -1) {
+        currentTeamIndex = 0; // Voltar ao primeiro time se necessário
       }
+      
       newTeams[currentTeamIndex].push(player);
-      currentTeamIndex = (currentTeamIndex + 1) % numTeams;
     });
+
+    // Verificar se todos os times têm número similar de jogadores
+    const minPlayers = Math.min(...newTeams.map(team => team.length));
+    const maxPlayers = Math.max(...newTeams.map(team => team.length));
+    
+    if (maxPlayers - minPlayers > 1) {
+      // Reequilibrar times se necessário
+      const rebalancedTeams = newTeams.map(team => {
+        if (team.length > minPlayers + 1) {
+          // Mover jogadores excedentes para times com menos jogadores
+          const excessPlayers = team.slice(minPlayers + 1);
+          team = team.slice(0, minPlayers + 1);
+          
+          excessPlayers.forEach(player => {
+            const smallestTeam = newTeams.find(t => t.length < minPlayers + 1);
+            if (smallestTeam) {
+              smallestTeam.push(player);
+            }
+          });
+        }
+        return team;
+      });
+      
+      newTeams = rebalancedTeams;
+    }
 
     set({ teams: newTeams });
     return { 
