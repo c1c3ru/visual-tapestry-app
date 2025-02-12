@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -13,66 +14,43 @@ import clsx from "clsx";
 const TeamDraw = () => {
   const { players } = usePlayerStore();
   const { toast } = useToast();
-  const { playersPerTeam, setPlayersPerTeam, teams, setTeams } = useTeamDrawStore();
+  const { 
+    playersPerTeam, 
+    setPlayersPerTeam, 
+    teams,
+    generateTeams 
+  } = useTeamDrawStore();
 
   const calculateTeamStrength = (team: typeof players) => {
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;
   };
 
-  const generateTeams = () => {
-    const availablePlayers = players.filter(p => p.includeInDraw);
+  const handleGenerateTeams = () => {
+    const availablePlayers = players.filter(p => p.includeInDraw && p.present);
     
-    if (availablePlayers.length < playersPerTeam) {
+    if (availablePlayers.length < playersPerTeam * 2) {
       toast({
         title: "Erro no Sorteio",
-        description: `São necessários no mínimo ${playersPerTeam} jogadores selecionados para formar times.`,
+        description: `São necessários no mínimo ${playersPerTeam * 2} jogadores selecionados para formar times.`,
         variant: "destructive",
       });
       return;
     }
 
-    // Separate goalkeepers
-    const goalkeepers = availablePlayers.filter(p => 
-      p.selectedPositions.includes("Goleiro")
-    );
-
-    // Other players
-    const fieldPlayers = availablePlayers.filter(p => 
-      !p.selectedPositions.includes("Goleiro")
-    );
-
-    // Shuffle players
-    const shuffledFieldPlayers = [...fieldPlayers].sort(() => Math.random() - 0.5);
-    const shuffledGoalkeepers = [...goalkeepers].sort(() => Math.random() - 0.5);
+    const result = generateTeams(players);
     
-    // Calculate number of teams
-    const numTeams = Math.floor(availablePlayers.length / playersPerTeam);
-    let newTeams: typeof players[] = Array(numTeams).fill(null).map(() => []);
+    if (!result.success) {
+      toast({
+        title: "Erro no Sorteio",
+        description: result.error || "Erro ao gerar times",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    // Distribute goalkeepers first
-    shuffledGoalkeepers.forEach((goalkeeper, index) => {
-      if (index < numTeams) {
-        newTeams[index].push(goalkeeper);
-      }
-    });
-
-    // Distribute remaining players
-    let currentTeamIndex = 0;
-    shuffledFieldPlayers.forEach(player => {
-      if (newTeams[currentTeamIndex].length < playersPerTeam) {
-        newTeams[currentTeamIndex].push(player);
-      } else {
-        currentTeamIndex = (currentTeamIndex + 1) % numTeams;
-        if (currentTeamIndex < numTeams) {
-          newTeams[currentTeamIndex].push(player);
-        }
-      }
-    });
-
-    setTeams(newTeams);
     toast({
       title: "Times Gerados",
-      description: `${numTeams} times foram sorteados com sucesso!`,
+      description: "Times foram sorteados com sucesso!",
     });
   };
 
@@ -103,7 +81,7 @@ const TeamDraw = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Button onClick={generateTeams}>
+            <Button onClick={handleGenerateTeams}>
               <Shuffle className="mr-2 h-4 w-4" />
               Sortear Times
             </Button>

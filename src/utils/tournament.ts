@@ -1,3 +1,4 @@
+
 import { Team, KnockoutMatches, Match, Group } from './types';
 
 export interface TournamentBracketProps {
@@ -17,7 +18,7 @@ export interface Tournament {
 
 export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
   const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
-  const isHomeAndAway = teams.length <= 8;
+  const isHomeAndAway = true; // Always true for mata-mata mode
 
   const createMatch = (team1: Team, team2: Team): Match => ({
     team1,
@@ -33,24 +34,35 @@ export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
     thirdPlace: {} as Match,
   };
 
-  if (teams.length > 16) {
+  // Generate Round of 16 if enough teams
+  if (teams.length >= 16) {
     for (let i = 0; i < 16; i += 2) {
       rounds.roundOf16.push(createMatch(shuffledTeams[i], shuffledTeams[i + 1]));
     }
   }
 
-  const quarterTeams = teams.length <= 8 ? shuffledTeams : shuffledTeams.slice(0, 8);
-  for (let i = 0; i < quarterTeams.length; i += 2) {
-    rounds.quarterFinals.push(createMatch(quarterTeams[i], quarterTeams[i + 1]));
+  // Generate Quarter Finals
+  const quarterFinalsTeams = teams.length >= 16 ? shuffledTeams.slice(0, 8) : shuffledTeams;
+  for (let i = 0; i < Math.min(quarterFinalsTeams.length, 8); i += 2) {
+    if (quarterFinalsTeams[i] && quarterFinalsTeams[i + 1]) {
+      rounds.quarterFinals.push(createMatch(quarterFinalsTeams[i], quarterFinalsTeams[i + 1]));
+    }
   }
 
-  rounds.semiFinals = [
-    createMatch(shuffledTeams[0], shuffledTeams[1]),
-    createMatch(shuffledTeams[2], shuffledTeams[3]),
-  ];
+  // Generate Semi Finals
+  const semiFinalTeams = shuffledTeams.slice(0, 4);
+  if (semiFinalTeams.length >= 4) {
+    rounds.semiFinals = [
+      createMatch(semiFinalTeams[0], semiFinalTeams[1]),
+      createMatch(semiFinalTeams[2], semiFinalTeams[3]),
+    ];
+  }
 
-  rounds.final = createMatch(shuffledTeams[0], shuffledTeams[1]);
-  rounds.thirdPlace = createMatch(shuffledTeams[2], shuffledTeams[3]);
+  // Generate Final and Third Place
+  if (semiFinalTeams.length >= 4) {
+    rounds.final = createMatch(semiFinalTeams[0], semiFinalTeams[1]);
+    rounds.thirdPlace = createMatch(semiFinalTeams[2], semiFinalTeams[3]);
+  }
 
   return rounds;
 };
@@ -109,10 +121,7 @@ export const generateTournamentMatches = (teams: Team[], tournamentType: string)
     case 'homeAway':
       const knockoutMatches = generateKnockoutMatches(teams);
       if (teams.length <= 8) {
-        matches.push(...knockoutMatches.quarterFinals.map(match => ({
-          ...match,
-          isHomeGame: true
-        })));
+        matches.push(...knockoutMatches.quarterFinals);
       } else {
         matches.push(...knockoutMatches.roundOf16);
       }
