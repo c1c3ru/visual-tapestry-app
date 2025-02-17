@@ -34,15 +34,25 @@ export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
     });
   }
 
-  const createMatch = (team1: Team, team2: Team): Match => ({
-    team1,
-    team2,
-    score1: 0,
-    score2: 0,
-    isHomeGame: true
-  });
+  const createMatches = (team1: Team, team2: Team): Match[] => [
+    // Jogo de ida
+    {
+      team1,
+      team2,
+      score1: 0,
+      score2: 0,
+      isHomeGame: true
+    },
+    // Jogo de volta
+    {
+      team1: team2,
+      team2: team1,
+      score1: 0,
+      score2: 0,
+      isHomeGame: false
+    }
+  ];
 
-  // Inicializar todas as rodadas
   const rounds: KnockoutMatches = {
     roundOf16: [],
     quarterFinals: [],
@@ -51,29 +61,33 @@ export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
     thirdPlace: {} as Match
   };
 
-  // Gerar partidas para cada fase
+  // Gerar partidas para cada fase com jogos de ida e volta
   if (shuffledTeams.length >= 16) {
     for (let i = 0; i < 16; i += 2) {
-      rounds.roundOf16.push(createMatch(shuffledTeams[i], shuffledTeams[i + 1]));
+      const matches = createMatches(shuffledTeams[i], shuffledTeams[i + 1]);
+      rounds.roundOf16.push(...matches);
     }
   }
 
   const quarterTeams = shuffledTeams.length >= 16 ? shuffledTeams.slice(0, 8) : shuffledTeams;
   for (let i = 0; i < Math.min(quarterTeams.length, 8); i += 2) {
     if (quarterTeams[i] && quarterTeams[i + 1]) {
-      rounds.quarterFinals.push(createMatch(quarterTeams[i], quarterTeams[i + 1]));
+      const matches = createMatches(quarterTeams[i], quarterTeams[i + 1]);
+      rounds.quarterFinals.push(...matches);
     }
   }
 
   if (shuffledTeams.length >= 4) {
     const semiTeams = shuffledTeams.slice(0, 4);
-    rounds.semiFinals = [
-      createMatch(semiTeams[0], semiTeams[1]),
-      createMatch(semiTeams[2], semiTeams[3])
-    ];
+    const semiFinalMatches1 = createMatches(semiTeams[0], semiTeams[1]);
+    const semiFinalMatches2 = createMatches(semiTeams[2], semiTeams[3]);
+    rounds.semiFinals = [...semiFinalMatches1, ...semiFinalMatches2];
 
-    rounds.final = createMatch(semiTeams[0], semiTeams[1]);
-    rounds.thirdPlace = createMatch(semiTeams[2], semiTeams[3]);
+    // Final e disputa de terceiro lugar
+    const finalMatches = createMatches(semiTeams[0], semiTeams[1]);
+    const thirdPlaceMatches = createMatches(semiTeams[2], semiTeams[3]);
+    [rounds.final] = finalMatches;
+    [rounds.thirdPlace] = thirdPlaceMatches;
   }
 
   return rounds;

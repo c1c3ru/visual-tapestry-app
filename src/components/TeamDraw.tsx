@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -12,7 +12,7 @@ import BackToDashboard from "./BackToDashboard";
 import clsx from "clsx";
 
 const TeamDraw = () => {
-  const { players } = usePlayerStore();
+  const { players, updatePlayer } = usePlayerStore();
   const { toast } = useToast();
   const { 
     playersPerTeam, 
@@ -21,13 +21,22 @@ const TeamDraw = () => {
     generateTeams 
   } = useTeamDrawStore();
 
+  // Ao montar o componente, marca todos os jogadores presentes como incluídos no sorteio
+  useEffect(() => {
+    players.forEach(player => {
+      if (player.present) {
+        updatePlayer(player.id, { includeInDraw: true });
+      }
+    });
+  }, [players]);
+
   const calculateTeamStrength = (team: typeof players) => {
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;
   };
 
   const handleGenerateTeams = () => {
     console.log("Iniciando sorteio com jogadores:", players);
-    const availablePlayers = players.filter(p => p.includeInDraw && p.present);
+    const availablePlayers = players.filter(p => p.present);
     console.log("Jogadores disponíveis:", availablePlayers);
     
     if (availablePlayers.length < playersPerTeam * 2) {
@@ -39,7 +48,12 @@ const TeamDraw = () => {
       return;
     }
 
-    const result = generateTeams(players);
+    // Marca todos os jogadores presentes como incluídos no sorteio antes de gerar os times
+    availablePlayers.forEach(player => {
+      updatePlayer(player.id, { includeInDraw: true });
+    });
+
+    const result = generateTeams(availablePlayers);
     console.log("Resultado do sorteio:", result);
     
     if (!result.success) {
