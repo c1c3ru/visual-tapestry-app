@@ -17,8 +17,22 @@ export interface Tournament {
 }
 
 export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
-  const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
-  const isHomeAndAway = true; // Always true for mata-mata mode
+  // Garantir número par de times
+  const numTeams = teams.length;
+  const numByes = Math.pow(2, Math.ceil(Math.log2(numTeams))) - numTeams;
+  
+  // Criar array com times e "byes"
+  const teamsWithByes = [...teams];
+  for (let i = 0; i < numByes; i++) {
+    teamsWithByes.push({
+      id: `bye-${i}`,
+      name: 'Bye',
+      responsible: ''
+    });
+  }
+
+  const shuffledTeams = teamsWithByes.sort(() => Math.random() - 0.5);
+  const isHomeAndAway = true;
 
   const createMatch = (team1: Team, team2: Team): Match => ({
     team1,
@@ -34,32 +48,37 @@ export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
     thirdPlace: {} as Match,
   };
 
-  // Generate Round of 16 if enough teams
-  if (teams.length >= 16) {
+  // Gerar chaves com base no número de times
+  if (shuffledTeams.length >= 16) {
+    // Round of 16
     for (let i = 0; i < 16; i += 2) {
       rounds.roundOf16.push(createMatch(shuffledTeams[i], shuffledTeams[i + 1]));
     }
   }
 
-  // Generate Quarter Finals
-  const quarterFinalsTeams = teams.length >= 16 ? shuffledTeams.slice(0, 8) : shuffledTeams;
+  // Quarter Finals
+  const quarterFinalsTeams = shuffledTeams.length >= 16 ? 
+    shuffledTeams.slice(0, 8) : 
+    shuffledTeams;
+
   for (let i = 0; i < Math.min(quarterFinalsTeams.length, 8); i += 2) {
     if (quarterFinalsTeams[i] && quarterFinalsTeams[i + 1]) {
-      rounds.quarterFinals.push(createMatch(quarterFinalsTeams[i], quarterFinalsTeams[i + 1]));
+      rounds.quarterFinals.push(createMatch(
+        quarterFinalsTeams[i], 
+        quarterFinalsTeams[i + 1]
+      ));
     }
   }
 
-  // Generate Semi Finals
+  // Semi Finals
   const semiFinalTeams = shuffledTeams.slice(0, 4);
   if (semiFinalTeams.length >= 4) {
     rounds.semiFinals = [
       createMatch(semiFinalTeams[0], semiFinalTeams[1]),
       createMatch(semiFinalTeams[2], semiFinalTeams[3]),
     ];
-  }
 
-  // Generate Final and Third Place
-  if (semiFinalTeams.length >= 4) {
+    // Final and Third Place
     rounds.final = createMatch(semiFinalTeams[0], semiFinalTeams[1]);
     rounds.thirdPlace = createMatch(semiFinalTeams[2], semiFinalTeams[3]);
   }

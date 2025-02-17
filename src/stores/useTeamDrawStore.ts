@@ -44,12 +44,18 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
       !p.selectedPositions.includes("Goleiro")
     );
 
-    // Embaralhar jogadores
-    const shuffledFieldPlayers = [...fieldPlayers].sort(() => Math.random() - 0.5);
-    const shuffledGoalkeepers = [...goalkeepers].sort(() => Math.random() - 0.5);
-    
-    // Calcular número de times possíveis
+    // Verificar se há goleiros suficientes
     const numTeams = Math.floor(availablePlayers.length / playersPerTeam);
+    if (goalkeepers.length < numTeams) {
+      return {
+        success: false,
+        error: `São necessários pelo menos ${numTeams} goleiros para formar ${numTeams} times.`
+      };
+    }
+
+    // Ordenar jogadores por rating para distribuição equilibrada
+    const sortedFieldPlayers = [...fieldPlayers].sort((a, b) => b.rating - a.rating);
+    const shuffledGoalkeepers = [...goalkeepers].sort(() => Math.random() - 0.5);
     
     if (numTeams < 2) {
       return {
@@ -68,43 +74,39 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
       }
     });
 
-    // Distribuir jogadores de linha de forma equilibrada
-    let currentTeamIndex = 0;
-    const maxPlayersPerTeam = Math.floor(availablePlayers.length / numTeams);
-
-    shuffledFieldPlayers.forEach(player => {
-      // Encontrar o time com menos jogadores
-      currentTeamIndex = newTeams.findIndex(team => team.length < maxPlayersPerTeam);
-      if (currentTeamIndex === -1) {
-        currentTeamIndex = 0; // Voltar ao primeiro time se necessário
+    // Distribuir jogadores de linha usando método "serpentina" para equilibrar os times
+    let goingForward = true;
+    sortedFieldPlayers.forEach((player, index) => {
+      if (goingForward) {
+        const teamIndex = index % numTeams;
+        if (newTeams[teamIndex].length < playersPerTeam) {
+          newTeams[teamIndex].push(player);
+        }
+      } else {
+        const teamIndex = numTeams - 1 - (index % numTeams);
+        if (newTeams[teamIndex].length < playersPerTeam) {
+          newTeams[teamIndex].push(player);
+        }
       }
-      
-      newTeams[currentTeamIndex].push(player);
+      // Alternar direção a cada rodada completa
+      if ((index + 1) % numTeams === 0) {
+        goingForward = !goingForward;
+      }
     });
 
-    // Verificar se todos os times têm número similar de jogadores
-    const minPlayers = Math.min(...newTeams.map(team => team.length));
-    const maxPlayers = Math.max(...newTeams.map(team => team.length));
+    // Calcular e verificar equilíbrio dos times
+    const teamStrengths = newTeams.map(team => ({
+      strength: team.reduce((acc, player) => acc + player.rating, 0) / team.length,
+      numPlayers: team.length
+    }));
+
+    const maxStrength = Math.max(...teamStrengths.map(t => t.strength));
+    const minStrength = Math.min(...teamStrengths.map(t => t.strength));
     
-    if (maxPlayers - minPlayers > 1) {
-      // Reequilibrar times se necessário
-      const rebalancedTeams = newTeams.map(team => {
-        if (team.length > minPlayers + 1) {
-          // Mover jogadores excedentes para times com menos jogadores
-          const excessPlayers = team.slice(minPlayers + 1);
-          team = team.slice(0, minPlayers + 1);
-          
-          excessPlayers.forEach(player => {
-            const smallestTeam = newTeams.find(t => t.length < minPlayers + 1);
-            if (smallestTeam) {
-              smallestTeam.push(player);
-            }
-          });
-        }
-        return team;
-      });
-      
-      newTeams = rebalancedTeams;
+    // Se a diferença de força for muito grande, tentar rebalancear
+    if (maxStrength - minStrength > 1) {
+      // Reordenar times para equilibrar forças
+      newTeams = balanceTeams(newTeams);
     }
 
     set({ teams: newTeams });
@@ -113,3 +115,45 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
     };
   }
 }));
+
+// Função auxiliar para balancear times
+const balanceTeams = (teams: Player[][]): Player[][] => {
+  const calculateTeamStrength = (team: Player[]) => 
+    team.reduce((acc, player) => acc + player.rating, 0) / team.length;
+
+  // Tentar trocar jogadores entre times para equilibrar
+  for (let i = 0; i < teams.length; i++) {
+    for (let j = i + 1; j < teams.length; j++) {
+      const strengthDiff = Math.abs(
+        calculateTeamStrength(teams[i]) - calculateTeamStrength(teams[j])
+      );
+
+      if (strengthDiff > 1) {
+        // Tentar trocar jogadores não goleiros
+        const team1Players = teams[i].filter(p => !p.selectedPositions.includes("Goleiro"));
+        const team2Players = teams[j].filter(p => !p.selectedPositions.includes("Goleiro"));
+
+        for (const player1 of team1Players) {
+          for (const player2 of team2Players) {
+            // Simular troca
+            const newTeam1 = [...teams[i]].map(p => p.id === player1.id ? player2 : p);
+            const newTeam2 = [...teams[j]].map(p => p.id === player2.id ? player1 : p);
+
+            const newStrengthDiff = Math.abs(
+              calculateTeamStrength(newTeam1) - calculateTeamStrength(newTeam2)
+            );
+
+            // Se a troca melhorar o equilíbrio, aplicar
+            if (newStrengthDiff < strengthDiff) {
+              teams[i] = newTeam1;
+              teams[j] = newTeam2;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return teams;
+};
