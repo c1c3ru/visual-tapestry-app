@@ -26,7 +26,9 @@ const TeamDraw = () => {
   };
 
   const handleGenerateTeams = () => {
+    console.log("Iniciando sorteio com jogadores:", players);
     const availablePlayers = players.filter(p => p.includeInDraw && p.present);
+    console.log("Jogadores disponíveis:", availablePlayers);
     
     if (availablePlayers.length < playersPerTeam * 2) {
       toast({
@@ -38,6 +40,7 @@ const TeamDraw = () => {
     }
 
     const result = generateTeams(players);
+    console.log("Resultado do sorteio:", result);
     
     if (!result.success) {
       toast({
@@ -88,45 +91,43 @@ const TeamDraw = () => {
           </div>
         </div>
 
-        {teams.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {teams.map((team, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <CardTitle className="flex justify-between">
-                    Time {index + 1}
-                    <span className="text-sm">
-                      Força: {calculateTeamStrength(team).toFixed(1)}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {team.map((player) => (
-                      <div
-                        key={player.id}
-                        className={clsx(
-                          "p-3 rounded-lg",
-                          player.selectedPositions.includes("Goleiro")
-                            ? "bg-blue-50"
-                            : "bg-gray-50"
-                        )}
-                      >
-                        <div className="font-medium">{player.name}</div>
-                        <div className="text-sm text-gray-600">
-                          {player.selectedPositions.join(", ")}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Rating: {player.rating}
-                        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {teams.map((team, index) => (
+            <Card key={index}>
+              <CardHeader>
+                <CardTitle className="flex justify-between">
+                  Time {index + 1}
+                  <span className="text-sm">
+                    Força: {calculateTeamStrength(team).toFixed(1)}
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {team.map((player) => (
+                    <div
+                      key={player.id}
+                      className={clsx(
+                        "p-3 rounded-lg",
+                        player.selectedPositions.includes("Goleiro")
+                          ? "bg-blue-50"
+                          : "bg-gray-50"
+                      )}
+                    >
+                      <div className="font-medium">{player.name}</div>
+                      <div className="text-sm text-gray-600">
+                        {player.selectedPositions.join(", ")}
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                      <div className="text-sm text-gray-600">
+                        Rating: {player.rating}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </motion.div>
   );
