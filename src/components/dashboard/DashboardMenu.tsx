@@ -1,6 +1,5 @@
-
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from "@/components/ui/card";
 
 interface MenuItem {
@@ -9,6 +8,50 @@ interface MenuItem {
   icon: string;
   description: string;
 }
+
+const springConfig = {
+  type: "spring",
+  stiffness: 300,
+  damping: 20
+};
+
+const MenuCard = ({ item, index }: { item: MenuItem; index: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: index * 0.1, ...springConfig }}
+  >
+    <Link 
+      to={item.route} 
+      className="focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-xl"
+      aria-label={`Acessar ${item.title}`}
+    >
+      <Card 
+        className="p-6 hover:shadow-lg transition-all duration-200 bg-white/90 backdrop-blur
+                   group hover:border-teal-100 relative overflow-hidden"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <div className="flex items-start gap-4">
+          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-50
+                          group-hover:bg-teal-100 transition-colors duration-200">
+            <span className="text-2xl">{item.icon}</span>
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-semibold text-gray-800 mb-1.5">
+              {item.title}
+            </h2>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              {item.description}
+            </p>
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-teal-50 group-hover:bg-teal-100 
+                        transition-colors duration-200" />
+      </Card>
+    </Link>
+  </motion.div>
+);
 
 export const DashboardMenu = () => {
   const menuItems: MenuItem[] = [
@@ -51,24 +94,9 @@ export const DashboardMenu = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
       {menuItems.map((item, index) => (
-        <motion.div
-          key={item.route}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-        >
-          <Link to={item.route}>
-            <Card className="p-6 hover:shadow-lg transition-shadow duration-300 bg-white/80 backdrop-blur">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl">{item.icon}</span>
-                <h2 className="text-xl font-semibold text-gray-800">{item.title}</h2>
-              </div>
-              <p className="text-gray-600 text-sm">{item.description}</p>
-            </Card>
-          </Link>
-        </motion.div>
+        <MenuCard key={item.route} item={item} index={index} />
       ))}
     </div>
   );
