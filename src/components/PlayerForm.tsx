@@ -1,4 +1,3 @@
-
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Save } from "lucide-react";
@@ -6,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { Player, PositionEnum, SportEnum, RatingEnum } from "@/utils/types";
+import { Player, FormErrors, SportEnum, PositionEnum, RatingEnum } from "@/utils/types";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
@@ -46,7 +45,7 @@ const PlayerForm = () => {
   };
 
   const validateForm = () => {
-    const newErrors = {
+    const newErrors: FormErrors = {
       name: { hasError: newPlayer.name.trim() === "", message: "Nome é obrigatório" },
       isGuest: { hasError: newPlayer.isGuest === null, message: "Selecione o status de convidado" },
       selectedPositions: { hasError: newPlayer.selectedPositions.length === 0, message: "Selecione ao menos uma posição" },

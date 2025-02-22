@@ -152,15 +152,15 @@ export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
   return rounds;
 };
 
-export const generateGroups = (teams: Team[], groupSize: number = 4): Group[] => {
+export const generateGroups = (teams: Team[]): Group[] => {
   validateTeams(teams);
   
   const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
-  const numGroups = Math.ceil(teams.length / groupSize);
+  const numGroups = Math.ceil(teams.length / 4);
   const groups: Group[] = [];
 
   for (let i = 0; i < numGroups; i++) {
-    const groupTeams = shuffledTeams.slice(i * groupSize, (i + 1) * groupSize);
+    const groupTeams = shuffledTeams.slice(i * 4, (i + 1) * 4);
     const matches: Match[] = [];
 
     // Gerar partidas de ida e volta

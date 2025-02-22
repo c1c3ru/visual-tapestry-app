@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+const MotionButton = motion(Button);
+
 interface DashboardHeaderProps {
   isAdmin: boolean;
   dashboardTitle: string;
@@ -74,21 +76,21 @@ export const DashboardHeader = ({
               onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()}
             />
             <div className="flex gap-2">
-              <AnimatedButton 
+              <MotionButton
                 onClick={handleTitleSave}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Salvar
-              </AnimatedButton>
-              <AnimatedButton
+              </MotionButton>
+              <MotionButton
                 variant="outline"
                 onClick={handleTitleCancel}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Cancelar
-              </AnimatedButton>
+              </MotionButton>
             </div>
           </motion.div>
         ) : (
