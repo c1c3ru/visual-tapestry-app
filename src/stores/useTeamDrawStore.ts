@@ -1,14 +1,6 @@
 
 import { create } from 'zustand';
-import { Player } from '@/utils/types';
-
-interface TeamDrawState {
-  playersPerTeam: number;
-  teams: Player[][];
-  setTeams: (teams: Player[][]) => void;
-  setPlayersPerTeam: (count: number) => void;
-  generateTeams: (players: Player[]) => { success: boolean; error?: string };
-}
+import { Player, PositionEnum, TeamDrawState } from '@/utils/types';
 
 export const useTeamDrawStore = create<TeamDrawState>((set) => ({
   playersPerTeam: 5,
@@ -33,10 +25,10 @@ export const useTeamDrawStore = create<TeamDrawState>((set) => ({
 
     // Separa goleiros dos demais jogadores
     const goalkeepers = availablePlayers.filter(p => 
-      p.selectedPositions.includes("Goleiro")
+      p.selectedPositions.includes(PositionEnum.GOALKEEPER)
     );
     const fieldPlayers = availablePlayers.filter(p => 
-      !p.selectedPositions.includes("Goleiro")
+      !p.selectedPositions.includes(PositionEnum.GOALKEEPER)
     );
 
     // Verifica se há goleiros suficientes
