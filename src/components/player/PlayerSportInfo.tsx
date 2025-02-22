@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "@/components/ui/label";
-import { Sport } from "@/utils/types";
+import { Sport, SportEnum } from "@/utils/types";
 import { PlayerPositions } from './PlayerPositions';
 import { PlayerSportSelection } from './PlayerSportSelection';
 import { AlertTriangle } from "lucide-react";
@@ -14,10 +14,10 @@ const springConfig = {
 interface PlayerSportInfoProps {
   sport: Sport;
   selectedPositions: string[];
-  onSportChange: (value: string) => void;
+  onSportChange: (sport: Sport) => void;
   onPositionChange: (position: string, checked: boolean) => void;
   errors: {
-    selectedPositions: boolean;
+    selectedPositions: { hasError: boolean; message: string };
   };
 }
 
@@ -54,7 +54,7 @@ export const PlayerSportInfo: React.FC<PlayerSportInfoProps> = ({
       >
         <legend className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-4">
           Posições do Jogador
-          {errors.selectedPositions && (
+          {errors.selectedPositions.hasError && (
             <span className="text-red-500">*</span>
           )}
         </legend>
@@ -66,7 +66,7 @@ export const PlayerSportInfo: React.FC<PlayerSportInfoProps> = ({
         />
 
         <AnimatePresence>
-          {errors.selectedPositions && (
+          {errors.selectedPositions.hasError && (
             <motion.div
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
@@ -77,7 +77,7 @@ export const PlayerSportInfo: React.FC<PlayerSportInfoProps> = ({
             >
               <AlertTriangle className="h-4 w-4 text-red-500" />
               <p className="text-sm text-red-600">
-                Selecione pelo menos uma posição
+                {errors.selectedPositions.message}
               </p>
             </motion.div>
           )}

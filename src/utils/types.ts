@@ -8,6 +8,12 @@ export enum SportEnum {
   HANDBALL = "HANDBALL"
 }
 
+export enum TournamentType {
+  LEAGUE = "league",
+  WORLD_CUP = "worldCup",
+  HOME_AWAY = "homeAway"
+}
+
 export enum PositionEnum {
   GOALKEEPER = "Goleiro",
   DEFENDER = "Defensor",
@@ -38,13 +44,13 @@ export interface FormErrors {
   rating: ErrorState;
 }
 
-export interface PlayerBasicInfoErrors {
-  name: boolean;
-  isGuest: boolean;
+export interface BasicInfoErrors {
+  name: ErrorState;
+  isGuest: ErrorState;
 }
 
-export interface PlayerSportInfoErrors {
-  selectedPositions: boolean;
+export interface SportInfoErrors {
+  selectedPositions: ErrorState;
 }
 
 export interface Player {
@@ -62,6 +68,50 @@ export interface Player {
   present: boolean;
   paid: boolean;
   registered: boolean;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  responsible: string;
+  players: Player[];
+  rating: number;
+  ranking?: number;
+  stats?: TeamStatistics;
+}
+
+export interface Match {
+  id: string;
+  team1: Team;
+  team2: Team;
+  score1?: number;
+  score2?: number;
+  date: Date;
+  location?: string;
+  isHomeGame?: boolean;
+  round?: string;
+  type?: string;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  teams: Team[];
+  matches: Match[];
+}
+
+export interface KnockoutMatches {
+  roundOf16: Match[];
+  quarterFinals: Match[];
+  semiFinals: Match[];
+  final: Match;
+  thirdPlace: Match;
+}
+
+export interface TournamentBracketProps {
+  match: Match;
+  groups?: Group[];
+  knockoutMatches?: KnockoutMatches;
 }
 
 export interface PlayerState {
@@ -95,47 +145,6 @@ export interface SettingsState {
   guestHighlight: string;
   setRatingSystem: (system: string) => void;
   setGuestHighlight: (highlight: string) => void;
-}
-
-export interface Team {
-  id: string;
-  name: string;
-  responsible: string;
-  players: Player[];
-  rating: number;
-  ranking?: number;
-  stats?: TeamStatistics;
-}
-
-export interface Match {
-  id: string;
-  team1: Team;
-  team2: Team;
-  score1?: number;
-  score2?: number;
-  date: Date;
-  location?: string;
-  isHomeGame?: boolean;
-}
-
-export interface Group {
-  name: string;
-  teams: Team[];
-  matches: Match[];
-}
-
-export interface KnockoutMatches {
-  roundOf16: Match[];
-  quarterFinals: Match[];
-  semiFinals: Match[];
-  final: Match;
-  thirdPlace: Match;
-}
-
-export interface TournamentBracketProps {
-  match: Match;
-  groups?: Group[];
-  knockoutMatches?: KnockoutMatches | null;
 }
 
 export interface Tournament {

@@ -15,8 +15,8 @@ interface PresenceListItemProps {
   player: Player;
   isAdmin: boolean;
   guestHighlight: string;
-  onTogglePresence: (id: number) => void;
-  onTogglePayment: (id: number) => void;
+  onTogglePresence: (id: string) => void;
+  onTogglePayment: (id: string) => void;
 }
 
 export const PresenceListItem: React.FC<PresenceListItemProps> = ({
@@ -128,6 +128,14 @@ export const PresenceListItem: React.FC<PresenceListItemProps> = ({
       </motion.div>
     </div>
   );
+
+  const handleTogglePresence = () => {
+    onTogglePresence(player.id);
+  };
+
+  const handleTogglePayment = () => {
+    onTogglePayment(player.id);
+  };
 
   return (
     <motion.div

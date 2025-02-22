@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { SportsIcons } from "./sportsicons.tsx"; // Assume a custom icon component
+import { SportsIcons } from "./sportsicons.tsx";
 
 const springConfig = {
   type: "spring",
@@ -29,6 +29,12 @@ interface PlayerPositionsProps {
   sport: Sport;
   selectedPositions: string[];
   onPositionChange: (position: string, checked: boolean) => void;
+}
+
+interface SportsIconsProps {
+  sport: Sport;
+  position: string;
+  className: string;
 }
 
 export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
@@ -81,7 +87,11 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
                   )}
                 />
                 <div className="flex items-center gap-2">
-                  <SportsIcons position={position} className="h-5 w-5 text-gray-600" />
+                  <SportsIcons 
+                    sport={sport}
+                    position={position}
+                    className="h-5 w-5 text-gray-600"
+                  />
                   <span className="text-sm font-medium text-gray-700">
                     {position}
                   </span>
