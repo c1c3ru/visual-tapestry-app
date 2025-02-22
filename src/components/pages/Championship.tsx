@@ -60,8 +60,7 @@ const Championship = () => {
       toast({
         title: "Campos obrigatórios",
         description: "Preencha todos os campos para adicionar um time",
-        variant: "destructive",
-        icon: <AlertTriangle className="w-4 h-4" />
+        variant: "destructive"
       });
       return;
     }

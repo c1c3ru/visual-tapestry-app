@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
 const springConfig = {
   type: "spring",

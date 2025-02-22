@@ -1,6 +1,3 @@
-// Remove the conflicting import
-// import { SportEnum } from './types';
-
 export enum SportEnum {
   FUTSAL = "futsal",
   FOOTBALL = "futebol",
@@ -29,7 +26,7 @@ export type Rating = RatingEnum;
 export type Sport = SportEnum;
 
 export interface Player {
-  id: string;
+  id: string; // Changed from number to string for consistency
   name: string;
   nickname: string;
   birthDate: string; // Changed to string for easier form handling
@@ -55,16 +52,11 @@ export interface PlayerState {
     rating: { hasError: boolean; message: string };
   };
   editingPlayer: Player | null;
-  editValue?: string; // Added for PlayerList component
+  setEditingPlayer: (player: Player | null) => void;
   addPlayer: (player: Player) => void;
-  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
-  setErrors: (errors: Partial<PlayerState['errors']>) => void;
-  resetForm: () => void;
-  updatePlayer: (id: string, updatedPlayer: Partial<Player>) => void;
+  updatePlayer: (id: string, updatedFields: Partial<Player>) => void;
   removePlayer: (id: string) => void;
   setPlayers: (players: Player[]) => void;
-  setEditingPlayer: (player: Player | null) => void;
-  setEditValue?: (value: string) => void; // Added for PlayerList component
 }
 
 export interface Team {

@@ -12,11 +12,11 @@ const springConfig = {
 interface PlayerListContainerProps {
   players: Player[];
   guestHighlight: string;
-  onEdit: (id: number) => void;
-  onDelete: (id: number) => void;
-  editingPlayer: { id: number } | null;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  editingPlayer: Player | null;
   editValue: string;
-  onEditSave: (id: number, newValue: string) => void;
+  onEditSave: (id: string, newValue: string) => void;
   setEditValue: (value: string) => void;
 }
 
