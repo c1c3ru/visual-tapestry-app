@@ -1,3 +1,5 @@
+import { SportEnum } from './types';
+
 // Tipos básicos melhorados
 export enum SportEnum {
   FUTSAL = "futsal",
