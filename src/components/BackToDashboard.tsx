@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -56,3 +57,5 @@ export const BackToDashboard = () => {
     </motion.div>
   );
 };
+
+export default BackToDashboard;
