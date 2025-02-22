@@ -1,27 +1,30 @@
+
 import React from "react";
+import { Trophy, CircleDot, Dumbbell } from "lucide-react";
 
-// Importe os ícones necessários (você pode usar bibliotecas como Lucide, FontAwesome ou criar seus próprios SVGs)
-import { Football, Basketball, Volleyball, Handball } from "lucide-react";
-
-interface SportsIconsProps {
-  sport: string; // Nome do esporte (ex.: "futsal", "futebol", "volei", etc.)
+export interface SportsIconsProps {
+  sport: SportEnum | string;
+  className?: string;
+  position?: string;
 }
 
-export const SportsIcons: React.FC<SportsIconsProps> = ({ sport }) => {
-  // Mapeie os esportes para seus respectivos ícones
+export const SportsIcons: React.FC<SportsIconsProps> = ({ sport, className, position }) => {
   const getIcon = () => {
-    switch (sport.toLowerCase()) {
-      case "futsal":
-      case "futebol":
-        return <Football className="h-6 w-6 text-green-600" />;
-      case "basquete":
-        return <Basketball className="h-6 w-6 text-orange-500" />;
-      case "volei":
-        return <Volleyball className="h-6 w-6 text-blue-500" />;
-      case "handbol":
-        return <Handball className="h-6 w-6 text-purple-600" />;
+    if (position) {
+      return <Trophy className={className || "h-6 w-6 text-green-600"} />;
+    }
+
+    switch (sport.toUpperCase()) {
+      case SportEnum.FUTSAL:
+      case SportEnum.FOOTBALL:
+        return <Trophy className={className || "h-6 w-6 text-green-600"} />;
+      case SportEnum.BASKETBALL:
+      case SportEnum.VOLLEYBALL:
+        return <CircleDot className={className || "h-6 w-6 text-orange-500"} />;
+      case SportEnum.HANDBALL:
+        return <Dumbbell className={className || "h-6 w-6 text-purple-600"} />;
       default:
-        return <span>❓</span>; // Ícone padrão para esportes não mapeados
+        return <span>❓</span>;
     }
   };
 

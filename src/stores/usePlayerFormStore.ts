@@ -1,28 +1,15 @@
 import { create } from 'zustand';
-import { Player, Rating } from '@/utils/types';
+import { Player, PlayerState, SportEnum } from '@/utils/types';
 
-interface PlayerFormState {
-  newPlayer: Omit<Player, 'id' | 'createdAt'>;
-  errors: {
-    name: boolean;
-    isGuest: boolean;
-    selectedPositions: boolean;
-    rating: boolean;
-  };
-  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
-  setErrors: (errors: Partial<PlayerFormState['errors']>) => void;
-  resetForm: () => void;
-}
-
-export const usePlayerFormStore = create<PlayerFormState>((set) => ({
+const initialState = {
   newPlayer: {
     name: "",
     nickname: "",
-    birthDate: "",
+    birthDate: new Date().toISOString(),
     isGuest: false,
-    sport: "futebol",
+    sport: SportEnum.FOOTBALL,
     selectedPositions: [],
-    rating: 0 as Rating,
+    rating: 3,
     includeInDraw: false,
     present: false,
     paid: false,
@@ -30,11 +17,18 @@ export const usePlayerFormStore = create<PlayerFormState>((set) => ({
     selected: false,
   },
   errors: {
-    name: false,
-    isGuest: false,
-    selectedPositions: false,
-    rating: false,
+    name: { hasError: false, message: '' },
+    isGuest: { hasError: false, message: '' },
+    selectedPositions: { hasError: false, message: '' },
+    rating: { hasError: false, message: '' },
   },
+  editingPlayer: null,
+  editValue: '',
+  players: [],
+};
+
+export const usePlayerFormStore = create<PlayerState>((set) => ({
+  ...initialState,
   setNewPlayer: (player) => set((state) => ({
     newPlayer: { ...state.newPlayer, ...player },
   })),
@@ -45,11 +39,11 @@ export const usePlayerFormStore = create<PlayerFormState>((set) => ({
     newPlayer: {
       name: "",
       nickname: "",
-      birthDate: "",
+      birthDate: new Date().toISOString(),
       isGuest: false,
-      sport: "futebol",
+      sport: SportEnum.FOOTBALL,
       selectedPositions: [],
-      rating: 0 as Rating,
+      rating: 3,
       includeInDraw: false,
       present: false,
       paid: false,
@@ -57,10 +51,22 @@ export const usePlayerFormStore = create<PlayerFormState>((set) => ({
       selected: false,
     },
     errors: {
-      name: false,
-      isGuest: false,
-      selectedPositions: false,
-      rating: false,
+      name: { hasError: false, message: '' },
+      isGuest: { hasError: false, message: '' },
+      selectedPositions: { hasError: false, message: '' },
+      rating: { hasError: false, message: '' },
     },
   }),
+  updatePlayer: (id, updatedPlayer) =>
+    set((state) => ({
+      players: state.players.map((player) =>
+        player.id === id ? { ...player, ...updatedPlayer } : player
+      ),
+    })),
+  removePlayer: (id) =>
+    set((state) => ({
+      players: state.players.filter((player) => player.id !== id),
+    })),
+  setPlayers: (players) => set({ players }),
+  setEditingPlayer: (editingPlayer) => set({ editingPlayer }),
 }));

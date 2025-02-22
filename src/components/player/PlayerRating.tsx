@@ -9,6 +9,15 @@ const springConfig = {
   damping: 20
 };
 
+export interface RatingInputProps {
+  ratingSystem: string;
+  rating: Rating;
+  onRatingChange: (rating: Rating) => void;
+  className?: string;
+  "aria-invalid"?: string;
+  "aria-describedby"?: string;
+}
+
 interface PlayerRatingProps {
   rating: Rating;
   ratingSystem: string;

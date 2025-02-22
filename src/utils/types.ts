@@ -1,9 +1,10 @@
+
 export enum SportEnum {
-  FUTSAL = "futsal",
-  FOOTBALL = "futebol",
-  VOLLEYBALL = "volei",
-  BASKETBALL = "basquete",
-  HANDBALL = "handbol"
+  FUTSAL = "FUTSAL",
+  FOOTBALL = "FOOTBALL",
+  VOLLEYBALL = "VOLLEYBALL",
+  BASKETBALL = "BASKETBALL",
+  HANDBALL = "HANDBALL"
 }
 
 export enum PositionEnum {
@@ -21,21 +22,20 @@ export enum RatingEnum {
   FIVE = 5
 }
 
-// Adding Rating type alias for components that use it
 export type Rating = RatingEnum;
 export type Sport = SportEnum;
 
 export interface Player {
-  id: string; // Changed from number to string for consistency
+  id: string;
   name: string;
   nickname: string;
-  birthDate: string; // Changed to string for easier form handling
+  birthDate: string;
   isGuest: boolean;
   sport: SportEnum;
   selectedPositions: PositionEnum[];
   rating: RatingEnum;
   includeInDraw: boolean;
-  createdAt: string; // Changed to string for consistency
+  createdAt: string;
   selected: boolean;
   present: boolean;
   paid: boolean;
@@ -52,11 +52,25 @@ export interface PlayerState {
     rating: { hasError: boolean; message: string };
   };
   editingPlayer: Player | null;
+  editValue?: string;
+  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
+  setErrors: (errors: Partial<PlayerState['errors']>) => void;
+  resetForm: () => void;
   setEditingPlayer: (player: Player | null) => void;
   addPlayer: (player: Player) => void;
   updatePlayer: (id: string, updatedFields: Partial<Player>) => void;
   removePlayer: (id: string) => void;
   setPlayers: (players: Player[]) => void;
+  setEditValue?: (value: string) => void;
+}
+
+export interface DashboardState {
+  currentPage: string;
+  setCurrentPage: (page: string) => void;
+  dashboardTitle: string;
+  isAdmin: boolean;
+  setDashboardTitle: (title: string) => void;
+  setIsAdmin: (isAdmin: boolean) => void;
 }
 
 export interface Team {
@@ -65,37 +79,10 @@ export interface Team {
   responsible: string;
   players: Player[];
   rating: number;
-  ranking?: number; // Made optional
-  stats?: TeamStatistics; // Made optional
+  ranking?: number;
+  stats?: TeamStatistics;
 }
 
-// Torneio com tipagem discriminada
-export type Tournament = 
-  | {
-      type: 'league';
-      id: string;
-      name: string;
-      teams: Team[];
-      matches: Match[];
-    }
-  | {
-      type: 'worldCup';
-      id: string;
-      name: string;
-      teams: Team[];
-      groups: Group[];
-      knockoutMatches: KnockoutMatches;
-    }
-  | {
-      type: 'homeAway';
-      id: string;
-      name: string;
-      teams: Team[];
-      matches: Match[];
-      isHomeGame: boolean;
-    };
-
-// Interfaces de partidas e times
 export interface Match {
   id: string;
   team1: Team;
@@ -104,6 +91,7 @@ export interface Match {
   score2?: number;
   date: Date;
   location?: string;
+  isHomeGame?: boolean;
 }
 
 export interface Group {
@@ -120,22 +108,19 @@ export interface KnockoutMatches {
   thirdPlace: Match;
 }
 
-// Estado do torneio com geração de matches
 export interface TournamentState {
   tournamentName: string;
-  tournamentType: Tournament['type'];
+  tournamentType: "league" | "worldCup" | "homeAway";
   teams: Team[];
   groups: Group[];
   knockoutMatches: KnockoutMatches | null;
   matches: Match[];
-  
   generateGroups: () => Group[];
   generateKnockoutStage: (qualifiedTeams: Team[]) => KnockoutMatches;
   scheduleMatch: (team1: Team, team2: Team, date: Date) => Match;
   updateMatchResult: (matchId: string, score1: number, score2: number) => void;
 }
 
-// Sistema de estatísticas melhorado
 export interface PlayerStatistics {
   playerId: string;
   matchesPlayed: number;
@@ -154,82 +139,12 @@ export interface TeamStatistics {
   goalsAgainst: number;
 }
 
-// Sistema de configurações ampliado
-export interface AppSettings {
-  ratingSystem: 'stars' | 'numbers' | 'points';
-  guestHighlight: 'color' | 'badge' | 'icon';
-  matchDuration: number;
-  maxPlayersPerTeam: number;
-  pointsPerWin: number;
-  pointsPerDraw: number;
-}
-
-// Exemplo de uso:
-const newPlayer: Player = {
-  id: crypto.randomUUID(),
-  name: "João Silva",
-  nickname: "JS",
-  birthDate: new Date(2000, 0, 1).toISOString(),
-  isGuest: false,
-  sport: SportEnum.FOOTBALL,
-  selectedPositions: [PositionEnum.FORWARD],
-  rating: RatingEnum.FOUR,
-  includeInDraw: true,
-  createdAt: new Date().toISOString(),
-  selected: false,
-  present: false,
-  paid: false,
-  registered: true
-};
-
-const worldCupTournament: Tournament = {
-  type: 'worldCup',
-  id: crypto.randomUUID(),
-  name: "Copa 2024",
-  teams: [],
-  groups: [],
-  knockoutMatches: {
-    roundOf16: [],
-    quarterFinals: [],
-    semiFinals: [],
-    final: {
-      id: crypto.randomUUID(),
-      team1: { id: '1', name: 'Time A', responsible: 'Coach A', players: [], rating: 0 },
-      team2: { id: '2', name: 'Time B', responsible: 'Coach B', players: [], rating: 0 },
-      date: new Date(2024, 6, 1)
-    },
-    thirdPlace: {
-      id: crypto.randomUUID(),
-      team1: { id: '3', name: 'Time C', responsible: 'Coach C', players: [], rating: 0 },
-      team2: { id: '4', name: 'Time D', responsible: 'Coach D', players: [], rating: 0 },
-      date: new Date(2024, 6, 1)
-    }
-  }
-};
-
-// Add missing types
-export interface DashboardState {
-  currentPage: string;
-  setCurrentPage: (page: string) => void;
-}
-
-export interface SettingsState {
-  ratingSystem: string;
-  guestHighlight: string;
-  setRatingSystem: (system: string) => void;
-  setGuestHighlight: (highlight: string) => void;
-}
-
 export interface StatisticsState {
   stats: PlayerStatistics[];
   teamStats: TeamStatistics[];
   updateStats: () => void;
 }
 
-export interface TeamDrawState {
-  playersPerTeam: number;
-  teams: Player[][];
-  setTeams: (teams: Player[][]) => void;
-  setPlayersPerTeam: (count: number) => void;
-  generateTeams: (players: Player[]) => { success: boolean; error?: string };
+export interface TournamentBracketProps {
+  match: Match;
 }
