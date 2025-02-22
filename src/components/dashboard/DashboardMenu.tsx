@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useDashboardStore } from '@/stores/useDashboardStore';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,13 +40,13 @@ const menuItems = [
 ];
 
 export const DashboardMenu = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { setCurrentPage, setDashboardTitle } = useDashboardStore();
 
   const handleNavigation = (path: string, title: string) => {
     setCurrentPage(path);
     setDashboardTitle(title);
-    router.push(path);
+    navigate(path);
   };
 
   return (

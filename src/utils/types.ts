@@ -1,4 +1,3 @@
-
 import { ReactNode } from 'react';
 
 export enum SportEnum {
@@ -37,6 +36,15 @@ export interface FormErrors {
   isGuest: ErrorState;
   selectedPositions: ErrorState;
   rating: ErrorState;
+}
+
+export interface PlayerBasicInfoErrors {
+  name: boolean;
+  isGuest: boolean;
+}
+
+export interface PlayerSportInfoErrors {
+  selectedPositions: boolean;
 }
 
 export interface Player {

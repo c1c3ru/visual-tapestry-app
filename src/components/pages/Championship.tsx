@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { Team } from "@/utils/types";
 
 const springConfig = {
   type: "spring",
@@ -58,9 +59,7 @@ const Championship = () => {
 
   const handleAddTeam = () => {
     if (!teamName.trim() || !responsible.trim()) {
-      toast("Erro", {
-        description: "Nome do time e responsável são obrigatórios"
-      });
+      toast("Nome do time e responsável são obrigatórios");
       return;
     }
 
@@ -74,15 +73,11 @@ const Championship = () => {
 
     const result = addTeam(newTeam);
     if (result.success) {
-      toast("Sucesso", {
-        description: "Time adicionado com sucesso!"
-      });
+      toast("Time adicionado com sucesso!");
       setTeamName("");
       setResponsible("");
     } else {
-      toast("Erro", {
-        description: result.error || "Erro ao adicionar time"
-      });
+      toast(result.error || "Erro ao adicionar time");
     }
   };
 

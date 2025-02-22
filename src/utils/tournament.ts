@@ -1,3 +1,7 @@
+import { Team, Match, KnockoutMatches, Group, TournamentBracketProps } from './types';
+
+export { TournamentBracketProps };
+
 import { v4 as uuidv4 } from 'uuid';
 
 // ==================== Enums e Tipos Base ====================
@@ -25,43 +29,6 @@ export enum ErrorMessages {
 }
 
 // ==================== Interfaces Melhoradas ====================
-export interface Team {
-  id: string;
-  name: string;
-  responsible: string;
-  players: string[]; // IDs dos jogadores
-  ranking: number;
-  group?: string;
-  stats: {
-    wins: number;
-    draws: number;
-    losses: number;
-    goalsFor: number;
-    goalsAgainst: number;
-  };
-}
-
-export interface Match {
-  id: string;
-  team1: Team;
-  team2: Team;
-  score1: number;
-  score2: number;
-  date: Date;
-  location?: string;
-  type: MatchType;
-  status: MatchStatus;
-  isHomeGame: boolean;
-  round?: string;
-}
-
-export interface Group {
-  id: string;
-  name: string;
-  teams: Team[];
-  matches: Match[];
-  standings?: TeamStanding[];
-}
 
 export interface TeamStanding {
   teamId: string;
@@ -74,25 +41,6 @@ export interface TeamStanding {
   goalsAgainst: number;
 }
 
-export interface KnockoutMatches {
-  roundOf16: Match[];
-  quarterFinals: Match[];
-  semiFinals: Match[];
-  final: Match;
-  thirdPlace: Match;
-}
-
-export interface Tournament {
-  id: string;
-  name: string;
-  type: TournamentType;
-  startDate: Date;
-  endDate: Date;
-  teams: Team[];
-  matches: Match[];
-  groups?: Group[];
-  knockoutMatches?: KnockoutMatches;
-}
 
 // ==================== Utilitários ====================
 const validateTeams = (teams: Team[], minTeams: number = 4): void => {

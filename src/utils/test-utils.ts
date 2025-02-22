@@ -1,5 +1,5 @@
 
-import { Player, Team, SportEnum, RatingEnum } from './types';
+import { Team, Player, SportEnum, RatingEnum } from './types';
 
 export const mockPlayer: Player = {
   id: "1",
@@ -23,5 +23,15 @@ export const mockTeam: Team = {
   name: "Test Team",
   responsible: "Test Responsible",
   players: [],
-  rating: 0
+  rating: 0,
 };
+
+export const createMockTeam = (overrides: Partial<Team> = {}): Team => ({
+  ...mockTeam,
+  ...overrides,
+});
+
+export const createMockPlayer = (overrides: Partial<Player> = {}): Player => ({
+  ...mockPlayer,
+  ...overrides,
+});

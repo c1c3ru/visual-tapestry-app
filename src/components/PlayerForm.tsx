@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { Player, FormErrors, SportEnum, PositionEnum, RatingEnum } from "@/utils/types";
+import { Player, FormErrors, SportEnum, PositionEnum, RatingEnum, PlayerBasicInfoErrors, PlayerSportInfoErrors } from "@/utils/types";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
@@ -22,6 +22,39 @@ const PlayerForm = () => {
   const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm } = usePlayerStore();
   const { ratingSystem } = useSettingsStore();
   const { toast } = useToast();
+
+  const validateForm = () => {
+    const basicErrors: PlayerBasicInfoErrors = {
+      name: newPlayer.name.trim() === "",
+      isGuest: newPlayer.isGuest === null,
+    };
+
+    const sportErrors: PlayerSportInfoErrors = {
+      selectedPositions: newPlayer.selectedPositions.length === 0
+    };
+
+    const newErrors: FormErrors = {
+      name: { 
+        hasError: basicErrors.name, 
+        message: "Nome é obrigatório" 
+      },
+      isGuest: { 
+        hasError: basicErrors.isGuest, 
+        message: "Selecione o status de convidado" 
+      },
+      selectedPositions: { 
+        hasError: sportErrors.selectedPositions, 
+        message: "Selecione ao menos uma posição" 
+      },
+      rating: { 
+        hasError: newPlayer.rating < 1, 
+        message: "Avaliação é obrigatória" 
+      }
+    };
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error.hasError);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -42,17 +75,6 @@ const PlayerForm = () => {
 
   const handleRatingChange = (newRating: RatingEnum) => {
     setNewPlayer({ rating: newRating });
-  };
-
-  const validateForm = () => {
-    const newErrors: FormErrors = {
-      name: { hasError: newPlayer.name.trim() === "", message: "Nome é obrigatório" },
-      isGuest: { hasError: newPlayer.isGuest === null, message: "Selecione o status de convidado" },
-      selectedPositions: { hasError: newPlayer.selectedPositions.length === 0, message: "Selecione ao menos uma posição" },
-      rating: { hasError: newPlayer.rating < 1, message: "Avaliação é obrigatória" }
-    };
-    setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error.hasError);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
