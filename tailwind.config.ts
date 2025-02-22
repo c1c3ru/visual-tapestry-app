@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,12 +26,12 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#00BFA5",
+          DEFAULT: "#9b87f5",
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#FEF7CD",
+          foreground: "#1A1F2C",
         },
         destructive: {
           DEFAULT: "#FF4444",
@@ -52,14 +53,6 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        bronze: {
-          DEFAULT: "#CD7F32",
-          foreground: "#FFFFFF",
-        },
-        tournament: {
-          bg: "#9b87f5",
-          accent: "#FEF7CD",
-        }
       },
       borderRadius: {
         lg: "var(--radius)",
