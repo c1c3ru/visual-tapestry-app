@@ -1,11 +1,12 @@
+
 import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { Player, Rating } from "@/utils/types";
+import { Player, PositionEnum, SportEnum, RatingEnum } from "@/utils/types";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
@@ -28,11 +29,11 @@ const PlayerForm = () => {
     setNewPlayer({ [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSelectChange = (value: string) => {
-    setNewPlayer({ sport: value as any, selectedPositions: [] });
+  const handleSelectChange = (value: SportEnum) => {
+    setNewPlayer({ sport: value, selectedPositions: [] });
   };
 
-  const handlePositionChange = (position: string, checked: boolean) => {
+  const handlePositionChange = (position: PositionEnum, checked: boolean) => {
     const positions = checked 
       ? [...newPlayer.selectedPositions, position]
       : newPlayer.selectedPositions.filter(p => p !== position);
@@ -40,19 +41,19 @@ const PlayerForm = () => {
     setNewPlayer({ selectedPositions: positions });
   };
 
-  const handleRatingChange = (newRating: Rating) => {
+  const handleRatingChange = (newRating: RatingEnum) => {
     setNewPlayer({ rating: newRating });
   };
 
   const validateForm = () => {
     const newErrors = {
-      name: newPlayer.name.trim() === "",
-      isGuest: newPlayer.isGuest === null,
-      selectedPositions: newPlayer.selectedPositions.length === 0,
-      rating: newPlayer.rating < 1,
+      name: { hasError: newPlayer.name.trim() === "", message: "Nome é obrigatório" },
+      isGuest: { hasError: newPlayer.isGuest === null, message: "Selecione o status de convidado" },
+      selectedPositions: { hasError: newPlayer.selectedPositions.length === 0, message: "Selecione ao menos uma posição" },
+      rating: { hasError: newPlayer.rating < 1, message: "Avaliação é obrigatória" }
     };
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error);
+    return !Object.values(newErrors).some(error => error.hasError);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -68,7 +69,7 @@ const PlayerForm = () => {
 
     const player: Player = {
       ...newPlayer,
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       registered: true,
       present: false,
@@ -145,7 +146,7 @@ const PlayerForm = () => {
                   rating={newPlayer.rating}
                   ratingSystem={ratingSystem}
                   onRatingChange={handleRatingChange}
-                  error={errors.rating}
+                  error={errors.rating.hasError}
                 />
               </motion.div>
             </AnimatePresence>

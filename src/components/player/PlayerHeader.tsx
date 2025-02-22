@@ -1,43 +1,30 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import BackToDashboard from "../BackToDashboard";
-import { User } from 'lucide-react';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
+import React from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 export const PlayerHeader = () => {
-  return (
-    <div className="mb-6 space-y-4">
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={springConfig}
-        >
-          <BackToDashboard />
-        </motion.div>
-      </AnimatePresence>
+  const navigate = useNavigate();
 
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ...springConfig, delay: 0.1 }}
-      >
-        <Card className="hover:shadow-lg transition-shadow bg-gradient-to-r from-blue-50 to-teal-50 border-b-4 border-teal-500">
-          <CardHeader className="flex flex-row items-center space-x-4">
-            <div className="p-3 bg-teal-100 rounded-full">
-              <User className="h-6 w-6 text-teal-600" />
-            </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-              Cadastrar Novo Jogador
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      </motion.div>
-    </div>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-6"
+    >
+      <div className="flex items-center justify-between">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/dashboard")}
+          className="gap-2"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Voltar ao Dashboard
+        </Button>
+        <h1 className="text-2xl font-bold">Cadastro de Jogador</h1>
+      </div>
+    </motion.div>
   );
 };

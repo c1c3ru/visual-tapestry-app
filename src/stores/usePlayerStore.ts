@@ -7,7 +7,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   newPlayer: {
     name: "",
     nickname: "",
-    birthDate: new Date(),
+    birthDate: new Date().toISOString(),
     isGuest: false,
     sport: SportEnum.FOOTBALL,
     selectedPositions: [],
@@ -39,7 +39,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     newPlayer: {
       name: "",
       nickname: "",
-      birthDate: new Date(),
+      birthDate: new Date().toISOString(),
       isGuest: false,
       sport: SportEnum.FOOTBALL,
       selectedPositions: [],
