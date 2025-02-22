@@ -1,3 +1,4 @@
+
 import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { SportEnum, PositionEnum } from "@/utils/types";
@@ -44,6 +45,7 @@ export const PlayerSportInfo: React.FC<PlayerSportInfoProps> = ({
           Posições Selecionadas *
         </Label>
         <PlayerPositions
+          sport={sport}
           selectedPositions={selectedPositions}
           onPositionChange={onPositionChange}
         />

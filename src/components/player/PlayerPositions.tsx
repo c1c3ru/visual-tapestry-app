@@ -3,38 +3,13 @@ import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { SportsIcons } from "./sportsicons.tsx";
-
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
-
-type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
-
-type Position = {
-  [key in Sport]: string[];
-};
-
-const positions: Position = {
-  futsal: ["Goleiro", "Fixo", "Ala", "Pivô"],
-  futebol: ["Goleiro", "Defensor", "Meio-campo", "Atacante"],
-  volei: ["Levantador", "Líbero", "Central", "Ponteiro", "Oposto"],
-  basquete: ["Armador", "Ala", "Ala-pivô", "Pivô"],
-  handbol: ["Goleiro", "Ponta", "Central", "Pivô"]
-};
+import { SportsIcons } from "./sportsicons";
+import { SportEnum, PositionEnum } from "@/utils/types";
 
 interface PlayerPositionsProps {
-  sport: Sport;
-  selectedPositions: string[];
-  onPositionChange: (position: string, checked: boolean) => void;
-}
-
-interface SportsIconsProps {
-  sport: Sport;
-  position: string;
-  className: string;
+  sport: SportEnum;
+  selectedPositions: PositionEnum[];
+  onPositionChange: (position: PositionEnum, checked: boolean) => void;
 }
 
 export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
@@ -42,8 +17,22 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
   selectedPositions,
   onPositionChange
 }) => {
-  const handlePositionChange = (checked: boolean, position: string) => {
+  const handlePositionChange = (checked: boolean, position: PositionEnum) => {
     onPositionChange(position, checked);
+  };
+
+  const positions: { [key in SportEnum]: PositionEnum[] } = {
+    [SportEnum.FUTSAL]: [PositionEnum.GOALKEEPER, PositionEnum.DEFENDER, PositionEnum.MIDFIELDER, PositionEnum.FORWARD],
+    [SportEnum.FOOTBALL]: [PositionEnum.GOALKEEPER, PositionEnum.DEFENDER, PositionEnum.MIDFIELDER, PositionEnum.FORWARD],
+    [SportEnum.VOLLEYBALL]: [PositionEnum.GOALKEEPER, PositionEnum.DEFENDER, PositionEnum.MIDFIELDER, PositionEnum.FORWARD],
+    [SportEnum.BASKETBALL]: [PositionEnum.GOALKEEPER, PositionEnum.DEFENDER, PositionEnum.MIDFIELDER, PositionEnum.FORWARD],
+    [SportEnum.HANDBALL]: [PositionEnum.GOALKEEPER, PositionEnum.DEFENDER, PositionEnum.MIDFIELDER, PositionEnum.FORWARD]
+  };
+
+  const springConfig = {
+    type: "spring",
+    stiffness: 300,
+    damping: 20
   };
 
   return (
