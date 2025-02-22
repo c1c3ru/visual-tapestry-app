@@ -1,3 +1,5 @@
+import React from 'react';
+import { RatingEnum } from '@/utils/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, StarHalf } from 'lucide-react';
 import { Rating } from '@/utils/types';
@@ -11,16 +13,22 @@ const springConfig = {
   damping: 20
 };
 
-interface RatingInputProps {
+export interface RatingInputProps {
   ratingSystem: string;
-  rating: number;
-  onRatingChange: (rating: number) => void;
+  rating: RatingEnum;
+  onRatingChange: (rating: RatingEnum) => void;
+  className?: string;
+  'aria-invalid'?: string;
+  'aria-describedby'?: string;
 }
 
 export const RatingInput: React.FC<RatingInputProps> = ({
   ratingSystem,
   rating,
   onRatingChange,
+  className,
+  'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy,
 }) => {
   const renderHalfStars = () => {
     return (

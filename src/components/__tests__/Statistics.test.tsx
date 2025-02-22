@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,35 +6,25 @@ import Statistics from '../Statistics';
 import { useStatisticsStore } from '@/stores/useStatisticsStore';
 import { useToast } from '@/hooks/use-toast';
 import { StatisticsState } from '@/utils/types';
+import { Mock } from 'jest-mock';
 
 jest.mock('@/stores/useStatisticsStore');
 jest.mock('@/hooks/use-toast');
 
+const mockUseStatisticsStore = useStatisticsStore as jest.MockedFunction<typeof useStatisticsStore>;
+
 describe('Statistics', () => {
-  const mockStore: StatisticsState = {
+  const mockStore = {
     stats: [],
     teamStats: [],
     updateStats: jest.fn(),
-    statistics: [
-      {
-        id: "1",
-        name: "Torneio 1",
-        date: "2024-01-01",
-        attendanceCount: 10,
-        lastUpdated: "2024-01-02",
-        pointRecords: [
-          { points: 3, date: "2024-01-01" },
-          { points: 2, date: "2024-01-02" },
-        ],
-      }
-    ],
     updateStatistic: jest.fn(),
     removeStatistic: jest.fn(),
-  };
+  } as unknown as StatisticsState;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (useStatisticsStore as jest.Mock).mockReturnValue(mockStore);
+    mockUseStatisticsStore.mockReturnValue(mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -49,7 +38,7 @@ describe('Statistics', () => {
 
   test('edits point record', async () => {
     const mockUpdateStatistic = jest.fn();
-    (mockUseStatisticsStore as unknown as jest.Mock).mockReturnValue({
+    mockUseStatisticsStore.mockReturnValue({
       ...mockStore,
       updateStatistic: mockUpdateStatistic,
     } as StatisticsState);
@@ -73,7 +62,7 @@ describe('Statistics', () => {
 
   test('removes statistic', async () => {
     const mockRemoveStatistic = jest.fn();
-    (mockUseStatisticsStore as unknown as jest.Mock).mockReturnValue({
+    mockUseStatisticsStore.mockReturnValue({
       ...mockStore,
       removeStatistic: mockRemoveStatistic,
     } as StatisticsState);

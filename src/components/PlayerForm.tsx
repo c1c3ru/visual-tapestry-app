@@ -10,8 +10,6 @@ import {
   SportEnum,
   PositionEnum,
   RatingEnum,
-  BasicInfoErrors,
-  SportInfoErrors,
   FormErrors 
 } from "@/utils/types";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
@@ -32,17 +30,26 @@ const PlayerForm = () => {
   const { toast } = useToast();
 
   const validateForm = () => {
+    const basicErrors = {
+      name: !newPlayer.name.trim(),
+      isGuest: newPlayer.isGuest === null,
+    };
+
+    const sportErrors = {
+      selectedPositions: newPlayer.selectedPositions.length === 0,
+    };
+
     const formErrors: FormErrors = {
       name: { 
-        hasError: !newPlayer.name.trim(), 
+        hasError: basicErrors.name, 
         message: "Nome é obrigatório" 
       },
       isGuest: { 
-        hasError: newPlayer.isGuest === null, 
+        hasError: basicErrors.isGuest, 
         message: "Selecione o status de convidado" 
       },
       selectedPositions: { 
-        hasError: newPlayer.selectedPositions.length === 0, 
+        hasError: sportErrors.selectedPositions, 
         message: "Selecione ao menos uma posição" 
       },
       rating: { 

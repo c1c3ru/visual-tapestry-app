@@ -3,6 +3,13 @@ import { toast } from "sonner";
 import { Team, TournamentType } from "@/utils/types";
 import { useTournamentStore } from "@/stores/useTournamentStore";
 import { TournamentBracket } from "@/components/TournamentBracket";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Flag, Shuffle } from "lucide-react";
 
 const Championship = () => {
   const {
@@ -20,14 +27,14 @@ const Championship = () => {
     setResponsible,
     addTeam,
     removeTeam,
-    generateMatches
+    generateMatches,
+    generateGroups,
+    generateKnockoutStage
   } = useTournamentStore();
 
   const handleAddTeam = () => {
     if (!teamName.trim() || !responsible.trim()) {
-      toast("Erro ao adicionar time", {
-        description: "Nome do time e responsável são obrigatórios"
-      });
+      toast.error("Nome do time e responsável são obrigatórios");
       return;
     }
 
@@ -41,29 +48,11 @@ const Championship = () => {
 
     const result = addTeam(newTeam);
     if (result.success) {
-      toast("Sucesso!", {
-        description: "Time adicionado com sucesso!"
-      });
+      toast.success("Time adicionado com sucesso!");
       setTeamName("");
       setResponsible("");
     } else {
-      toast("Erro!", {
-        description: result.error || "Erro ao adicionar time"
-      });
-    }
-  };
-
-  const handleRemoveTeam = (id: string) => {
-    removeTeam(id);
-    toast.info('Time removido');
-  };
-
-  const handleGenerateMatches = () => {
-    const result = generateMatches();
-    if (result.success) {
-      toast.success("Partidas geradas com sucesso!");
-    } else {
-      toast.error(result.error || "Erro ao gerar partidas");
+      toast.error(result.error || "Erro ao adicionar time");
     }
   };
 
@@ -73,10 +62,8 @@ const Championship = () => {
       return;
     }
 
-    const generatedGroups = generateGroups(teams);
-    console.log("Generated Groups:", generatedGroups);
+    const generatedGroups = generateGroups();
     toast({
-      title: "Grupos gerados!",
       description: "Os grupos para o torneio foram gerados aleatoriamente.",
       icon: <Shuffle className="h-4 w-4" />
     });
@@ -88,10 +75,8 @@ const Championship = () => {
       return;
     }
 
-    const generatedKnockoutStage = generateKnockoutMatches(teams);
-    console.log("Generated Knockout Stage:", generatedKnockoutStage);
+    const generatedKnockoutStage = generateKnockoutStage(teams);
     toast({
-      title: "Fase eliminatória gerada!",
       description: "A fase eliminatória do torneio foi gerada.",
       icon: <Flag className="h-4 w-4" />
     });
