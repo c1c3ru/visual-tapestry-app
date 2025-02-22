@@ -1,7 +1,9 @@
+
 import { create } from 'zustand';
 import { Player, PlayerState, SportEnum } from '@/utils/types';
 
-const initialState = {
+export const usePlayerFormStore = create<PlayerState>((set) => ({
+  players: [],
   newPlayer: {
     name: "",
     nickname: "",
@@ -17,25 +19,19 @@ const initialState = {
     selected: false,
   },
   errors: {
-    name: { hasError: false, message: '' },
-    isGuest: { hasError: false, message: '' },
-    selectedPositions: { hasError: false, message: '' },
-    rating: { hasError: false, message: '' },
+    name: { hasError: false, message: "" },
+    isGuest: { hasError: false, message: "" },
+    selectedPositions: { hasError: false, message: "" },
+    rating: { hasError: false, message: "" }
   },
   editingPlayer: null,
-  editValue: '',
-  players: [],
-};
-
-export const usePlayerFormStore = create<PlayerState>((set) => ({
-  ...initialState,
   setNewPlayer: (player) => set((state) => ({
-    newPlayer: { ...state.newPlayer, ...player },
+    newPlayer: { ...state.newPlayer, ...player }
   })),
   setErrors: (errors) => set((state) => ({
-    errors: { ...state.errors, ...errors },
+    errors: { ...state.errors, ...errors }
   })),
-  resetForm: () => set({
+  resetForm: () => set((state) => ({
     newPlayer: {
       name: "",
       nickname: "",
@@ -51,22 +47,23 @@ export const usePlayerFormStore = create<PlayerState>((set) => ({
       selected: false,
     },
     errors: {
-      name: { hasError: false, message: '' },
-      isGuest: { hasError: false, message: '' },
-      selectedPositions: { hasError: false, message: '' },
-      rating: { hasError: false, message: '' },
-    },
-  }),
-  updatePlayer: (id, updatedPlayer) =>
-    set((state) => ({
-      players: state.players.map((player) =>
-        player.id === id ? { ...player, ...updatedPlayer } : player
-      ),
-    })),
-  removePlayer: (id) =>
-    set((state) => ({
-      players: state.players.filter((player) => player.id !== id),
-    })),
-  setPlayers: (players) => set({ players }),
-  setEditingPlayer: (editingPlayer) => set({ editingPlayer }),
+      name: { hasError: false, message: "" },
+      isGuest: { hasError: false, message: "" },
+      selectedPositions: { hasError: false, message: "" },
+      rating: { hasError: false, message: "" }
+    }
+  })),
+  setEditingPlayer: (player) => set({ editingPlayer: player }),
+  addPlayer: (player) => set((state) => ({
+    players: [...state.players, player]
+  })),
+  updatePlayer: (id, updatedFields) => set((state) => ({
+    players: state.players.map((p) =>
+      p.id === id ? { ...p, ...updatedFields } : p
+    )
+  })),
+  removePlayer: (id) => set((state) => ({
+    players: state.players.filter((p) => p.id !== id)
+  })),
+  setPlayers: (players) => set({ players })
 }));

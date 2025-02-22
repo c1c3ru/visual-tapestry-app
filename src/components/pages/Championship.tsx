@@ -15,6 +15,7 @@ import { useTournamentStore } from "../../stores/useTournamentStore";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 const springConfig = {
   type: "spring",
@@ -56,44 +57,33 @@ const Championship = () => {
   }, [teams]);
 
   const handleAddTeam = () => {
-    if (!teamName?.trim() || !responsible?.trim()) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Preencha todos os campos para adicionar um time",
-        variant: "destructive"
+    if (!teamName.trim() || !responsible.trim()) {
+      toast("Erro", {
+        description: "Nome do time e responsável são obrigatórios"
       });
       return;
     }
 
-    const teamExists = teams.some(team => 
-      team.name.toLowerCase() === teamName.toLowerCase().trim()
-    );
-    
-    if (teamExists) {
-      toast({
-        title: "Time duplicado",
-        description: "Já existe um time com este nome",
-        variant: "destructive",
-        icon: <AlertTriangle className="w-4 h-4" />
-      });
-      return;
-    }
-
-    const newTeam = {
-      id: Date.now().toString(),
+    const newTeam: Team = {
+      id: crypto.randomUUID(),
       name: teamName.trim(),
       responsible: responsible.trim(),
+      players: [],
+      rating: 0
     };
 
-    addTeam(newTeam);
-    setTeamName('');
-    setResponsible('');
-    
-    toast({
-      title: "Time adicionado",
-      description: `${newTeam.name} foi registrado com sucesso`,
-      icon: <Users className="w-4 h-4 text-green-600" />
-    });
+    const result = addTeam(newTeam);
+    if (result.success) {
+      toast("Sucesso", {
+        description: "Time adicionado com sucesso!"
+      });
+      setTeamName("");
+      setResponsible("");
+    } else {
+      toast("Erro", {
+        description: result.error || "Erro ao adicionar time"
+      });
+    }
   };
 
   const handleGenerateMatches = async () => {

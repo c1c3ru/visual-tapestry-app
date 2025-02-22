@@ -1,103 +1,90 @@
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card } from "@/components/ui/card";
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/router';
+import { useDashboardStore } from '@/stores/useDashboardStore';
+import { Button } from '@/components/ui/button';
+import {
+  Users,
+  Trophy,
+  BarChart,
+  Settings,
+  ChevronRight,
+} from 'lucide-react';
 
-interface MenuItem {
-  title: string;
-  route: string;
-  icon: string;
-  description: string;
-}
+const MotionDiv = motion.div;
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
-
-const MenuCard = ({ item, index }: { item: MenuItem; index: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: index * 0.1, ...springConfig }}
-  >
-    <Link 
-      to={item.route} 
-      className="focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-xl"
-      aria-label={`Acessar ${item.title}`}
-    >
-      <Card 
-        className="p-6 hover:shadow-lg transition-all duration-200 bg-white/90 backdrop-blur
-                   group hover:border-teal-100 relative overflow-hidden"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <div className="flex items-start gap-4">
-          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-50
-                          group-hover:bg-teal-100 transition-colors duration-200">
-            <span className="text-2xl">{item.icon}</span>
-          </div>
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-800 mb-1.5">
-              {item.title}
-            </h2>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              {item.description}
-            </p>
-          </div>
-        </div>
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-teal-50 group-hover:bg-teal-100 
-                        transition-colors duration-200" />
-      </Card>
-    </Link>
-  </motion.div>
-);
+const menuItems = [
+  {
+    title: 'Jogadores',
+    icon: Users,
+    path: '/players',
+    description: 'Gerenciar jogadores e presenças',
+  },
+  {
+    title: 'Campeonatos',
+    icon: Trophy,
+    path: '/tournaments',
+    description: 'Organizar torneios e competições',
+  },
+  {
+    title: 'Estatísticas',
+    icon: BarChart,
+    path: '/statistics',
+    description: 'Visualizar dados e relatórios',
+  },
+  {
+    title: 'Configurações',
+    icon: Settings,
+    path: '/settings',
+    description: 'Ajustar preferências do sistema',
+  },
+];
 
 export const DashboardMenu = () => {
-  const menuItems: MenuItem[] = [
-    { 
-      title: 'Cadastrar Jogador', 
-      route: '/player/new',
-      icon: '👤',
-      description: 'Adicione novos jogadores ao sistema'
-    },
-    { 
-      title: 'Lista de Jogadores', 
-      route: '/players',
-      icon: '📋',
-      description: 'Visualize e gerencie todos os jogadores'
-    },
-    { 
-      title: 'Sorteio de Times', 
-      route: '/teams/draw',
-      icon: '🎲',
-      description: 'Sorteie times equilibrados automaticamente'
-    },
-    { 
-      title: 'Lista de Presença', 
-      route: '/presence',
-      icon: '✓',
-      description: 'Controle a presença dos jogadores'
-    },
-    { 
-      title: 'Estatísticas', 
-      route: '/statistics',
-      icon: '📊',
-      description: 'Visualize estatísticas e desempenho'
-    },
-    { 
-      title: 'Campeonato', 
-      route: '/championship',
-      icon: '🏆',
-      description: 'Gerencie campeonatos e torneios'
-    },
-  ];
+  const router = useRouter();
+  const { setCurrentPage, setDashboardTitle } = useDashboardStore();
+
+  const handleNavigation = (path: string, title: string) => {
+    setCurrentPage(path);
+    setDashboardTitle(title);
+    router.push(path);
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-      {menuItems.map((item, index) => (
-        <MenuCard key={item.route} item={item} index={index} />
-      ))}
-    </div>
+    <MotionDiv
+      className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      {menuItems.map((item) => {
+        const Icon = item.icon;
+        return (
+          <MotionDiv
+            key={item.path}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Button
+              variant="outline"
+              className="w-full h-full p-6 flex items-center justify-between hover:bg-accent hover:text-accent-foreground"
+              onClick={() => handleNavigation(item.path, item.title)}
+            >
+              <div className="flex items-center space-x-4">
+                <Icon className="h-6 w-6" />
+                <div className="text-left">
+                  <h3 className="font-semibold">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </MotionDiv>
+        );
+      })}
+    </MotionDiv>
   );
 };
+
+export default DashboardMenu;
