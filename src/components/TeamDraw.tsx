@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -21,14 +21,20 @@ const TeamDraw = () => {
     generateTeams 
   } = useTeamDrawStore();
 
-  // Ao montar o componente, marca todos os jogadores presentes como incluídos no sorteio
-  useEffect(() => {
-    players.forEach(player => {
-      if (player.present) {
+  // Movido para uma função separada para evitar recriações desnecessárias
+  const markPlayersForDraw = useCallback(() => {
+    const presentPlayers = players.filter(p => p.present && !p.includeInDraw);
+    if (presentPlayers.length > 0) {
+      presentPlayers.forEach(player => {
         updatePlayer(player.id, { includeInDraw: true });
-      }
-    });
-  }, [players]);
+      });
+    }
+  }, []); // Sem dependências para evitar loops
+
+  // useEffect agora só roda uma vez na montagem do componente
+  useEffect(() => {
+    markPlayersForDraw();
+  }, []); // Array de dependências vazio = roda apenas na montagem
 
   const calculateTeamStrength = (team: typeof players) => {
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;
@@ -36,7 +42,7 @@ const TeamDraw = () => {
 
   const handleGenerateTeams = () => {
     console.log("Iniciando sorteio com jogadores:", players);
-    const availablePlayers = players.filter(p => p.present);
+    const availablePlayers = players.filter(p => p.present && p.includeInDraw);
     console.log("Jogadores disponíveis:", availablePlayers);
     
     if (availablePlayers.length < playersPerTeam * 2) {
@@ -47,11 +53,6 @@ const TeamDraw = () => {
       });
       return;
     }
-
-    // Marca todos os jogadores presentes como incluídos no sorteio antes de gerar os times
-    availablePlayers.forEach(player => {
-      updatePlayer(player.id, { includeInDraw: true });
-    });
 
     const result = generateTeams(availablePlayers);
     console.log("Resultado do sorteio:", result);
