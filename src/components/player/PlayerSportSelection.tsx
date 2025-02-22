@@ -1,3 +1,4 @@
+
 import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import {
@@ -7,20 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SportsIcons } from "./sportsicons.tsx"; // Assume a custom icon component
+import { SportsIcons } from "./sportsicons";
 import { ChevronDown } from "lucide-react";
-
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
-
-type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
+import { SportEnum } from "@/utils/types";
 
 interface PlayerSportSelectionProps {
-  sport: Sport;
-  onSportChange: (value: string) => void;
+  sport: SportEnum;
+  onSportChange: (value: SportEnum) => void;
 }
 
 export const PlayerSportSelection = ({
@@ -28,12 +22,18 @@ export const PlayerSportSelection = ({
   onSportChange
 }: PlayerSportSelectionProps) => {
   const sports = [
-    { value: "futsal", label: "Futsal" },
-    { value: "futebol", label: "Futebol" },
-    { value: "volei", label: "Vôlei" },
-    { value: "basquete", label: "Basquete" },
-    { value: "handbol", label: "Handebol" }
+    { value: SportEnum.FUTSAL, label: "Futsal" },
+    { value: SportEnum.FOOTBALL, label: "Futebol" },
+    { value: SportEnum.VOLLEYBALL, label: "Vôlei" },
+    { value: SportEnum.BASKETBALL, label: "Basquete" },
+    { value: SportEnum.HANDBALL, label: "Handebol" }
   ];
+
+  const springConfig = {
+    type: "spring",
+    stiffness: 300,
+    damping: 20
+  };
 
   return (
     <motion.div
@@ -42,10 +42,6 @@ export const PlayerSportSelection = ({
       transition={springConfig}
       className="space-y-2"
     >
-      <Label htmlFor="sport" className="text-sm font-medium text-gray-700">
-        Esporte
-      </Label>
-
       <Select
         value={sport}
         onValueChange={onSportChange}
@@ -76,7 +72,7 @@ export const PlayerSportSelection = ({
                   className="focus:bg-blue-50"
                 >
                   <div className="flex items-center gap-3">
-                    <SportsIcons sport={sportItem.value as Sport} className="h-5 w-5" />
+                    <SportsIcons sport={sportItem.value} className="h-5 w-5" />
                     <span>{sportItem.label}</span>
                   </div>
                 </SelectItem>
