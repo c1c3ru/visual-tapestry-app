@@ -74,21 +74,21 @@ export const DashboardHeader = ({
               onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()}
             />
             <div className="flex gap-2">
-              <Button 
+              <AnimatedButton 
                 onClick={handleTitleSave}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Salvar
-              </Button>
-              <Button
+              </AnimatedButton>
+              <AnimatedButton
                 variant="outline"
                 onClick={handleTitleCancel}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Cancelar
-              </Button>
+              </AnimatedButton>
             </div>
           </motion.div>
         ) : (

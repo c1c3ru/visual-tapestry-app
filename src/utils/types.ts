@@ -1,4 +1,6 @@
 
+import { ReactNode } from 'react';
+
 export enum SportEnum {
   FUTSAL = "FUTSAL",
   FOOTBALL = "FOOTBALL",
@@ -25,6 +27,18 @@ export enum RatingEnum {
 export type Rating = RatingEnum;
 export type Sport = SportEnum;
 
+export interface ErrorState {
+  hasError: boolean;
+  message: string;
+}
+
+export interface FormErrors {
+  name: ErrorState;
+  isGuest: ErrorState;
+  selectedPositions: ErrorState;
+  rating: ErrorState;
+}
+
 export interface Player {
   id: string;
   name: string;
@@ -45,16 +59,11 @@ export interface Player {
 export interface PlayerState {
   players: Player[];
   newPlayer: Omit<Player, 'id' | 'createdAt'>;
-  errors: {
-    name: { hasError: boolean; message: string };
-    isGuest: { hasError: boolean; message: string };
-    selectedPositions: { hasError: boolean; message: string };
-    rating: { hasError: boolean; message: string };
-  };
+  errors: FormErrors;
   editingPlayer: Player | null;
   editValue?: string;
   setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
-  setErrors: (errors: Partial<PlayerState['errors']>) => void;
+  setErrors: (errors: Partial<FormErrors>) => void;
   resetForm: () => void;
   setEditingPlayer: (player: Player | null) => void;
   addPlayer: (player: Player) => void;
@@ -71,6 +80,13 @@ export interface DashboardState {
   isAdmin: boolean;
   setDashboardTitle: (title: string) => void;
   setIsAdmin: (isAdmin: boolean) => void;
+}
+
+export interface SettingsState {
+  ratingSystem: string;
+  guestHighlight: string;
+  setRatingSystem: (system: string) => void;
+  setGuestHighlight: (highlight: string) => void;
 }
 
 export interface Team {
@@ -108,6 +124,24 @@ export interface KnockoutMatches {
   thirdPlace: Match;
 }
 
+export interface TournamentBracketProps {
+  match: Match;
+  groups?: Group[];
+  knockoutMatches?: KnockoutMatches | null;
+}
+
+export interface Tournament {
+  id: string;
+  name: string;
+  type: "league" | "worldCup" | "homeAway";
+  startDate: Date;
+  endDate: Date;
+  teams: Team[];
+  matches: Match[];
+  groups?: Group[];
+  knockoutMatches?: KnockoutMatches;
+}
+
 export interface TournamentState {
   tournamentName: string;
   tournamentType: "league" | "worldCup" | "homeAway";
@@ -115,10 +149,26 @@ export interface TournamentState {
   groups: Group[];
   knockoutMatches: KnockoutMatches | null;
   matches: Match[];
+  teamName: string;
+  responsible: string;
   generateGroups: () => Group[];
   generateKnockoutStage: (qualifiedTeams: Team[]) => KnockoutMatches;
   scheduleMatch: (team1: Team, team2: Team, date: Date) => Match;
   updateMatchResult: (matchId: string, score1: number, score2: number) => void;
+  setTournamentName: (name: string) => void;
+  setTournamentType: (type: "league" | "worldCup" | "homeAway") => void;
+  setTeamName: (name: string) => void;
+  setResponsible: (name: string) => void;
+  addTeam: (team: Team) => { success: boolean; error?: string };
+  removeTeam: (id: string) => void;
+  generateMatches: () => { success: boolean; error?: string };
+}
+
+export interface TeamDrawState {
+  playersPerTeam: number;
+  teams: Player[][];
+  setPlayersPerTeam: (count: number) => void;
+  generateTeams: (players: Player[]) => { success: boolean; error?: string };
 }
 
 export interface PlayerStatistics {
@@ -143,8 +193,4 @@ export interface StatisticsState {
   stats: PlayerStatistics[];
   teamStats: TeamStatistics[];
   updateStats: () => void;
-}
-
-export interface TournamentBracketProps {
-  match: Match;
 }

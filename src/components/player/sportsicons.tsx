@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Trophy, CircleDot, Dumbbell } from "lucide-react";
+import { SportEnum } from "@/utils/types";
 
 export interface SportsIconsProps {
   sport: SportEnum | string;

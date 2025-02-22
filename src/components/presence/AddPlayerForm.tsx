@@ -1,13 +1,16 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Player, Rating } from "@/utils/types";
+import { FC } from 'react';
+import { Player, SportEnum } from '@/utils/types';
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus, Loader2 } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
+import { Rating } from "@/utils/types";
+export interface AddPlayerFormProps {
+  onAddPlayer: (player: Player) => void;
+  players: Player[];
+}
 
 const formSchema = z.object({
   playerName: z.string().min(1, "O nome do jogador é obrigatório"),
@@ -21,7 +24,7 @@ const springConfig = {
   damping: 20
 };
 
-export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, players }) => {
+export const AddPlayerForm: FC<AddPlayerFormProps> = ({ onAddPlayer, players }) => {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,12 +53,12 @@ export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, playe
       }
 
       const newPlayer: Player = {
-        id: Date.now(),
+        id: Date.now().toString(),
         name: newPlayerName,
         nickname: "",
         birthDate: "",
         isGuest: false,
-        sport: "futebol",
+        sport: SportEnum.FOOTBALL,
         selectedPositions: [],
         rating: 1 as Rating,
         includeInDraw: false,
