@@ -1,6 +1,6 @@
 import React from 'react';
 import { toast } from "sonner";
-import { Team, TournamentType } from "@/utils/types";
+import { Team } from "@/utils/types";
 import { useTournamentStore } from "@/stores/useTournamentStore";
 import { TournamentBracket } from "@/components/TournamentBracket";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
@@ -31,6 +31,20 @@ const Championship = () => {
     generateGroups,
     generateKnockoutStage
   } = useTournamentStore();
+
+  const handleRemoveTeam = (id: string) => {
+    removeTeam(id);
+    toast.success("Time removido com sucesso");
+  };
+
+  const handleGenerateMatches = () => {
+    const result = generateMatches();
+    if (result.success) {
+      toast.success("Partidas geradas com sucesso");
+    } else {
+      toast.error(result.error || "Erro ao gerar partidas");
+    }
+  };
 
   const handleAddTeam = () => {
     if (!teamName.trim() || !responsible.trim()) {
@@ -63,10 +77,7 @@ const Championship = () => {
     }
 
     const generatedGroups = generateGroups();
-    toast({
-      description: "Os grupos para o torneio foram gerados aleatoriamente.",
-      icon: <Shuffle className="h-4 w-4" />
-    });
+    toast.success("Os grupos para o torneio foram gerados aleatoriamente");
   };
 
   const handleGenerateKnockoutStage = () => {
@@ -76,10 +87,7 @@ const Championship = () => {
     }
 
     const generatedKnockoutStage = generateKnockoutStage(teams);
-    toast({
-      description: "A fase eliminatória do torneio foi gerada.",
-      icon: <Flag className="h-4 w-4" />
-    });
+    toast.success("A fase eliminatória do torneio foi gerada");
   };
 
   return (

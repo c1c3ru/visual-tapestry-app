@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,21 +6,20 @@ import { act } from 'react-dom/test-utils';
 import Championship from '../pages/Championship';
 import { useTournamentStore } from '@/stores/useTournamentStore';
 import { useToast } from '@/hooks/use-toast';
-import { Tournament, TournamentState } from '@/utils/types';
+import { TournamentState, TournamentType } from '@/utils/types';
 
 jest.mock('@/stores/useTournamentStore');
 jest.mock('@/hooks/use-toast');
 
-const mockUseTournamentStore = useTournamentStore as jest.MockedFunction<typeof useTournamentStore>;
-
 describe('Championship', () => {
-  const mockStore = {
+  const mockStore: Partial<TournamentState> = {
     tournamentName: '',
-    tournamentType: 'league' as const,
+    tournamentType: TournamentType.LEAGUE,
     teamName: '',
     responsible: '',
     teams: [],
     groups: [],
+    matches: [],
     knockoutMatches: null,
     setTournamentName: jest.fn(),
     setTournamentType: jest.fn(),
@@ -28,11 +28,15 @@ describe('Championship', () => {
     addTeam: jest.fn(),
     removeTeam: jest.fn(),
     generateMatches: jest.fn(),
+    generateGroups: jest.fn(),
+    generateKnockoutStage: jest.fn(),
+    scheduleMatch: jest.fn(),
+    updateMatchResult: jest.fn()
   };
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (mockUseTournamentStore as unknown as jest.Mock).mockReturnValue(mockStore as TournamentState);
+    (useTournamentStore as jest.Mock).mockReturnValue(mockStore as TournamentState);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });

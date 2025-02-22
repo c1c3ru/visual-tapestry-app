@@ -44,7 +44,9 @@ const PresenceList = () => {
       className="min-h-screen bg-background p-6"
     >
       <div className="max-w-4xl mx-auto">
-        <PresenceHeader />
+        <PresenceHeader>
+          <h1 className="text-2xl font-bold">Lista de Presença</h1>
+        </PresenceHeader>
         
         <Card>
           <CardContent className="p-6">
