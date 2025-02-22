@@ -5,10 +5,19 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { BasicInfoErrors, SportInfoErrors, FormErrors } from "@/utils/types";
+import { 
+  Player,
+  SportEnum,
+  PositionEnum,
+  RatingEnum,
+  BasicInfoErrors,
+  SportInfoErrors,
+  FormErrors 
+} from "@/utils/types";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
 import { PlayerRating } from "./player/PlayerRating";
+import { PlayerHeader } from "./player/PlayerHeader";
 import { Card } from "@/components/ui/card";
 
 const springConfig = {
@@ -23,29 +32,27 @@ const PlayerForm = () => {
   const { toast } = useToast();
 
   const validateForm = () => {
-    const basicErrors: BasicInfoErrors = {
-      name: { hasError: newPlayer.name.trim() === "", message: "Nome é obrigatório" },
-      isGuest: { hasError: newPlayer.isGuest === null, message: "Selecione o status de convidado" }
-    };
-
-    const sportErrors: SportInfoErrors = {
+    const formErrors: FormErrors = {
+      name: { 
+        hasError: !newPlayer.name.trim(), 
+        message: "Nome é obrigatório" 
+      },
+      isGuest: { 
+        hasError: newPlayer.isGuest === null, 
+        message: "Selecione o status de convidado" 
+      },
       selectedPositions: { 
-        hasError: newPlayer.selectedPositions.length === 0,
-        message: "Selecione ao menos uma posição"
-      }
-    };
-
-    const newErrors: FormErrors = {
-      ...basicErrors,
-      ...sportErrors,
+        hasError: newPlayer.selectedPositions.length === 0, 
+        message: "Selecione ao menos uma posição" 
+      },
       rating: { 
-        hasError: newPlayer.rating < 1,
-        message: "Avaliação é obrigatória"
+        hasError: newPlayer.rating < 1, 
+        message: "Avaliação é obrigatória" 
       }
     };
 
-    setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error.hasError);
+    setErrors(formErrors);
+    return !Object.values(formErrors).some(error => error.hasError);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

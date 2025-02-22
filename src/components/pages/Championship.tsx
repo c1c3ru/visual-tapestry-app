@@ -1,27 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { toast } from "sonner";
 import { Team, TournamentType } from "@/utils/types";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useTournamentStore } from '@/stores/useTournamentStore';
-import { generateTournamentMatches, generateGroups, generateKnockoutMatches } from '@/utils/tournament';
-import { Match } from '@/utils/types';
-import { TournamentBracket } from '../tournament/TournamentBracket';
-import { Shuffle, Flag, ListChecks } from 'lucide-react';
+import { useTournamentStore } from "@/stores/useTournamentStore";
+import { TournamentBracket } from "@/components/TournamentBracket";
 
 const Championship = () => {
-  const [teamName, setTeamName] = useState('');
-  const [responsible, setResponsible] = useState('');
   const {
     tournamentName,
     tournamentType,
     teams,
     groups,
     knockoutMatches,
+    matches,
+    teamName,
+    responsible,
     setTournamentName,
     setTournamentType,
     setTeamName,
@@ -33,7 +25,9 @@ const Championship = () => {
 
   const handleAddTeam = () => {
     if (!teamName.trim() || !responsible.trim()) {
-      toast.error("Nome do time e responsável são obrigatórios");
+      toast("Erro ao adicionar time", {
+        description: "Nome do time e responsável são obrigatórios"
+      });
       return;
     }
 
@@ -47,11 +41,15 @@ const Championship = () => {
 
     const result = addTeam(newTeam);
     if (result.success) {
-      toast.success("Time adicionado com sucesso!");
+      toast("Sucesso!", {
+        description: "Time adicionado com sucesso!"
+      });
       setTeamName("");
       setResponsible("");
     } else {
-      toast.error(result.error || "Erro ao adicionar time");
+      toast("Erro!", {
+        description: result.error || "Erro ao adicionar time"
+      });
     }
   };
 
@@ -194,7 +192,7 @@ const Championship = () => {
             </div>
           ))}
 
-          <h2 className="text-2xl font-bold mt-6 mb-4">Fase Eliminatória</h2>
+          <h2 className="text-2xl font-bold mt-6 mb-4">Fase Eliminat��ria</h2>
           {knockoutMatches && (
             <>
               {knockoutMatches.roundOf16 && knockoutMatches.roundOf16.length > 0 && (
