@@ -1,5 +1,6 @@
+
 import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -17,12 +18,6 @@ import { PlayerSportInfo } from "./player/PlayerSportInfo";
 import { PlayerRating } from "./player/PlayerRating";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { Card } from "@/components/ui/card";
-
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 const PlayerForm = () => {
   const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm } = usePlayerStore();
@@ -62,27 +57,6 @@ const PlayerForm = () => {
     return !Object.values(formErrors).some(error => error.hasError);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setNewPlayer({ [name]: type === "checkbox" ? checked : value });
-  };
-
-  const handleSelectChange = (value: SportEnum) => {
-    setNewPlayer({ sport: value, selectedPositions: [] });
-  };
-
-  const handlePositionChange = (position: PositionEnum, checked: boolean) => {
-    const positions = checked 
-      ? [...newPlayer.selectedPositions, position]
-      : newPlayer.selectedPositions.filter(p => p !== position);
-    
-    setNewPlayer({ selectedPositions: positions });
-  };
-
-  const handleRatingChange = (newRating: RatingEnum) => {
-    setNewPlayer({ rating: newRating });
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -114,88 +88,55 @@ const PlayerForm = () => {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={springConfig}
-      className="min-h-screen bg-gray-50 p-6"
-    >
-      <PlayerHeader />
-      
-      <motion.div
-        initial={{ scale: 0.95 }}
-        animate={{ scale: 1 }}
-        transition={springConfig}
-        className="max-w-4xl mx-auto"
-      >
-        <Card className="shadow-lg hover:shadow-xl transition-shadow">
-          <form onSubmit={handleSubmit} className="space-y-6 p-6">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="basic-info"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={springConfig}
-              >
-                <PlayerBasicInfo
-                  name={newPlayer.name}
-                  nickname={newPlayer.nickname}
-                  birthDate={newPlayer.birthDate}
-                  isGuest={newPlayer.isGuest}
-                  onChange={handleChange}
-                  onGuestChange={(checked) => setNewPlayer({ isGuest: checked })}
-                  errors={errors}
-                />
-              </motion.div>
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-4xl mx-auto">
+        <PlayerHeader />
+        
+        <Card className="mt-6 p-6 shadow-lg">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <PlayerBasicInfo
+              name={newPlayer.name}
+              nickname={newPlayer.nickname}
+              birthDate={newPlayer.birthDate}
+              isGuest={newPlayer.isGuest}
+              onChange={(e) => setNewPlayer({ [e.target.name]: e.target.value })}
+              onGuestChange={(checked) => setNewPlayer({ isGuest: checked })}
+              errors={errors}
+            />
 
-              <motion.div
-                key="sport-info"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ ...springConfig, delay: 0.1 }}
-              >
-                <PlayerSportInfo
-                  sport={newPlayer.sport}
-                  selectedPositions={newPlayer.selectedPositions}
-                  onSportChange={handleSelectChange}
-                  onPositionChange={handlePositionChange}
-                  errors={errors}
-                />
-              </motion.div>
+            <PlayerSportInfo
+              sport={newPlayer.sport}
+              selectedPositions={newPlayer.selectedPositions}
+              onSportChange={(sport) => {
+                setNewPlayer({ sport, selectedPositions: [] });
+              }}
+              onPositionChange={(position, checked) => {
+                const positions = checked
+                  ? [...newPlayer.selectedPositions, position]
+                  : newPlayer.selectedPositions.filter(p => p !== position);
+                setNewPlayer({ selectedPositions: positions });
+              }}
+              errors={errors}
+            />
 
-              <motion.div
-                key="rating-info"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ ...springConfig, delay: 0.2 }}
-              >
-                <PlayerRating
-                  rating={newPlayer.rating}
-                  ratingSystem={ratingSystem}
-                  onRatingChange={handleRatingChange}
-                  error={errors.rating.hasError}
-                />
-              </motion.div>
-            </AnimatePresence>
+            <PlayerRating
+              rating={newPlayer.rating}
+              ratingSystem={ratingSystem}
+              onRatingChange={(rating) => setNewPlayer({ rating })}
+              error={errors.rating.hasError}
+            />
 
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex justify-end"
+            <Button 
+              type="submit"
+              className="w-full md:w-auto gap-2 bg-primary hover:bg-primary/90"
             >
-              <Button 
-                type="submit"
-                className="w-full md:w-auto gap-2"
-                aria-label="Salvar jogador"
-              >
-                <Save className="h-4 w-4" />
-                Salvar Jogador
-              </Button>
-            </motion.div>
+              <Save className="h-4 w-4" />
+              Salvar Jogador
+            </Button>
           </form>
         </Card>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 

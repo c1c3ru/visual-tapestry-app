@@ -12,7 +12,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import './App.css';
 import './index.css';
-import './styles/global.css';
 
 const App = () => {
   const location = useLocation();
