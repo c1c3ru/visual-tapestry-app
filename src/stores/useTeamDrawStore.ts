@@ -1,6 +1,7 @@
 
 import { create } from 'zustand';
 import { Player } from '@/utils/types';
+import { PositionEnum } from '@/utils/enums';
 
 interface TeamDrawState {
   playersPerTeam: number;
@@ -38,10 +39,10 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
 
     // Separar goleiros e jogadores de linha
     const goalkeepers = availablePlayers.filter(p => 
-      p.selectedPositions.includes("Goleiro")
+      p.selectedPositions.includes(PositionEnum.GOALKEEPER)
     );
     const fieldPlayers = availablePlayers.filter(p => 
-      !p.selectedPositions.includes("Goleiro")
+      !p.selectedPositions.includes(PositionEnum.GOALKEEPER)
     );
 
     // Verificar se há goleiros suficientes
@@ -130,8 +131,8 @@ const balanceTeams = (teams: Player[][]): Player[][] => {
 
       if (strengthDiff > 1) {
         // Tentar trocar jogadores não goleiros
-        const team1Players = teams[i].filter(p => !p.selectedPositions.includes("Goleiro"));
-        const team2Players = teams[j].filter(p => !p.selectedPositions.includes("Goleiro"));
+        const team1Players = teams[i].filter(p => !p.selectedPositions.includes(PositionEnum.GOALKEEPER));
+        const team2Players = teams[j].filter(p => !p.selectedPositions.includes(PositionEnum.GOALKEEPER));
 
         for (const player1 of team1Players) {
           for (const player2 of team2Players) {

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Star, StarHalf } from 'lucide-react';
-import { RatingEnum } from '@/utils/types';
+import { RatingEnum } from '@/utils/enums';
 import NumberRating from '../rating/NumberRating';
 import Scale5Rating from '../rating/Scale5Rating';
 import StarRating from '../rating/StarRating';

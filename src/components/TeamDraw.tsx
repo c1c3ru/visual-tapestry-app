@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTeamDrawStore } from "@/stores/useTeamDrawStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import BackToDashboard from "./BackToDashboard";
+import { PositionEnum } from "../utils/enums";
 import clsx from "clsx";
 
 const TeamDraw = () => {
@@ -124,7 +125,7 @@ const TeamDraw = () => {
                       key={player.id}
                       className={clsx(
                         "p-3 rounded-lg",
-                        player.selectedPositions.includes("Goleiro")
+                        player.selectedPositions.includes(PositionEnum.GOALKEEPER)
                           ? "bg-blue-50"
                           : "bg-gray-50"
                       )}

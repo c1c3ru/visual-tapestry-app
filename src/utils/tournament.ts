@@ -1,99 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-
-export enum TournamentType {
-  LEAGUE = "league",
-  WORLD_CUP = "worldCup",
-  HOME_AWAY = "homeAway",
-}
-
-export enum MatchType {
-  GROUP_STAGE = "group",
-  KNOCKOUT = "knockout",
-  FINAL = "final",
-}
-
-export enum MatchStatus {
-  SCHEDULED = "scheduled",
-  IN_PROGRESS = "in_progress",
-  COMPLETED = "completed",
-}
-
-export enum ErrorMessages {
-  INVALID_TEAMS_NUMBER = "Número de times inválido para este formato de torneio",
-  MIN_TEAMS_REQUIRED = "Mínimo de 4 times necessários",
-}
-
-
-
-export interface Team {
-  id: string;
-  name: string;
-  responsible: string;
-  players: string[];
-  ranking: number;
-  group?: string;
-  stats: {
-    wins: number;
-    draws: number;
-    losses: number;
-    goalsFor: number;
-    goalsAgainst: number;
-
-  };
-}
-
-export interface Match {
-  id: string;
-  team1: Team;
-  team2: Team;
-  score1: number;
-  score2: number;
-  date: Date;
-  location?: string;
-  type: MatchType;
-  status: MatchStatus;
-  isHomeGame: boolean;
-  round?: string;
-}
-
-export interface Group {
-  id: string;
-  name: string;
-  teams: Team[];
-  matches: Match[];
-  standings?: TeamStanding[];
-}
-
-export interface TeamStanding {
-  teamId: string;
-  points: number;
-  played: number;
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsFor: number;
-  goalsAgainst: number;
-}
-
-export interface KnockoutMatches {
-  roundOf16: Match[];
-  quarterFinals: Match[];
-  semiFinals: Match[];
-  final: Match;
-  thirdPlace: Match;
-}
-
-export interface Tournament {
-  id: string;
-  name: string;
-  type: TournamentType;
-  startDate: Date;
-  endDate: Date;
-  teams: Team[];
-  matches: Match[];
-  groups?: Group[];
-  knockoutMatches?: KnockoutMatches;
-}
+import { Team, Match, Group, KnockoutMatches } from "./types";
+import { ErrorMessages, MatchStatus, MatchType, TournamentType } from "./enums";
 
 const validateTeams = (teams: Team[], minTeams: number = 4): void => {
   if (teams.length < minTeams) {
@@ -192,13 +99,10 @@ export const generateTournamentMatches = (
   switch (tournamentType) {
     case TournamentType.LEAGUE:
       return generateLeagueMatches(teams);
-    
     case TournamentType.WORLD_CUP:
       return generateWorldCupMatches(teams);
-    
     case TournamentType.HOME_AWAY:
       return generateHomeAwayMatches(teams);
-    
     default:
       throw new Error(ErrorMessages.INVALID_TEAMS_NUMBER);
   }
@@ -251,15 +155,3 @@ const generateHomeAwayMatches = (teams: Team[]): Match[] => {
 
   return [...matches, ...returnMatches];
 };
-
-const sampleTeams: Team[] = Array.from({ length: 16 }, (_, i) => ({
-  id: uuidv4(),
-  name: `Team ${i + 1}`,
-  responsible: `Coach ${i + 1}`,
-  players: [],
-  ranking: i + 1,
-  stats: { wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 }
-}));
-
-const worldCupMatches = generateTournamentMatches(sampleTeams, TournamentType.WORLD_CUP);
-console.log('World Cup Matches:', worldCupMatches);

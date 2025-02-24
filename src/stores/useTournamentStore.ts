@@ -1,7 +1,8 @@
 
 import { create } from 'zustand';
-import { Team, Tournament, Group, Match, KnockoutMatches } from '@/utils/types';
+import { Team, Group, KnockoutMatches } from '@/utils/types';
 import { generateTournamentMatches, generateGroups, generateKnockoutMatches } from '@/utils/tournament';
+import { TournamentType } from '@/utils/enums';
 
 interface TournamentState {
   tournamentName: string;
@@ -72,8 +73,8 @@ export const useTournamentStore = create<TournamentState>((set, get) => ({
         const knockoutMatches = generateKnockoutMatches(teams);
         set({ groups: [], knockoutMatches });
       } else {
-        const matches = generateTournamentMatches(teams, tournamentType);
-        set({ groups: [{ name: 'Liga', matches }], knockoutMatches: null });
+        const matches = generateTournamentMatches(teams, TournamentType.LEAGUE);
+        set({ groups: [{ id: 'league', name: 'league', matches, teams }], knockoutMatches: null });
       }
 
       return { success: true };

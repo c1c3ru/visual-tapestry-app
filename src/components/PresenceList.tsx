@@ -16,9 +16,9 @@ const PresenceList = () => {
   const isAdmin = true;
 
   const handleTogglePresence = (id: number) => {
-    const player = players.find((player) => player.id === id);
+    const player = players.find((player) => Number(player.id) === id);
     if (player) {
-      updatePlayer(id, { present: !player.present });
+      updatePlayer(id.toString(), { present: !player.present });
       toast({
         title: "Presença atualizada",
         description: "Status de presença foi atualizado com sucesso.",
@@ -27,9 +27,9 @@ const PresenceList = () => {
   };
 
   const handleTogglePayment = (id: number) => {
-    const player = players.find((player) => player.id === id);
+    const player = players.find((player) => Number(player.id) === id);
     if (player) {
-      updatePlayer(id, { paid: !player.paid });
+      updatePlayer(id.toString(), { paid: !player.paid });
       toast({
         title: "Pagamento atualizado",
         description: "Status de pagamento foi atualizado com sucesso.",

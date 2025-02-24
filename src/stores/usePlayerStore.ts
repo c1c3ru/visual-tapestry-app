@@ -1,6 +1,6 @@
-
 import { create } from 'zustand';
-import { Player, Rating, PlayerState, SportEnum } from '@/utils/types';
+import { PlayerState,  } from '@/utils/types';
+import { SportEnum, RatingEnum } from '@/utils/enums';
 
 const initialErrors = {
   name: { hasError: false, message: '' },
@@ -14,11 +14,11 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   newPlayer: {
     name: "",
     nickname: "",
-    birthDate: "",
+    birthDate: new Date(),
     isGuest: false,
-    sport: SportEnum.FOOTBALL,
+    sport: SportEnum.SOCCER,
     selectedPositions: [],
-    rating: 0 as Rating,
+    rating: 0 as RatingEnum,
     includeInDraw: false,
     present: false,
     paid: false,
@@ -42,11 +42,11 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     newPlayer: {
       name: "",
       nickname: "",
-      birthDate: "",
+      birthDate: new Date(),
       isGuest: false,
-      sport: SportEnum.FOOTBALL,
+      sport: SportEnum.SOCCER,
       selectedPositions: [],
-      rating: 0 as Rating,
+      rating: 0 as RatingEnum,
       includeInDraw: false,
       present: false,
       paid: false,

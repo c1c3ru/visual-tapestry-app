@@ -1,90 +1,73 @@
-import { RatingEnum } from "./enums";
-
-export { RatingEnum };
-
-export enum SportEnum {
-  FUTSAL = "futsal",
-  FOOTBALL = "futebol",
-  VOLLEYBALL = "volei",
-  BASKETBALL = "basquete",
-  HANDBALL = "handbol"
-}
-
-export enum PositionEnum {
-  GOALKEEPER = "Goleiro",
-  DEFENDER = "Defensor",
-  MIDFIELDER = "Meio-campo",
-  FORWARD = "Atacante"
-}
-
-export type Rating = RatingEnum;
-
-export interface ErrorState {
-  hasError: boolean;
-  message: string;
-}
-
-export interface PlayerBasicInfoErrors {
-  name: boolean;
-  isGuest: boolean;
-}
-
-export interface PlayerSportInfoErrors {
-  selectedPositions: boolean;
-}
+import { SportEnum, PositionEnum, RatingEnum, TournamentType, MatchType, MatchStatus, ErrorMessages } from "./enums";
 
 export interface Player {
   id: string;
   name: string;
   nickname: string;
-  birthDate: string;
+  birthDate: Date;
   isGuest: boolean;
   sport: SportEnum;
   selectedPositions: PositionEnum[];
-  rating: Rating;
+  rating: RatingEnum;
   includeInDraw: boolean;
-  createdAt: string;
+  createdAt: Date;
   selected: boolean;
   present: boolean;
   paid: boolean;
   registered: boolean;
 }
 
-export interface PlayerFormErrors {
-  name: ErrorState;
-  isGuest: ErrorState;
-  selectedPositions: ErrorState;
-  rating: ErrorState;
+export interface PlayerState {
+  players: Player[];
+  newPlayer: Omit<Player, 'id' | 'createdAt'>;
+  errors: {
+    name: { hasError: boolean; message: string };
+    isGuest: { hasError: boolean; message: string };
+    selectedPositions: { hasError: boolean; message: string };
+    rating: { hasError: boolean; message: string };
+  };
+  editingPlayer: Player | null;
+  editValue: string;
+  setEditValue: (value: string) => void;
+  addPlayer: (player: Player) => void;
+  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
+  setErrors: (errors: Partial<PlayerState['errors']>) => void;
+  resetForm: () => void;
+  updatePlayer: (id: string, updatedPlayer: Partial<Player>) => void;
+  removePlayer: (id: string) => void;
+  setPlayers: (players: Player[]) => void;
+  setEditingPlayer: (player: Player | null) => void;
+  
 }
 
 export interface Team {
   id: string;
   name: string;
   responsible: string;
-  rating: number;
-  players: Player[];
-  stats?: {
+  players: string[];
+  ranking: number;
+  group?: string;
+  stats: {
     wins: number;
     draws: number;
     losses: number;
     goalsFor: number;
     goalsAgainst: number;
   };
-  ranking?: number;
 }
 
 export interface Match {
   id: string;
   team1: Team;
   team2: Team;
-  score1?: number;
-  score2?: number;
-  date: string;
+  score1: number;
+  score2: number;
+  date: Date;
   location?: string;
-  round?: string;
-  isHomeGame?: boolean;
-  type?: string;
-  status?: string;
+  type: MatchType;
+  status: MatchStatus;
+  isHomeGame: boolean;
+  round?: "roundOf16" | "quarterFinals" | "semiFinals" | "final" | "thirdPlace";
 }
 
 export interface Group {
@@ -117,73 +100,11 @@ export interface KnockoutMatches {
 export interface Tournament {
   id: string;
   name: string;
-  type: 'league' | 'worldCup' | 'homeAway';
-  startDate: string;
-  endDate: string;
+  type: TournamentType;
+  startDate: Date;
+  endDate: Date;
   teams: Team[];
   matches: Match[];
   groups?: Group[];
   knockoutMatches?: KnockoutMatches;
-}
-
-export interface TournamentState {
-  tournamentName: string;
-  tournamentType: 'league' | 'worldCup' | 'homeAway';
-  teams: Team[];
-  groups: Group[];
-  matches: Match[];
-  knockoutMatches: KnockoutMatches | null;
-  generateGroups: (teams: Team[], groupSize?: number) => Group[];
-  generateKnockoutStage: (qualifiedTeams: Team[]) => KnockoutMatches;
-  scheduleMatch: (team1: Team, team2: Team, date: string) => Match;
-  updateMatchResult: (matchId: string, score1: number, score2: number) => void;
-}
-
-export interface SettingsState {
-  ratingSystem: 'stars' | 'numbers' | 'points';
-  guestHighlight: 'color' | 'badge' | 'icon';
-  setRatingSystem: (system: 'stars' | 'numbers' | 'points') => void;
-  setGuestHighlight: (highlight: 'color' | 'badge' | 'icon') => void;
-}
-
-export interface StatisticsState {
-  data: any[];
-  loading: boolean;
-  error: string | null;
-}
-
-export interface PlayerState {
-  players: Player[];
-  newPlayer: Omit<Player, 'id' | 'createdAt'>;
-  errors: PlayerFormErrors;
-  editingPlayer: Player | null;
-  editValue: string;
-  addPlayer: (player: Player) => void;
-  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
-  setErrors: (errors: Partial<PlayerFormErrors>) => void;
-  resetForm: () => void;
-  updatePlayer: (id: string, updatedPlayer: Partial<Player>) => void;
-  removePlayer: (id: string) => void;
-  setPlayers: (players: Player[]) => void;
-  setEditingPlayer: (player: Player | null) => void;
-  setEditValue: (editValue: string) => void;
-}
-
-export interface TeamDrawState {
-  selectedPlayers: Player[];
-  teams: Team[];
-  setSelectedPlayers: (players: Player[]) => void;
-  setTeams: (teams: Team[]) => void;
-}
-
-export interface TournamentBracketProps {
-  matches: Match[];
-  onMatchClick?: (match: Match) => void;
-}
-
-export interface DashboardState {
-  dashboardTitle: string;
-  isAdmin: boolean;
-  setDashboardTitle: (title: string) => void;
-  setIsAdmin: (isAdmin: boolean) => void;
 }

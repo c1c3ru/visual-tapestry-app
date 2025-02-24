@@ -3,29 +3,52 @@ import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { SportsIcons } from "./sportsicons";
+import { SportEnum, PositionEnum } from "@/utils/enums";
+import { SportsIcons } from "@/utils/sportsIcons";
+
 const springConfig = {
   type: "spring",
   stiffness: 300,
   damping: 20,
 };
 
-type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
-
-type Position = {
-  [key in Sport]: string[];
-};
-
-const positions: Position = {
-  futsal: ["Goleiro", "Fixo", "Ala", "Pivô"],
-  futebol: ["Goleiro", "Defensor", "Meio-campo", "Atacante"],
-  volei: ["Levantador", "Líbero", "Central", "Ponteiro", "Oposto"],
-  basquete: ["Armador", "Ala", "Ala-pivô", "Pivô"],
-  handbol: ["Goleiro", "Ponta", "Central", "Pivô"],
+// Mapeamento de posições por esporte
+const positions: Record<SportEnum, PositionEnum[]> = {
+  [SportEnum.FUTSAL]: [
+    PositionEnum.GOALKEEPER,
+    PositionEnum.FIXO,
+    PositionEnum.ALA,
+    PositionEnum.PIVO_FUTSAL,
+  ],
+  [SportEnum.SOCCER]: [
+    PositionEnum.GOALKEEPER,
+    PositionEnum.DEFENDER,
+    PositionEnum.MIDFIELDER,
+    PositionEnum.FORWARD,
+  ],
+  [SportEnum.VOLLEYBALL]: [
+    PositionEnum.SETTER,
+    PositionEnum.LIBERO,
+    PositionEnum.CENTRAL,
+    PositionEnum.PONTEIRO,
+    PositionEnum.OPOSTO,
+  ],
+  [SportEnum.BASKETBALL]: [
+    PositionEnum.ARMADOR,
+    PositionEnum.ALA_BASKET,
+    PositionEnum.ALA_PIVO,
+    PositionEnum.PIVO_BASKET,
+  ],
+  [SportEnum.HANDBALL]: [
+    PositionEnum.GOALKEEPER,
+    PositionEnum.PONTA,
+    PositionEnum.CENTRAL_HANDBALL,
+    PositionEnum.PIVO_HANDBALL,
+  ],
 };
 
 interface PlayerPositionsProps {
-  sport: Sport;
+  sport: SportEnum; // Usando o enum SportEnum
   selectedPositions: string[];
   onPositionChange: (position: string, checked: boolean) => void;
 }
@@ -38,6 +61,9 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
   const handlePositionChange = (checked: boolean, position: string) => {
     onPositionChange(position, checked);
   };
+
+  // Obtém o ícone correspondente ao esporte
+  const SportIcon = SportsIcons[sport];
 
   return (
     <motion.fieldset
@@ -82,12 +108,7 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
                   )}
                 />
                 <div style={{ display: "flex", gap: "16px" }}>
-                  <SportsIcons sport="futebol" />
-                  <SportsIcons sport="basquete" />
-                  <SportsIcons sport="volei" />
-                  <SportsIcons sport="handbol" />
-                  <SportsIcons sport="outro" />{" "}
-                  {/* Exibe o ícone padrão (❓) */}
+                  <SportIcon /> {/* Renderiza o ícone do esporte */}
                   <span className="text-sm font-medium text-gray-700">
                     {position}
                   </span>
