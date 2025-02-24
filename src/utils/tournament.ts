@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 
-// ==================== Enums e Tipos Base ====================
 export enum TournamentType {
   LEAGUE = 'league',
   WORLD_CUP = 'worldCup',
@@ -24,12 +23,11 @@ export enum ErrorMessages {
   MIN_TEAMS_REQUIRED = 'Mínimo de 4 times necessários'
 }
 
-// ==================== Interfaces Melhoradas ====================
 export interface Team {
   id: string;
   name: string;
   responsible: string;
-  players: string[]; // IDs dos jogadores
+  players: string[];
   ranking: number;
   group?: string;
   stats: {
@@ -94,7 +92,6 @@ export interface Tournament {
   knockoutMatches?: KnockoutMatches;
 }
 
-// ==================== Utilitários ====================
 const validateTeams = (teams: Team[], minTeams: number = 4): void => {
   if (teams.length < minTeams) {
     throw new Error(ErrorMessages.MIN_TEAMS_REQUIRED);
@@ -113,7 +110,6 @@ const createMatch = (team1: Team, team2: Team, type: MatchType): Match => ({
   isHomeGame: true
 });
 
-// ==================== Funções Principais Melhoradas ====================
 export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
   validateTeams(teams);
   
@@ -126,7 +122,6 @@ export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
     thirdPlace: createMatch(shuffledTeams[2], shuffledTeams[3], MatchType.KNOCKOUT)
   };
 
-  // Gerar todas as partidas com IDs únicos
   const generateRoundMatches = (teams: Team[], roundName: keyof KnockoutMatches) => {
     const matches: Match[] = [];
     for (let i = 0; i < teams.length; i += 2) {
@@ -163,7 +158,6 @@ export const generateGroups = (teams: Team[], groupSize: number = 4): Group[] =>
     const groupTeams = shuffledTeams.slice(i * groupSize, (i + 1) * groupSize);
     const matches: Match[] = [];
 
-    // Gerar partidas de ida e volta
     for (let j = 0; j < groupTeams.length; j++) {
       for (let k = j + 1; k < groupTeams.length; k++) {
         matches.push(
@@ -206,7 +200,6 @@ export const generateTournamentMatches = (
   }
 };
 
-// ==================== Implementações Específicas ====================
 const generateLeagueMatches = (teams: Team[]): Match[] => {
   const matches: Match[] = [];
   
@@ -247,7 +240,6 @@ const generateHomeAwayMatches = (teams: Team[]): Match[] => {
     knockout.thirdPlace
   ];
 
-  // Duplicar partidas para jogos de volta
   const returnMatches = matches.map(match => ({
     ...createMatch(match.team2, match.team1, MatchType.KNOCKOUT),
     isHomeGame: true
@@ -256,7 +248,6 @@ const generateHomeAwayMatches = (teams: Team[]): Match[] => {
   return [...matches, ...returnMatches];
 };
 
-// ==================== Exemplo de Uso ====================
 const sampleTeams: Team[] = Array.from({ length: 16 }, (_, i) => ({
   id: uuidv4(),
   name: `Team ${i + 1}`,
