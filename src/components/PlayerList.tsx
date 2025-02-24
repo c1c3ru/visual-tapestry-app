@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { BackToDashboard } from "./BackToDashboard";
+import BackToDashboard from "./BackToDashboard";
 import { DynamicTitle } from "./DynamicTitle";
 import { useToast } from "@/hooks/use-toast";
 import { usePlayerStore } from "@/stores/usePlayerStore";
@@ -14,21 +14,22 @@ const PlayerList = () => {
     updatePlayer, 
     removePlayer, 
     editingPlayer, 
-    setEditingPlayer
+    setEditingPlayer, 
+    editValue, 
+    setEditValue 
   } = usePlayerStore();
   const { guestHighlight } = useSettingsStore();
   const { toast } = useToast();
-  const [editValue, setEditValue] = React.useState("");
 
-  const handleEdit = (id: string) => {
+  const handleEdit = (id: number) => {
     const player = players.find((p) => p.id === id);
     if (player) {
-      setEditingPlayer(player);
+      setEditingPlayer({ id });
       setEditValue(player.name);
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     removePlayer(id);
     toast({
       title: "Jogador Removido",
@@ -36,11 +37,11 @@ const PlayerList = () => {
     });
   };
 
-  const handleEditSave = (id: string, newValue: string) => {
+  const handleEditSave = (id: number, newValue: string) => {
     if (newValue.trim()) {
       updatePlayer(id, { name: newValue.trim() });
       setEditingPlayer(null);
-      setEditValue("");
+      setEditValue('');
       toast({
         title: "Sucesso",
         description: "Nome do jogador atualizado com sucesso.",

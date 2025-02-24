@@ -1,14 +1,14 @@
 
-import React, { ReactNode } from 'react';
+import React from 'react';
+import { DynamicTitle } from '../DynamicTitle';
+import BackToDashboard from '../BackToDashboard';
 
-interface PresenceHeaderProps {
-  children: ReactNode;
-}
-
-export const PresenceHeader: React.FC<PresenceHeaderProps> = ({ children }) => {
+export const PresenceHeader = () => {
   return (
-    <header className="flex items-center justify-between mb-6">
-      {children}
-    </header>
+    <div className="flex items-center justify-between mb-6">
+      <BackToDashboard />
+      <DynamicTitle />
+    </div>
   );
 };
+
