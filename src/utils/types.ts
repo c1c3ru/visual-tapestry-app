@@ -1,3 +1,6 @@
+
+import { RatingEnum } from "./enums";
+
 // Tipos básicos melhorados
 export enum SportEnum {
   FUTSAL = "futsal",
@@ -14,24 +17,40 @@ export enum PositionEnum {
   FORWARD = "Atacante"
 }
 
-export enum RatingEnum {
-  ONE = 1,
-  TWO = 2,
-  THREE = 3,
-  FOUR = 4,
-  FIVE = 5
+export type Rating = RatingEnum;
+
+export interface DashboardState {
+  dashboardTitle: string;
+  isAdmin: boolean;
+  setDashboardTitle: (title: string) => void;
+  setIsAdmin: (isAdmin: boolean) => void;
 }
 
-// Interface Player melhorada
+export interface Team {
+  id: string;
+  name: string;
+  responsible: string;
+  players: Player[];
+  rating: number;
+  ranking?: number;
+  stats?: {
+    wins: number;
+    draws: number;
+    losses: number;
+    goalsFor: number;
+    goalsAgainst: number;
+  };
+}
+
 export interface Player {
-  id: string; 
+  id: string;
   name: string;
   nickname: string;
-  birthDate: Date; 
+  birthDate: Date;
   isGuest: boolean;
   sport: SportEnum;
   selectedPositions: PositionEnum[];
-  rating: RatingEnum;
+  rating: Rating;
   includeInDraw: boolean;
   createdAt: Date;
   selected: boolean;
@@ -40,7 +59,6 @@ export interface Player {
   registered: boolean;
 }
 
-// Estado do jogador com validação melhorada
 export interface PlayerState {
   players: Player[];
   newPlayer: Omit<Player, 'id' | 'createdAt'>;
@@ -50,7 +68,7 @@ export interface PlayerState {
     selectedPositions: { hasError: boolean; message: string };
     rating: { hasError: boolean; message: string };
   };
-  editingPlayer: Player | null; 
+  editingPlayer: Player | null;
   addPlayer: (player: Player) => void;
   setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
   setErrors: (errors: Partial<PlayerState['errors']>) => void;
@@ -59,35 +77,43 @@ export interface PlayerState {
   removePlayer: (id: string) => void;
   setPlayers: (players: Player[]) => void;
   setEditingPlayer: (player: Player | null) => void;
+  editValue?: string;
+  setEditValue?: (value: string) => void;
 }
 
-// Torneio com tipagem discriminada
-export type Tournament = 
-  | {
-      type: 'league';
-      id: string;
-      name: string;
-      teams: Team[];
-      matches: Match[];
-    }
-  | {
-      type: 'worldCup';
-      id: string;
-      name: string;
-      teams: Team[];
-      groups: Group[];
-      knockoutMatches: KnockoutMatches;
-    }
-  | {
-      type: 'homeAway';
-      id: string;
-      name: string;
-      teams: Team[];
-      matches: Match[];
-      isHomeGame: boolean;
-    };
+export interface SettingsState {
+  ratingSystem: 'stars' | 'numbers' | 'points';
+  guestHighlight: 'color' | 'badge' | 'icon';
+  setRatingSystem: (system: 'stars' | 'numbers' | 'points') => void;
+  setGuestHighlight: (highlight: 'color' | 'badge' | 'icon') => void;
+}
 
-// Interfaces de partidas e times
+export interface StatisticsState {
+  data: any[];
+  loading: boolean;
+  error: string | null;
+}
+
+export interface TeamDrawState {
+  selectedPlayers: Player[];
+  teams: Team[];
+  setSelectedPlayers: (players: Player[]) => void;
+  setTeams: (teams: Team[]) => void;
+}
+
+export interface TournamentState {
+  tournamentName: string;
+  tournamentType: 'league' | 'worldCup' | 'homeAway';
+  teams: Team[];
+  groups: Group[];
+  matches: Match[];
+  knockoutMatches: KnockoutMatches | null;
+  generateGroups: (teams: Team[], groupSize?: number) => Group[];
+  generateKnockoutStage: (qualifiedTeams: Team[]) => KnockoutMatches;
+  scheduleMatch: (team1: Team, team2: Team, date: Date) => Match;
+  updateMatchResult: (matchId: string, score1: number, score2: number) => void;
+}
+
 export interface Match {
   id: string;
   team1: Team;
@@ -96,12 +122,26 @@ export interface Match {
   score2?: number;
   date: Date;
   location?: string;
+  round?: string;
 }
 
 export interface Group {
+  id: string;
   name: string;
   teams: Team[];
   matches: Match[];
+  standings?: TeamStanding[];
+}
+
+export interface TeamStanding {
+  teamId: string;
+  points: number;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goalsFor: number;
+  goalsAgainst: number;
 }
 
 export interface KnockoutMatches {
@@ -112,97 +152,7 @@ export interface KnockoutMatches {
   thirdPlace: Match;
 }
 
-export interface Team {
-  id: string;
-  name: string;
-  responsible: string;
-  players: Player[];
-  rating: number;
-}
-
-// Estado do torneio com geração de matches
-export interface TournamentState {
-  tournamentName: string;
-  tournamentType: Tournament['type'];
-  teams: Team[];
-  groups: Group[];
-  knockoutMatches: KnockoutMatches | null;
+export interface TournamentBracketProps {
   matches: Match[];
-  
-  generateGroups: () => Group[];
-  generateKnockoutStage: (qualifiedTeams: Team[]) => KnockoutMatches;
-  scheduleMatch: (team1: Team, team2: Team, date: Date) => Match;
-  updateMatchResult: (matchId: string, score1: number, score2: number) => void;
+  onMatchClick?: (match: Match) => void;
 }
-
-// Sistema de estatísticas melhorado
-export interface PlayerStatistics {
-  playerId: string;
-  matchesPlayed: number;
-  goals: number;
-  assists: number;
-  averageRating: number;
-  lastFiveRatings: RatingEnum[];
-}
-
-export interface TeamStatistics {
-  teamId: string;
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsFor: number;
-  goalsAgainst: number;
-}
-
-// Sistema de configurações ampliado
-export interface AppSettings {
-  ratingSystem: 'stars' | 'numbers' | 'points';
-  guestHighlight: 'color' | 'badge' | 'icon';
-  matchDuration: number;
-  maxPlayersPerTeam: number;
-  pointsPerWin: number;
-  pointsPerDraw: number;
-}
-
-// Exemplo de uso:
-const newPlayer: Player = {
-  id: crypto.randomUUID(),
-  name: "João Silva",
-  nickname: "JS",
-  birthDate: new Date(2000, 0, 1),
-  isGuest: false,
-  sport: SportEnum.FOOTBALL,
-  selectedPositions: [PositionEnum.FORWARD],
-  rating: RatingEnum.FOUR,
-  includeInDraw: true,
-  createdAt: new Date(),
-  selected: false,
-  present: false,
-  paid: false,
-  registered: true
-};
-
-const worldCupTournament: Tournament = {
-  type: 'worldCup',
-  id: crypto.randomUUID(),
-  name: "Copa 2024",
-  teams: [],
-  groups: [],
-  knockoutMatches: {
-    roundOf16: [],
-    quarterFinals: [],
-    semiFinals: [],
-    final: {
-      id: crypto.randomUUID(),
-      team1: { id: '1', name: 'Time A', responsible: 'Coach A', players: [], rating: 0 },
-      team2: { id: '2', name: 'Time B', responsible: 'Coach B', players: [], rating: 0 },
-      date: new Date(2024, 6, 1)
-    },
-    thirdPlace: {
-      id: crypto.randomUUID(),
-      team1: { id: '3', name: 'Time C', responsible: 'Coach C', players: [], rating: 0 },
-      team2: { id: '4', name: 'Time D', responsible: 'Coach D', players: [], rating: 0 },
-      date: new Date(2024, 6, 1)
-    }
-  }
-};

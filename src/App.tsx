@@ -1,4 +1,7 @@
+
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import Login from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
 import PlayerForm from './components/PlayerForm';
@@ -7,8 +10,6 @@ import TeamDraw from './components/TeamDraw';
 import PresenceList from './components/PresenceList';
 import Statistics from './components/Statistics';
 import Championship from './components/pages/Championship';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
 
 const App = () => {
   const location = useLocation();
@@ -23,7 +24,7 @@ const App = () => {
         transition={{ duration: 0.3 }}
       >
         <Routes location={location}>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/player/new" element={<PlayerForm />} />
@@ -32,7 +33,7 @@ const App = () => {
           <Route path="/presence" element={<PresenceList />} />
           <Route path="/statistics" element={<Statistics />} />
           <Route path="/championship" element={<Championship />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
