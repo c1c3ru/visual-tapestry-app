@@ -1,33 +1,13 @@
 
-import React from "react";
-import { SportsSoccer, SportsBasketball, SportsVolleyball, SportsHandball } from '@mui/icons-material';
-import { Box } from "@mui/material";
+import { SportEnum } from "@/utils/types";
+import { Futbol, Basketball, Volleyball } from "lucide-react";
 
-interface SportsIconsProps {
-  sport: string;
-  className?: string;
-}
-
-export const SportsIcons: React.FC<SportsIconsProps> = ({ sport, className }) => {
-  const getIcon = () => {
-    switch (sport.toLowerCase()) {
-      case "futsal":
-      case "futebol":
-        return <SportsSoccer sx={{ color: "green" }} className={className} />;
-      case "basquete":
-        return <SportsBasketball sx={{ color: "orange" }} className={className} />;
-      case "volei":
-        return <SportsVolleyball sx={{ color: "blue" }} className={className} />;
-      case "handbol":
-        return <SportsHandball sx={{ color: "purple" }} className={className} />;
-      default:
-        return <span>❓</span>;
-    }
-  };
-
-  return (
-    <Box display="flex" alignItems="center" justifyContent="center">
-      {getIcon()}
-    </Box>
-  );
+export const SportsIcons: Record<SportEnum, React.ComponentType> = {
+  [SportEnum.FUTSAL]: Futbol,
+  [SportEnum.FOOTBALL]: Futbol,
+  [SportEnum.VOLLEYBALL]: Volleyball,
+  [SportEnum.BASKETBALL]: Basketball,
+  [SportEnum.HANDBALL]: Volleyball,
 };
+
+export default SportsIcons;

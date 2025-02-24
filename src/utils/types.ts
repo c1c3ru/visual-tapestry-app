@@ -1,4 +1,3 @@
-
 import { RatingEnum } from "./enums";
 
 export { RatingEnum };
@@ -20,16 +19,18 @@ export enum PositionEnum {
 
 export type Rating = RatingEnum;
 
-export interface DashboardState {
-  dashboardTitle: string;
-  isAdmin: boolean;
-  setDashboardTitle: (title: string) => void;
-  setIsAdmin: (isAdmin: boolean) => void;
-}
-
 export interface ErrorState {
   hasError: boolean;
   message: string;
+}
+
+export interface PlayerBasicInfoErrors {
+  name: boolean;
+  isGuest: boolean;
+}
+
+export interface PlayerSportInfoErrors {
+  selectedPositions: boolean;
 }
 
 export interface Player {
@@ -56,11 +57,12 @@ export interface PlayerFormErrors {
   rating: ErrorState;
 }
 
-export interface BaseTeam {
+export interface Team {
   id: string;
   name: string;
   responsible: string;
   rating: number;
+  players: Player[];
   stats?: {
     wins: number;
     draws: number;
@@ -68,10 +70,7 @@ export interface BaseTeam {
     goalsFor: number;
     goalsAgainst: number;
   };
-}
-
-export interface Team extends BaseTeam {
-  players: Player[];
+  ranking?: number;
 }
 
 export interface Match {
@@ -84,6 +83,8 @@ export interface Match {
   location?: string;
   round?: string;
   isHomeGame?: boolean;
+  type?: string;
+  status?: string;
 }
 
 export interface Group {

@@ -1,45 +1,41 @@
+
 import { create } from 'zustand';
-import { Player, Rating } from '@/utils/types';
+import { Player, SportEnum, PlayerState, RatingEnum } from '@/utils/types';
 
-interface PlayerFormState {
-  newPlayer: Omit<Player, 'id' | 'createdAt'>;
-  errors: {
-    name: boolean;
-    isGuest: boolean;
-    selectedPositions: boolean;
-    rating: boolean;
-  };
-  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
-  setErrors: (errors: Partial<PlayerFormState['errors']>) => void;
-  resetForm: () => void;
-}
+const initialErrors = {
+  name: { hasError: false, message: '' },
+  isGuest: { hasError: false, message: '' },
+  selectedPositions: { hasError: false, message: '' },
+  rating: { hasError: false, message: '' }
+};
 
-export const usePlayerFormStore = create<PlayerFormState>((set) => ({
+export const usePlayerFormStore = create<PlayerState>((set) => ({
   newPlayer: {
     name: "",
     nickname: "",
     birthDate: "",
     isGuest: false,
-    sport: "futebol",
+    sport: SportEnum.FOOTBALL,
     selectedPositions: [],
-    rating: 0 as Rating,
+    rating: RatingEnum.ONE,
     includeInDraw: false,
     present: false,
     paid: false,
     registered: true,
     selected: false,
   },
-  errors: {
-    name: false,
-    isGuest: false,
-    selectedPositions: false,
-    rating: false,
-  },
+  errors: initialErrors,
+  players: [],
+  editingPlayer: null,
+  editValue: '',
+  addPlayer: (player) => set((state) => ({ 
+    players: [...state.players, player] 
+  })),
   setNewPlayer: (player) => set((state) => ({
-    newPlayer: { ...state.newPlayer, ...player },
+    newPlayer: { ...state.newPlayer, ...player }
   })),
   setErrors: (errors) => set((state) => ({
-    errors: { ...state.errors, ...errors },
+    errors: { ...state.errors, ...errors }
   })),
   resetForm: () => set({
     newPlayer: {
@@ -47,20 +43,26 @@ export const usePlayerFormStore = create<PlayerFormState>((set) => ({
       nickname: "",
       birthDate: "",
       isGuest: false,
-      sport: "futebol",
+      sport: SportEnum.FOOTBALL,
       selectedPositions: [],
-      rating: 0 as Rating,
+      rating: RatingEnum.ONE,
       includeInDraw: false,
       present: false,
       paid: false,
       registered: true,
       selected: false,
     },
-    errors: {
-      name: false,
-      isGuest: false,
-      selectedPositions: false,
-      rating: false,
-    },
+    errors: initialErrors,
   }),
+  updatePlayer: (id, updatedPlayer) => set((state) => ({
+    players: state.players.map((player) =>
+      player.id === id ? { ...player, ...updatedPlayer } : player
+    ),
+  })),
+  removePlayer: (id) => set((state) => ({
+    players: state.players.filter((player) => player.id !== id),
+  })),
+  setPlayers: (players) => set({ players }),
+  setEditingPlayer: (editingPlayer) => set({ editingPlayer }),
+  setEditValue: (editValue) => set({ editValue }),
 }));

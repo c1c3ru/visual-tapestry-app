@@ -8,6 +8,7 @@ interface AddPlayerFormProps {
   onAddPlayer: (player: Player) => Promise<void>;
   players: Player[];
 }
+
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -56,15 +57,15 @@ export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, playe
 
       const newPlayer: Player = {
         id: Date.now().toString(),
-        name: newPlayerName,
+        name: values.playerName,
         nickname: "",
-        birthDate: new Date(),
+        birthDate: new Date().toISOString(),
         isGuest: false,
         sport: SportEnum.FOOTBALL,
         selectedPositions: [],
-        rating: 1 as RatingEnum,
+        rating: RatingEnum.ONE,
         includeInDraw: false,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         present: false,
         paid: false,
         registered: true,
