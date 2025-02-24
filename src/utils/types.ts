@@ -21,11 +21,34 @@ export enum PositionEnum {
 
 export type Rating = RatingEnum;
 
+export interface DashboardState {
+  dashboardTitle: string;
+  isAdmin: boolean;
+  setDashboardTitle: (title: string) => void;
+  setIsAdmin: (isAdmin: boolean) => void;
+}
+
+export interface Player {
+  id: string;
+  name: string;
+  nickname: string;
+  birthDate: string;
+  isGuest: boolean;
+  sport: SportEnum;
+  selectedPositions: PositionEnum[];
+  rating: Rating;
+  includeInDraw: boolean;
+  createdAt: string;
+  selected: boolean;
+  present: boolean;
+  paid: boolean;
+  registered: boolean;
+}
+
 export interface BaseTeam {
   id: string;
   name: string;
   responsible: string;
-  players: string[];
   rating?: number;
   ranking?: number;
   stats?: {
@@ -46,21 +69,16 @@ export interface TournamentTeam extends BaseTeam {
   players: string[];
 }
 
-export interface Player {
+export interface Tournament {
   id: string;
   name: string;
-  nickname: string;
-  birthDate: string;
-  isGuest: boolean;
-  sport: SportEnum;
-  selectedPositions: PositionEnum[];
-  rating: Rating;
-  includeInDraw: boolean;
-  createdAt: string;
-  selected: boolean;
-  present: boolean;
-  paid: boolean;
-  registered: boolean;
+  type: 'league' | 'worldCup' | 'homeAway';
+  startDate: string;
+  endDate: string;
+  teams: Team[];
+  matches: Match[];
+  groups?: Group[];
+  knockoutMatches?: KnockoutMatches;
 }
 
 export interface PlayerState {
@@ -73,6 +91,7 @@ export interface PlayerState {
     rating: { hasError: boolean; message: string };
   };
   editingPlayer: Player | null;
+  editValue: string;
   addPlayer: (player: Player) => void;
   setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
   setErrors: (errors: Partial<PlayerState['errors']>) => void;
@@ -81,8 +100,7 @@ export interface PlayerState {
   removePlayer: (id: string) => void;
   setPlayers: (players: Player[]) => void;
   setEditingPlayer: (player: Player | null) => void;
-  editValue?: string;
-  setEditValue?: (value: string) => void;
+  setEditValue: (editValue: string) => void;
 }
 
 export interface SettingsState {
@@ -127,6 +145,7 @@ export interface Match {
   date: Date;
   location?: string;
   round?: string;
+  isHomeGame?: boolean;
 }
 
 export interface Group {

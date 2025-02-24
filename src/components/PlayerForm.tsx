@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { Player, Rating } from "@/utils/types";
+import { Player, Rating, PositionEnum } from "@/utils/types";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
@@ -34,7 +34,7 @@ const PlayerForm = () => {
     });
   };
 
-  const handlePositionChange = (position: string, checked: boolean) => {
+  const handlePositionChange = (position: PositionEnum, checked: boolean) => {
     if (checked) {
       setNewPlayer({ selectedPositions: [position] });
       toast({
@@ -46,23 +46,15 @@ const PlayerForm = () => {
     }
   };
 
-  const handleRatingChange = (newRating: Rating) => {
-    setNewPlayer({ rating: newRating });
-    toast({
-      title: "Avaliação Atualizada",
-      description: `Nova avaliação: ${newRating}`,
-    });
-  };
-
   const validateForm = () => {
     const newErrors = {
-      name: newPlayer.name.trim() === "",
-      isGuest: newPlayer.isGuest === null,
-      selectedPositions: newPlayer.selectedPositions.length === 0,
-      rating: newPlayer.rating === 0 as Rating,
+      name: { hasError: newPlayer.name.trim() === "", message: "Nome é obrigatório" },
+      isGuest: { hasError: newPlayer.isGuest === null, message: "Status de convidado é obrigatório" },
+      selectedPositions: { hasError: newPlayer.selectedPositions.length === 0, message: "Selecione pelo menos uma posição" },
+      rating: { hasError: newPlayer.rating === 0 as Rating, message: "Avaliação é obrigatória" }
     };
     setErrors(newErrors);
-    return !Object.values(newErrors).some((error) => error);
+    return !Object.values(newErrors).some((error) => error.hasError);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -78,7 +70,7 @@ const PlayerForm = () => {
 
     const player: Player = {
       ...newPlayer,
-      id: Date.now(),
+      id: String(Date.now()),
       createdAt: new Date().toISOString(),
     };
     
@@ -123,8 +115,8 @@ const PlayerForm = () => {
           <PlayerRating
             rating={newPlayer.rating}
             ratingSystem={ratingSystem}
-            onRatingChange={handleRatingChange}
-            error={errors.rating}
+            onRatingChange={(rating) => setNewPlayer({ rating })}
+            error={errors.rating.hasError}
           />
 
           <Button 

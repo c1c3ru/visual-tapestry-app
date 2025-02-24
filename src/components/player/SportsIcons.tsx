@@ -1,6 +1,6 @@
 
 import React from "react";
-import { SportsSoccer, SportsBasketball, SportsVolleyball, SportHandball } from '@mui/icons-material';
+import { SportsSoccer, SportsBasketball, SportsVolleyball, SportsHandball } from '@mui/icons-material';
 import { Box } from "@mui/material";
 
 interface SportsIconsProps {
@@ -19,7 +19,7 @@ export const SportsIcons: React.FC<SportsIconsProps> = ({ sport, className }) =>
       case "volei":
         return <SportsVolleyball sx={{ color: "blue" }} className={className} />;
       case "handbol":
-        return <SportHandball sx={{ color: "purple" }} className={className} />;
+        return <SportsHandball sx={{ color: "purple" }} className={className} />;
       default:
         return <span>❓</span>;
     }
