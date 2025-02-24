@@ -1,27 +1,29 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export enum TournamentType {
-  LEAGUE = 'league',
-  WORLD_CUP = 'worldCup',
-  HOME_AWAY = 'homeAway'
+  LEAGUE = "league",
+  WORLD_CUP = "worldCup",
+  HOME_AWAY = "homeAway",
 }
 
 export enum MatchType {
-  GROUP_STAGE = 'group',
-  KNOCKOUT = 'knockout',
-  FINAL = 'final'
+  GROUP_STAGE = "group",
+  KNOCKOUT = "knockout",
+  FINAL = "final",
 }
 
 export enum MatchStatus {
-  SCHEDULED = 'scheduled',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed'
+  SCHEDULED = "scheduled",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
 }
 
 export enum ErrorMessages {
-  INVALID_TEAMS_NUMBER = 'Número de times inválido para este formato de torneio',
-  MIN_TEAMS_REQUIRED = 'Mínimo de 4 times necessários'
+  INVALID_TEAMS_NUMBER = "Número de times inválido para este formato de torneio",
+  MIN_TEAMS_REQUIRED = "Mínimo de 4 times necessários",
 }
+
+
 
 export interface Team {
   id: string;
@@ -36,6 +38,7 @@ export interface Team {
     losses: number;
     goalsFor: number;
     goalsAgainst: number;
+
   };
 }
 
@@ -107,7 +110,8 @@ const createMatch = (team1: Team, team2: Team, type: MatchType): Match => ({
   date: new Date(),
   type,
   status: MatchStatus.SCHEDULED,
-  isHomeGame: true
+  isHomeGame: true,
+  round: undefined,
 });
 
 export const generateKnockoutMatches = (teams: Team[]): KnockoutMatches => {
