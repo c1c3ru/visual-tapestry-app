@@ -48,13 +48,13 @@ const PlayerForm = () => {
 
   const validateForm = () => {
     const newErrors = {
-      name: { hasError: newPlayer.name.trim() === "", message: "Nome é obrigatório" },
+      name: { hasError: !newPlayer.name.trim(), message: "Nome é obrigatório" },
       isGuest: { hasError: newPlayer.isGuest === null, message: "Status de convidado é obrigatório" },
-      selectedPositions: { hasError: newPlayer.selectedPositions.length === 0, message: "Selecione pelo menos uma posição" },
+      selectedPositions: { hasError: !newPlayer.selectedPositions.length, message: "Selecione pelo menos uma posição" },
       rating: { hasError: newPlayer.rating === 0 as Rating, message: "Avaliação é obrigatória" }
     };
     setErrors(newErrors);
-    return !Object.values(newErrors).some((error) => error.hasError);
+    return !Object.values(newErrors).some(error => error.hasError);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
