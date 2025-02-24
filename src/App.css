@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +40,27 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Base Styles */
+html, body {
+  @apply antialiased bg-background text-foreground;
+}
+
+/* Dashboard Specific Styles */
+.dashboard-container {
+  @apply min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-background;
+}
+
+.dashboard-card {
+  @apply bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300;
+}
+
+/* Utility Classes */
+.glass {
+  @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg;
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
 }

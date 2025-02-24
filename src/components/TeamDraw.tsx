@@ -8,6 +8,7 @@ import { Shuffle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTeamDrawStore } from "@/stores/useTeamDrawStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
+import { PositionEnum } from "@/utils/types";
 import BackToDashboard from "./BackToDashboard";
 import clsx from "clsx";
 
@@ -21,7 +22,6 @@ const TeamDraw = () => {
     generateTeams 
   } = useTeamDrawStore();
 
-  // Movido para uma função separada para evitar recriações desnecessárias
   const markPlayersForDraw = useCallback(() => {
     const presentPlayers = players.filter(p => p.present && !p.includeInDraw);
     if (presentPlayers.length > 0) {
@@ -29,12 +29,11 @@ const TeamDraw = () => {
         updatePlayer(player.id, { includeInDraw: true });
       });
     }
-  }, []); // Sem dependências para evitar loops
+  }, []);
 
-  // useEffect agora só roda uma vez na montagem do componente
   useEffect(() => {
     markPlayersForDraw();
-  }, []); // Array de dependências vazio = roda apenas na montagem
+  }, []);
 
   const calculateTeamStrength = (team: typeof players) => {
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;
@@ -124,7 +123,7 @@ const TeamDraw = () => {
                       key={player.id}
                       className={clsx(
                         "p-3 rounded-lg",
-                        player.selectedPositions.includes("Goleiro")
+                        player.selectedPositions.includes(PositionEnum.GOALKEEPER)
                           ? "bg-blue-50"
                           : "bg-gray-50"
                       )}

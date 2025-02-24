@@ -1,10 +1,12 @@
 
 import { create } from 'zustand';
-import { DashboardState } from '../utils/types';
+import { DashboardState } from '@/utils/types';
 
-export const useDashboardStore = create<DashboardState>((set) => ({
-  dashboardTitle: 'Dashboard',
+export const useMenuStore = create<DashboardState>((set) => ({
+  currentPage: 'menu',
+  setCurrentPage: (page) => set({ currentPage: page }),
+  dashboardTitle: 'Menu',
   isAdmin: true,
   setDashboardTitle: (title) => set({ dashboardTitle: title }),
-  setIsAdmin: (isAdmin) => set({ isAdmin }),
+  setIsAdmin: (isAdmin) => set({ isAdmin })
 }));

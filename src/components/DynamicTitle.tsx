@@ -1,8 +1,13 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
-export const DynamicTitle = () => {
+interface DynamicTitleProps {
+  className?: string;
+}
+
+export const DynamicTitle = ({ className }: DynamicTitleProps = {}) => {
   const [title, setTitle] = useState('Dashboard');
   const [loading, setLoading] = useState(true);
 
@@ -22,9 +27,11 @@ export const DynamicTitle = () => {
           animate={loading ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <CardTitle className="text-2xl">{title}</CardTitle>
+          <CardTitle className={className || "text-2xl"}>{title}</CardTitle>
         </motion.div>
       </CardHeader>
     </Card>
   );
 };
+
+export default DynamicTitle;

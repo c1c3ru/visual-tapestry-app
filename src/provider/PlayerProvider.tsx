@@ -1,48 +1,33 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
-import { Player } from "@/utils/types";
 
-interface PlayerContextProps {
+import React, { createContext, useContext, useState } from 'react';
+import { Player } from '@/utils/types';
+
+interface PlayerContextType {
   players: Player[];
   addPlayer: (player: Player) => void;
-  updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
-  removePlayer: (id: number) => void;
+  updatePlayer: (id: string, updates: Partial<Player>) => void;
+  removePlayer: (id: string) => void;
 }
 
-const PlayerContext = createContext<PlayerContextProps | undefined>(undefined);
+const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
-interface PlayerProviderProps {
-  children: React.ReactNode;
-}
-
-export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
+export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [players, setPlayers] = useState<Player[]>([]);
 
-  useEffect(() => {
-    const savedPlayers = getFromLocalStorage("players") || [];
-    setPlayers(savedPlayers);
-  }, []);
-
-  const savePlayersToStorage = (updatedPlayers: Player[]) => {
-    saveToLocalStorage("players", updatedPlayers);
-    setPlayers(updatedPlayers);
-  };
-
   const addPlayer = (player: Player) => {
-    const updatedPlayers = [...players, player];
-    savePlayersToStorage(updatedPlayers);
+    setPlayers(prevPlayers => [...prevPlayers, player]);
   };
 
-  const updatePlayer = (id: number, updatedPlayer: Partial<Player>) => {
-    const updatedPlayers = players.map((player) =>
-      player.id === id ? { ...player, ...updatedPlayer } : player
+  const updatePlayer = (id: string, updates: Partial<Player>) => {
+    setPlayers(prevPlayers => 
+      prevPlayers.map(player => 
+        player.id === id ? { ...player, ...updates } : player
+      )
     );
-    savePlayersToStorage(updatedPlayers);
   };
 
-  const removePlayer = (id: number) => {
-    const updatedPlayers = players.filter((player) => player.id !== id);
-    savePlayersToStorage(updatedPlayers);
+  const removePlayer = (id: string) => {
+    setPlayers(prevPlayers => prevPlayers.filter(player => player.id !== id));
   };
 
   return (
@@ -55,7 +40,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
 export const usePlayerContext = () => {
   const context = useContext(PlayerContext);
   if (!context) {
-    throw new Error("usePlayerContext must be used within a PlayerProvider");
+    throw new Error('usePlayerContext must be used within a PlayerProvider');
   }
   return context;
 };

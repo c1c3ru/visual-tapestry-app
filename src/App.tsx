@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
@@ -9,6 +10,8 @@ import Statistics from './components/Statistics';
 import Championship from './components/pages/Championship';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
+import './App.css';
+import './index.css';
 
 const App = () => {
   const location = useLocation();
@@ -21,6 +24,7 @@ const App = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
+        className="min-h-screen bg-background"
       >
         <Routes location={location}>
           <Route path="/" element={<Navigate to="/login" replace />} />

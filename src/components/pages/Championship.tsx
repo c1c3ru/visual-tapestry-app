@@ -1,31 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Save, Trophy, Users, AlertTriangle } from "lucide-react";
+import React from 'react';
+import { toast } from "sonner";
+import { Team } from "@/utils/types";
+import { useTournamentStore } from "@/stores/useTournamentStore";
+import { TournamentBracket } from "@/components/TournamentBracket";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TournamentBracket } from '../TournamentBracket';
-import TournamentHeader from '../tournament/TournamentHeader';
-import { TournamentForm } from '../tournament/TournamentForm';
-import TeamList from '../tournament/TeamList';
-import BackToDashboard from '../BackToDashboard';
-import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useTournamentStore } from '@/stores/useTournamentStore';
-import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Flag, Shuffle } from "lucide-react";
 
 const Championship = () => {
-  const { toast } = useToast();
   const {
     tournamentName,
     tournamentType,
-    teamName,
-    responsible,
     teams,
     groups,
     knockoutMatches,
+    matches,
+    teamName,
+    responsible,
     setTournamentName,
     setTournamentType,
     setTeamName,
@@ -33,165 +28,222 @@ const Championship = () => {
     addTeam,
     removeTeam,
     generateMatches,
+    generateGroups,
+    generateKnockoutStage
   } = useTournamentStore();
 
-  const [validationError, setValidationError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (teams.length < 4) {
-      setValidationError("Mínimo de 4 times necessário");
-    } else if (teams.length > 64) {
-      setValidationError("Máximo de 64 times permitido");
-    } else {
-      setValidationError(null);
-    }
-  }, [teams]);
-
-  const handleAddTeam = () => {
-    if (!teamName || !responsible) {
-      toast({
-        title: "Erro",
-        description: "Preencha todos os campos obrigatórios.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const teamExists = teams.some(team => team.name.toLowerCase() === teamName.toLowerCase());
-    if (teamExists) {
-      toast({
-        title: "Erro",
-        description: "Já existe um time com este nome.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newTeam = {
-      id: Date.now().toString(),
-      name: teamName,
-      responsible,
-    };
-
-    addTeam(newTeam);
-    setTeamName('');
-    setResponsible('');
-    toast({
-      title: "Time Adicionado",
-      description: "Novo time foi adicionado com sucesso.",
-    });
+  const handleRemoveTeam = (id: string) => {
+    removeTeam(id);
+    toast.success("Time removido com sucesso");
   };
 
   const handleGenerateMatches = () => {
-    if (teams.length < 4) {
-      toast({
-        title: "Erro",
-        description: "Mínimo de 4 times necessário para gerar partidas.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     const result = generateMatches();
-    if (!result.success) {
-      toast({
-        title: "Erro",
-        description: result.error || "Erro ao gerar partidas.",
-        variant: "destructive"
-      });
+    if (result.success) {
+      toast.success("Partidas geradas com sucesso");
+    } else {
+      toast.error(result.error || "Erro ao gerar partidas");
+    }
+  };
+
+  const handleAddTeam = () => {
+    if (!teamName.trim() || !responsible.trim()) {
+      toast.error("Nome do time e responsável são obrigatórios");
       return;
     }
 
-    toast({
-      title: "Sucesso",
-      description: "Partidas geradas com sucesso!",
-    });
+    const newTeam: Team = {
+      id: crypto.randomUUID(),
+      name: teamName.trim(),
+      responsible: responsible.trim(),
+      players: [],
+      rating: 0
+    };
+
+    const result = addTeam(newTeam);
+    if (result.success) {
+      toast.success("Time adicionado com sucesso!");
+      setTeamName("");
+      setResponsible("");
+    } else {
+      toast.error(result.error || "Erro ao adicionar time");
+    }
+  };
+
+  const handleGenerateGroups = () => {
+    if (teams.length < 4) {
+      toast.error("Adicione pelo menos 4 times para gerar os grupos.");
+      return;
+    }
+
+    const generatedGroups = generateGroups();
+    toast.success("Os grupos para o torneio foram gerados aleatoriamente");
+  };
+
+  const handleGenerateKnockoutStage = () => {
+    if (teams.length < 4) {
+      toast.error("Adicione pelo menos 4 times para gerar a fase eliminatória.");
+      return;
+    }
+
+    const generatedKnockoutStage = generateKnockoutStage(teams);
+    toast.success("A fase eliminatória do torneio foi gerada");
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <BackToDashboard />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto space-y-6"
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-6 w-6 text-primary" />
-              Campeonato
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {validationError && (
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Atenção</AlertTitle>
-                <AlertDescription>{validationError}</AlertDescription>
-              </Alert>
-            )}
-
-            <TournamentForm
-              tournamentName={tournamentName}
-              tournamentType={tournamentType}
-              onTournamentNameChange={setTournamentName}
-              onTournamentTypeChange={setTournamentType}
-            />
-
-            <Separator className="my-4" />
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="teamName">Nome do Time</Label>
-                <Input
-                  id="teamName"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="Digite o nome do time"
-                />
-              </div>
-              <div>
-                <Label htmlFor="responsible">Responsável</Label>
-                <Input
-                  id="responsible"
-                  value={responsible}
-                  onChange={(e) => setResponsible(e.target.value)}
-                  placeholder="Digite o nome do responsável"
-                />
-              </div>
-              <Button 
-                onClick={handleAddTeam}
-                disabled={teams.length >= 64}
-                className="w-full"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                Adicionar Time
-              </Button>
+    <div className="container mx-auto p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Configuração do Campeonato</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="tournamentName">Nome do Torneio</Label>
+              <Input
+                id="tournamentName"
+                value={tournamentName}
+                onChange={(e) => setTournamentName(e.target.value)}
+              />
             </div>
+            <div>
+              <Label htmlFor="tournamentType">Tipo de Torneio</Label>
+              <Select onValueChange={setTournamentType} defaultValue={tournamentType}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="league">Liga</SelectItem>
+                  <SelectItem value="worldCup">Copa do Mundo</SelectItem>
+                  <SelectItem value="homeAway">Mata-Mata (Ida e Volta)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-            <Separator className="my-4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="teamName">Nome do Time</Label>
+              <Input
+                id="teamName"
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="responsible">Responsável</Label>
+              <Input
+                id="responsible"
+                value={responsible}
+                onChange={(e) => setResponsible(e.target.value)}
+              />
+            </div>
+          </div>
 
-            <TeamList teams={teams} onRemoveTeam={removeTeam} />
-            
-            <Button 
-              onClick={handleGenerateMatches}
-              disabled={teams.length < 4}
-              className="w-full"
-              variant="secondary"
-            >
-              <Trophy className="mr-2 h-4 w-4" />
-              Gerar Partidas
-            </Button>
+          <Button onClick={handleAddTeam}>Adicionar Time</Button>
 
-            {groups.length > 0 && (
-              <div className="mt-8">
-                <TournamentBracket groups={groups} knockoutMatches={knockoutMatches} />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </motion.div>
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Times Participantes</h3>
+            <ScrollArea className="h-[200px] w-full rounded-md border">
+              {teams.length > 0 ? (
+                <ul className="p-2">
+                  {teams.map((team) => (
+                    <li key={team.id} className="flex items-center justify-between p-2 hover:bg-gray-100 rounded-md">
+                      {team.name} - {team.responsible}
+                      <Button variant="ghost" size="sm" onClick={() => handleRemoveTeam(team.id)}>Remover</Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="p-2">Nenhum time adicionado.</p>
+              )}
+            </ScrollArea>
+          </div>
+
+          <div className="flex gap-2">
+            <Button onClick={handleGenerateMatches}>Gerar Partidas</Button>
+            <Button variant="secondary" onClick={handleGenerateGroups}>Gerar Grupos</Button>
+            <Button variant="secondary" onClick={handleGenerateKnockoutStage}>Gerar Eliminatórias</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Display Tournament Brackets or Match List */}
+      {tournamentType === "worldCup" && groups.length > 0 && knockoutMatches ? (
+        <div className="mt-4">
+          <h2 className="text-2xl font-bold mb-4">Fase de Grupos</h2>
+          {groups.map((group) => (
+            <div key={group.name} className="mb-4">
+              <h3 className="text-xl font-semibold">{group.name}</h3>
+              <ul>
+                {group.matches.map((match) => (
+                  <li key={match.id}>
+                    {match.team1.name} vs {match.team2.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          <h2 className="text-2xl font-bold mt-6 mb-4">Fase Eliminat��ria</h2>
+          {knockoutMatches && (
+            <>
+              {knockoutMatches.roundOf16 && knockoutMatches.roundOf16.length > 0 && (
+                <div>
+                  <h3>Oitavas de Final</h3>
+                  <ul>
+                    {knockoutMatches.roundOf16.map((match) => (
+                      <li key={match.id}>
+                        {match.team1.name} vs {match.team2.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {knockoutMatches.quarterFinals && knockoutMatches.quarterFinals.length > 0 && (
+                <div>
+                  <h3>Quartas de Final</h3>
+                  <ul>
+                    {knockoutMatches.quarterFinals.map((match) => (
+                      <li key={match.id}>
+                        {match.team1.name} vs {match.team2.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {knockoutMatches.semiFinals && knockoutMatches.semiFinals.length > 0 && (
+                <div>
+                  <h3>Semi-Finais</h3>
+                  <ul>
+                    {knockoutMatches.semiFinals.map((match) => (
+                      <li key={match.id}>
+                        {match.team1.name} vs {match.team2.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {knockoutMatches.final && (
+                <div>
+                  <h3>Final</h3>
+                  <p>{knockoutMatches.final.team1.name} vs {knockoutMatches.final.team2.name}</p>
+                </div>
+              )}
+
+              {knockoutMatches.thirdPlace && (
+                <div>
+                  <h3>Disputa pelo Terceiro Lugar</h3>
+                  <p>{knockoutMatches.thirdPlace.team1.name} vs {knockoutMatches.thirdPlace.team2.name}</p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -15,23 +16,21 @@ const PresenceList = () => {
   const { toast } = useToast();
   const isAdmin = true;
 
-  const handleTogglePresence = (id: number) => {
-    const player = players.find((player) => player.id === id);
+  const handleTogglePresence = (id: string) => {
+    const player = players.find(p => p.id === id);
     if (player) {
       updatePlayer(id, { present: !player.present });
       toast({
-        title: "Presença atualizada",
         description: "Status de presença foi atualizado com sucesso.",
       });
     }
   };
 
-  const handleTogglePayment = (id: number) => {
-    const player = players.find((player) => player.id === id);
+  const handleTogglePayment = (id: string) => {
+    const player = players.find(p => p.id === id);
     if (player) {
       updatePlayer(id, { paid: !player.paid });
       toast({
-        title: "Pagamento atualizado",
         description: "Status de pagamento foi atualizado com sucesso.",
       });
     }
@@ -45,7 +44,9 @@ const PresenceList = () => {
       className="min-h-screen bg-background p-6"
     >
       <div className="max-w-4xl mx-auto">
-        <PresenceHeader />
+        <PresenceHeader>
+          <h1 className="text-2xl font-bold">Lista de Presença</h1>
+        </PresenceHeader>
         
         <Card>
           <CardContent className="p-6">
