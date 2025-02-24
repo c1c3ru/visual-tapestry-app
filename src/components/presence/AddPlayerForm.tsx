@@ -1,25 +1,37 @@
-import { FC, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from "@/components/ui/button";
+import React from 'react';
 import { Input } from "@/components/ui/input";
-import { Player, SportEnum } from '@/utils/types';
-import { useToast } from '@/hooks/use-toast';
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Player, Rating } from "@/utils/types";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export interface AddPlayerFormProps {
+interface AddPlayerFormProps {
   onAddPlayer: (player: Player) => void;
   players: Player[];
 }
 
-export const AddPlayerForm: FC<AddPlayerFormProps> = ({ onAddPlayer, players }) => {
-  const [newPlayerName, setNewPlayerName] = useState('');
+const formSchema = z.object({
+  playerName: z.string().min(1, "O nome do jogador é obrigatório"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, players }) => {
   const { toast } = useToast();
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      playerName: "",
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const trimmedName = newPlayerName.trim();
-
-    if (!trimmedName) {
+  const onSubmit = (values: FormValues) => {
+    const newPlayerName = values.playerName.trim();
+    
+    if (!newPlayerName) {
       toast({
         title: "Erro",
         description: "O nome do jogador não pode estar vazio.",
@@ -28,11 +40,11 @@ export const AddPlayerForm: FC<AddPlayerFormProps> = ({ onAddPlayer, players }) 
       return;
     }
 
-    const isDuplicate = players.some(
-      (player) => player.name.trim().toLowerCase() === trimmedName.toLowerCase()
+    const playerExists = players.find(
+      (player) => player.name.toLowerCase() === newPlayerName.toLowerCase()
     );
 
-    if (isDuplicate) {
+    if (playerExists) {
       toast({
         title: "Erro",
         description: "Jogador já está cadastrado.",
@@ -42,67 +54,52 @@ export const AddPlayerForm: FC<AddPlayerFormProps> = ({ onAddPlayer, players }) 
     }
 
     const newPlayer: Player = {
-      id: crypto.randomUUID(),
-      name: trimmedName,
+      id: Date.now(),
+      name: newPlayerName,
       nickname: "",
-      birthDate: new Date().toISOString(),
+      birthDate: "",
       isGuest: false,
-      sport: SportEnum.FOOTBALL,
+      sport: "futebol",
       selectedPositions: [],
-      rating: 3,
+      rating: 1 as Rating,
       includeInDraw: false,
       createdAt: new Date().toISOString(),
-      present: true,
+      present: false,
       paid: false,
       registered: true,
       selected: false,
     };
 
     onAddPlayer(newPlayer);
-    setNewPlayerName('');
+    form.reset();
+    
     toast({
-      title: "Jogador adicionado",
-      description: `${trimmedName} foi adicionado à lista.`,
+      title: "Sucesso",
+      description: "Jogador adicionado com sucesso!",
     });
   };
 
   return (
-    <motion.form
-      onSubmit={handleSubmit}
-      className="flex items-center space-x-4"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <AnimatePresence>
-        <motion.div
-          key="input-field"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.2 }}
-          className="flex-grow"
-        >
-          <Input
-            type="text"
-            placeholder="Digite o nome do novo jogador..."
-            value={newPlayerName}
-            onChange={(e) => setNewPlayerName(e.target.value)}
-            className="w-full"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8">
+        <div className="flex gap-4">
+          <FormField
+            control={form.control}
+            name="playerName"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Digite o nome do novo jogador..."
+                  />
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </motion.div>
-      </AnimatePresence>
-
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{ duration: 0.2, delay: 0.1 }}
-      >
-        <Button type="submit">
-          Adicionar Jogador
-        </Button>
-      </motion.div>
-    </motion.form>
+          <Button type="submit">Adicionar Jogador</Button>
+        </div>
+      </form>
+    </Form>
   );
 };

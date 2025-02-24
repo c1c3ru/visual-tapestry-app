@@ -1,17 +1,16 @@
-
-import { create } from 'zustand';
-import { Player, PlayerState, PositionEnum, RatingEnum, SportEnum } from '@/utils/types';
+import {create} from 'zustand';
+import { Player, Rating, PlayerState } from '@/utils/types';
 
 export const usePlayerStore = create<PlayerState>((set) => ({
   players: [],
   newPlayer: {
     name: "",
     nickname: "",
-    birthDate: new Date().toISOString(),
+    birthDate: "",
     isGuest: false,
-    sport: SportEnum.FOOTBALL,
+    sport: "futebol",
     selectedPositions: [],
-    rating: RatingEnum.THREE,
+    rating: 0 as Rating,
     includeInDraw: false,
     present: false,
     paid: false,
@@ -19,12 +18,13 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     selected: false,
   },
   errors: {
-    name: { hasError: false, message: '' },
-    isGuest: { hasError: false, message: '' },
-    selectedPositions: { hasError: false, message: '' },
-    rating: { hasError: false, message: '' },
+    name: false,
+    isGuest: false,
+    selectedPositions: false,
+    rating: false,
   },
   editingPlayer: null,
+  editValue: '',
   addPlayer: (player) =>
     set((state) => ({
       players: [...state.players, player],
@@ -39,11 +39,11 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     newPlayer: {
       name: "",
       nickname: "",
-      birthDate: new Date().toISOString(),
+      birthDate: "",
       isGuest: false,
-      sport: SportEnum.FOOTBALL,
+      sport: "futebol",
       selectedPositions: [],
-      rating: RatingEnum.THREE,
+      rating: 0 as Rating,
       includeInDraw: false,
       present: false,
       paid: false,
@@ -51,10 +51,10 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       selected: false,
     },
     errors: {
-      name: { hasError: false, message: '' },
-      isGuest: { hasError: false, message: '' },
-      selectedPositions: { hasError: false, message: '' },
-      rating: { hasError: false, message: '' },
+      name: false,
+      isGuest: false,
+      selectedPositions: false,
+      rating: false,
     },
   }),
   updatePlayer: (id, updatedPlayer) =>
@@ -69,4 +69,6 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     })),
   setPlayers: (players) => set({ players }),
   setEditingPlayer: (editingPlayer) => set({ editingPlayer }),
+  setEditValue: (editValue) => set({ editValue }),
+
 }));

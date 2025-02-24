@@ -1,5 +1,5 @@
 
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react';
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -8,79 +8,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SportsIcons } from "./sportsicons";
-import { ChevronDown } from "lucide-react";
-import { SportEnum } from "@/utils/types";
+
+type Sport = "futsal" | "futebol" | "volei" | "basquete" | "handbol";
 
 interface PlayerSportSelectionProps {
-  sport: SportEnum;
-  onSportChange: (value: SportEnum) => void;
+  sport: Sport;
+  onSportChange: (value: string) => void;
 }
 
 export const PlayerSportSelection = ({
   sport,
   onSportChange
 }: PlayerSportSelectionProps) => {
-  const sports = [
-    { value: SportEnum.FUTSAL, label: "Futsal" },
-    { value: SportEnum.FOOTBALL, label: "Futebol" },
-    { value: SportEnum.VOLLEYBALL, label: "Vôlei" },
-    { value: SportEnum.BASKETBALL, label: "Basquete" },
-    { value: SportEnum.HANDBALL, label: "Handebol" }
-  ];
-
-  const springConfig = {
-    type: "spring",
-    stiffness: 300,
-    damping: 20
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={springConfig}
-      className="space-y-2"
-    >
+    <div>
+      <Label htmlFor="sport">Esporte</Label>
       <Select
         value={sport}
         onValueChange={onSportChange}
       >
-        <SelectTrigger
-          className="hover:bg-gray-50 focus:ring-2 focus:ring-blue-200"
-          aria-label="Selecione um esporte"
-        >
-          <div className="flex items-center gap-3">
-            {sport && <SportsIcons sport={sport} className="h-5 w-5" />}
-            <SelectValue placeholder="Selecione um esporte" />
-          </div>
-          <ChevronDown className="h-4 w-4 ml-auto opacity-50" />
+        <SelectTrigger>
+          <SelectValue placeholder="Selecione um esporte" />
         </SelectTrigger>
-
         <SelectContent>
-          <AnimatePresence>
-            {sports.map((sportItem, index) => (
-              <motion.div
-                key={sportItem.value}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ ...springConfig, delay: index * 0.05 }}
-              >
-                <SelectItem
-                  value={sportItem.value}
-                  className="focus:bg-blue-50"
-                >
-                  <div className="flex items-center gap-3">
-                    <SportsIcons sport={sportItem.value} className="h-5 w-5" />
-                    <span>{sportItem.label}</span>
-                  </div>
-                </SelectItem>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          <SelectItem value="futsal">Futsal</SelectItem>
+          <SelectItem value="futebol">Futebol</SelectItem>
+          <SelectItem value="volei">Vôlei</SelectItem>
+          <SelectItem value="basquete">Basquete</SelectItem>
+          <SelectItem value="handbol">Handbol</SelectItem>
         </SelectContent>
       </Select>
-    </motion.div>
+    </div>
   );
 };
