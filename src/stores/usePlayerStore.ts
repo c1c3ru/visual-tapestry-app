@@ -1,5 +1,13 @@
-import {create} from 'zustand';
-import { Player, Rating, PlayerState } from '@/utils/types';
+
+import { create } from 'zustand';
+import { Player, Rating, PlayerState, SportEnum } from '@/utils/types';
+
+const initialErrors = {
+  name: { hasError: false, message: '' },
+  isGuest: { hasError: false, message: '' },
+  selectedPositions: { hasError: false, message: '' },
+  rating: { hasError: false, message: '' }
+};
 
 export const usePlayerStore = create<PlayerState>((set) => ({
   players: [],
@@ -8,7 +16,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     nickname: "",
     birthDate: "",
     isGuest: false,
-    sport: "futebol",
+    sport: SportEnum.FOOTBALL,
     selectedPositions: [],
     rating: 0 as Rating,
     includeInDraw: false,
@@ -17,12 +25,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     registered: true,
     selected: false,
   },
-  errors: {
-    name: false,
-    isGuest: false,
-    selectedPositions: false,
-    rating: false,
-  },
+  errors: initialErrors,
   editingPlayer: null,
   editValue: '',
   addPlayer: (player) =>
@@ -41,7 +44,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       nickname: "",
       birthDate: "",
       isGuest: false,
-      sport: "futebol",
+      sport: SportEnum.FOOTBALL,
       selectedPositions: [],
       rating: 0 as Rating,
       includeInDraw: false,
@@ -50,12 +53,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       registered: true,
       selected: false,
     },
-    errors: {
-      name: false,
-      isGuest: false,
-      selectedPositions: false,
-      rating: false,
-    },
+    errors: initialErrors,
   }),
   updatePlayer: (id, updatedPlayer) =>
     set((state) => ({
@@ -70,5 +68,4 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   setPlayers: (players) => set({ players }),
   setEditingPlayer: (editingPlayer) => set({ editingPlayer }),
   setEditValue: (editValue) => set({ editValue }),
-
 }));

@@ -2,6 +2,8 @@
 import { RatingEnum } from "./enums";
 
 // Tipos básicos melhorados
+export { RatingEnum };
+
 export enum SportEnum {
   FUTSAL = "futsal",
   FOOTBALL = "futebol",
@@ -19,19 +21,12 @@ export enum PositionEnum {
 
 export type Rating = RatingEnum;
 
-export interface DashboardState {
-  dashboardTitle: string;
-  isAdmin: boolean;
-  setDashboardTitle: (title: string) => void;
-  setIsAdmin: (isAdmin: boolean) => void;
-}
-
-export interface Team {
+export interface BaseTeam {
   id: string;
   name: string;
   responsible: string;
-  players: Player[];
-  rating: number;
+  players: string[];
+  rating?: number;
   ranking?: number;
   stats?: {
     wins: number;
@@ -42,17 +37,26 @@ export interface Team {
   };
 }
 
+export interface Team extends BaseTeam {
+  players: Player[];
+  rating: number;
+}
+
+export interface TournamentTeam extends BaseTeam {
+  players: string[];
+}
+
 export interface Player {
   id: string;
   name: string;
   nickname: string;
-  birthDate: Date;
+  birthDate: string;
   isGuest: boolean;
   sport: SportEnum;
   selectedPositions: PositionEnum[];
   rating: Rating;
   includeInDraw: boolean;
-  createdAt: Date;
+  createdAt: string;
   selected: boolean;
   present: boolean;
   paid: boolean;
