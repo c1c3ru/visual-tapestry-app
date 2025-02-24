@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Star, StarHalf } from 'lucide-react';
-import { Rating } from '@/utils/types';
+import { RatingEnum } from '@/utils/types';
 import NumberRating from '../rating/NumberRating';
 import Scale5Rating from '../rating/Scale5Rating';
 import StarRating from '../rating/StarRating';
@@ -36,7 +36,7 @@ export const RatingInput: React.FC<RatingInputProps> = ({
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    onRatingChange(starNumber - 0.5 as Rating);
+                    onRatingChange(starNumber - 0.5 as RatingEnum);
                   }}
                   className="absolute left-0 w-1/2 h-full z-10 focus:outline-none"
                   type="button"
@@ -44,7 +44,7 @@ export const RatingInput: React.FC<RatingInputProps> = ({
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    onRatingChange(starNumber as Rating);
+                    onRatingChange(starNumber as RatingEnum);
                   }}
                   className="absolute right-0 w-1/2 h-full z-10 focus:outline-none"
                   type="button"
