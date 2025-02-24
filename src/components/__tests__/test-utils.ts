@@ -1,7 +1,7 @@
 
-import { Team, Player, SportEnum, PositionEnum, RatingEnum } from '@/utils/types';
+import { Team, Player, SportEnum, PositionEnum, RatingEnum, Match, Group } from '@/utils/types';
 
-export const createMockTeam = (): Team => ({
+export const createMockTeam = (overrides = {}): Team => ({
   id: "1",
   name: "Time Teste",
   responsible: "Responsável Teste",
@@ -14,10 +14,11 @@ export const createMockTeam = (): Team => ({
     goalsFor: 0,
     goalsAgainst: 0
   },
-  ranking: 1
+  ranking: 1,
+  ...overrides
 });
 
-export const createMockPlayer = (): Player => ({
+export const createMockPlayer = (overrides = {}): Player => ({
   id: "1",
   name: "Jogador Teste",
   nickname: "Teste",
@@ -31,5 +32,22 @@ export const createMockPlayer = (): Player => ({
   selected: false,
   present: true,
   paid: true,
-  registered: true
+  registered: true,
+  ...overrides
+});
+
+export const createMockMatch = (overrides = {}): Match => ({
+  id: "1",
+  team1: createMockTeam(),
+  team2: createMockTeam({ id: "2", name: "Time 2" }),
+  date: "2024-01-01",
+  ...overrides
+});
+
+export const createMockGroup = (overrides = {}): Group => ({
+  id: "1",
+  name: "Grupo A",
+  teams: [createMockTeam(), createMockTeam({ id: "2", name: "Time 2" })],
+  matches: [createMockMatch()],
+  ...overrides
 });

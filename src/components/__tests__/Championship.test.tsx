@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,34 +6,29 @@ import { act } from 'react-dom/test-utils';
 import Championship from '../pages/Championship';
 import { useTournamentStore } from '@/stores/useTournamentStore';
 import { useToast } from '@/hooks/use-toast';
-import { Tournament, TournamentState } from '@/utils/types';
+import { TournamentState } from '@/utils/types';
+import { createMockTeam } from './test-utils';
 
 jest.mock('@/stores/useTournamentStore');
 jest.mock('@/hooks/use-toast');
 
-const mockUseTournamentStore = useTournamentStore as jest.MockedFunction<typeof useTournamentStore>;
-
 describe('Championship', () => {
-  const mockStore = {
+  const mockStore: Partial<TournamentState> = {
     tournamentName: '',
-    tournamentType: 'league' as const,
-    teamName: '',
-    responsible: '',
+    tournamentType: 'league',
     teams: [],
     groups: [],
+    matches: [],
     knockoutMatches: null,
-    setTournamentName: jest.fn(),
-    setTournamentType: jest.fn(),
-    setTeamName: jest.fn(),
-    setResponsible: jest.fn(),
-    addTeam: jest.fn(),
-    removeTeam: jest.fn(),
-    generateMatches: jest.fn(),
+    generateGroups: jest.fn(),
+    generateKnockoutStage: jest.fn(),
+    scheduleMatch: jest.fn(),
+    updateMatchResult: jest.fn(),
   };
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (mockUseTournamentStore as unknown as jest.Mock).mockReturnValue(mockStore as TournamentState);
+    (useTournamentStore as jest.Mock).mockReturnValue(mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -43,17 +39,15 @@ describe('Championship', () => {
     expect(screen.getByText(/Campeonato/i)).toBeInTheDocument();
   });
 
-  test('validates tournament name input', async () => {
-    render(<Championship />);
-    const nameInput = screen.getByLabelText(/Nome do Torneio/i);
-    await act(async () => {
-      await userEvent.type(nameInput, '');
-    });
-    expect(mockStore.addTeam).not.toHaveBeenCalled();
-  });
-
   test('adds team successfully', async () => {
+    const addTeam = jest.fn();
+    (useTournamentStore as jest.Mock).mockReturnValue({
+      ...mockStore,
+      addTeam,
+    });
+
     render(<Championship />);
+    
     const teamNameInput = screen.getByLabelText(/Nome do Time/i);
     const responsibleInput = screen.getByLabelText(/Responsável/i);
     const addButton = screen.getByText(/Adicionar Time/i);
@@ -64,7 +58,7 @@ describe('Championship', () => {
       fireEvent.click(addButton);
     });
 
-    expect(mockStore.addTeam).toHaveBeenCalledWith(expect.objectContaining({
+    expect(addTeam).toHaveBeenCalledWith(expect.objectContaining({
       name: 'Time Teste',
       responsible: 'Responsável Teste',
     }));

@@ -1,11 +1,13 @@
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import TeamList from '../tournament/TeamList';
+import { createMockTeam } from './test-utils';
 
 describe('TeamList Component', () => {
   const mockTeams = [
-    { id: '1', name: 'Time 1', responsible: 'Resp 1' },
-    { id: '2', name: 'Time 2', responsible: 'Resp 2' },
+    createMockTeam(),
+    { ...createMockTeam(), id: '2', name: 'Time 2', responsible: 'Resp 2' }
   ];
 
   const mockOnRemoveTeam = jest.fn();

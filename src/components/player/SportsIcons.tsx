@@ -1,13 +1,13 @@
 
 import { SportEnum } from "@/utils/types";
-import { Futbol, Basketball, Volleyball } from "lucide-react";
+import { Football, Basketball } from "lucide-react";
 
 export const SportsIcons: Record<SportEnum, React.ComponentType> = {
-  [SportEnum.FUTSAL]: Futbol,
-  [SportEnum.FOOTBALL]: Futbol,
-  [SportEnum.VOLLEYBALL]: Volleyball,
+  [SportEnum.FUTSAL]: Football,
+  [SportEnum.FOOTBALL]: Football,
+  [SportEnum.VOLLEYBALL]: Basketball,
   [SportEnum.BASKETBALL]: Basketball,
-  [SportEnum.HANDBALL]: Volleyball,
+  [SportEnum.HANDBALL]: Basketball,
 };
 
 export default SportsIcons;

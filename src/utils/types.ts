@@ -180,3 +180,10 @@ export interface TournamentBracketProps {
   matches: Match[];
   onMatchClick?: (match: Match) => void;
 }
+
+export interface DashboardState {
+  dashboardTitle: string;
+  isAdmin: boolean;
+  setDashboardTitle: (title: string) => void;
+  setIsAdmin: (isAdmin: boolean) => void;
+}
