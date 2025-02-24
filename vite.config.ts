@@ -15,11 +15,14 @@ export default defineConfig({
     host: true
   },
   optimizeDeps: {
-    include: ['uuid']
+    include: ['uuid', 'react', 'react-dom', 'react-router-dom']
   },
   build: {
     commonjsOptions: {
       include: [/node_modules/]
+    },
+    rollupOptions: {
+      external: ['react/jsx-runtime'],
     }
   }
 });
