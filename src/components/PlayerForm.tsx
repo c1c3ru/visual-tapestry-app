@@ -27,8 +27,8 @@ const PlayerForm = () => {
     });
   };
 
-  const handleSelectChange = (value: string) => {
-    setNewPlayer({ sport: value as any, selectedPositions: [] });
+  const handleSelectChange = (value: SportEnum) => {
+    setNewPlayer({ sport: value, selectedPositions: [] });
     toast({
       title: "Esporte Selecionado",
       description: `${value} foi selecionado como esporte.`,

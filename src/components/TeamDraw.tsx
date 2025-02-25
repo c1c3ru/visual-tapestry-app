@@ -1,4 +1,3 @@
-
 import React, { useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -22,7 +21,6 @@ const TeamDraw = () => {
     generateTeams 
   } = useTeamDrawStore();
 
-  // Movido para uma função separada para evitar recriações desnecessárias
   const markPlayersForDraw = useCallback(() => {
     const presentPlayers = players.filter(p => p.present && !p.includeInDraw);
     if (presentPlayers.length > 0) {
@@ -30,12 +28,11 @@ const TeamDraw = () => {
         updatePlayer(player.id, { includeInDraw: true });
       });
     }
-  }, []); // Sem dependências para evitar loops
+  }, [players, updatePlayer]);
 
-  // useEffect agora só roda uma vez na montagem do componente
   useEffect(() => {
     markPlayersForDraw();
-  }, []); // Array de dependências vazio = roda apenas na montagem
+  }, [markPlayersForDraw]);
 
   const calculateTeamStrength = (team: typeof players) => {
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;

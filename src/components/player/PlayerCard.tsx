@@ -43,7 +43,7 @@ export const PlayerCard = ({
     nickname: player.nickname,
     sport: player.sport,
     selectedPositions: player.selectedPositions,
-    rating: player.rating, // Assuming `rating` is a number
+    rating: player.rating,
     isGuest: player.isGuest
   });
 
@@ -86,6 +86,10 @@ export const PlayerCard = ({
     onDelete(player.id);
   };
 
+  const handleSelectChange = (value: SportEnum) => {
+    setEditForm((prev) => ({ ...prev, sport: value }));
+  };
+
   if (isEditing) {
     return (
       <motion.div 
@@ -119,8 +123,8 @@ export const PlayerCard = ({
         </Select>
         <Input
           type="number"
-          value={editForm.rating.toString()} // Convert number to string for the input
-          onChange={(e) => setEditForm((prev) => ({ ...prev, rating: Number(e.target.value) }))} // Convert string to number
+          value={editForm.rating.toString()}
+          onChange={(e) => setEditForm((prev) => ({ ...prev, rating: Number(e.target.value) }))}
           placeholder="Avaliação"
         />
         <Checkbox
