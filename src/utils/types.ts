@@ -10,10 +10,10 @@ export interface ErrorState {
 }
 
 export type PlayerFormErrors = {
-  name: boolean;
-  isGuest: boolean;
-  selectedPositions: boolean;
-  rating: boolean;
+  name: { hasError: boolean; message: string };
+  isGuest: { hasError: boolean; message: string };
+  selectedPositions: { hasError: boolean; message: string };
+  rating: { hasError: boolean; message: string };
 };
 
 export interface PlayerState {

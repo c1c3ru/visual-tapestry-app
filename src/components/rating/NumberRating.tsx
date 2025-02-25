@@ -1,6 +1,7 @@
+
 import { motion } from 'framer-motion';
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
 
 const springConfig = {
@@ -21,9 +22,8 @@ const NumberRating: React.FC<NumberRatingProps> = ({ rating, onRatingChange }) =
     return 'text-blue-500';
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.min(Math.max(parseInt(e.target.value) || 1, 10));
-    onRatingChange(value);
+  const handleChange = (value: number[]) => {
+    onRatingChange(value[0]);
   };
 
   const colorClass = getColorClass(rating);
@@ -44,18 +44,15 @@ const NumberRating: React.FC<NumberRatingProps> = ({ rating, onRatingChange }) =
               </span>
             </Label>
 
-            <motion.div whileHover={{ scale: 1.05 }} className="relative">
-              <Input
-                id="rating"
-                type="number"
-                value={rating}
+            <motion.div whileHover={{ scale: 1.05 }} className="relative px-2">
+              <Slider
+                value={[rating]}
                 min={1}
                 max={10}
-                onChange={handleChange}
-                className={`text-2xl font-bold ${colorClass} pr-16`}
-                aria-label="Classificação de 1 a 10"
+                step={1}
+                onValueChange={handleChange}
+                className={colorClass}
               />
-              <span className="absolute right-4 top-3 text-gray-400">/ 10</span>
             </motion.div>
 
             <div className="w-full bg-gray-200 rounded-full overflow-hidden h-2">
@@ -63,7 +60,7 @@ const NumberRating: React.FC<NumberRatingProps> = ({ rating, onRatingChange }) =
                 initial={{ width: 0 }}
                 animate={{ width: `${(rating / 10) * 100}%` }}
                 transition={springConfig}
-                className={`h-full ${colorClass} rounded-full`}
+                className={`h-full ${colorClass.replace('text', 'bg')} rounded-full`}
                 role="progressbar"
                 aria-valuenow={rating}
                 aria-valuemin={1}

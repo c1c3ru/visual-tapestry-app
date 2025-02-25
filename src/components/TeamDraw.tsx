@@ -21,39 +21,32 @@ const TeamDraw = () => {
     generateTeams 
   } = useTeamDrawStore();
 
-  const markPlayersForDraw = useCallback(() => {
-    const presentPlayers = players.filter(p => p.present && !p.includeInDraw);
-    if (presentPlayers.length > 0) {
-      presentPlayers.forEach(player => {
+  useEffect(() => {
+    const availablePlayers = players.filter(p => p.present);
+    if (availablePlayers.length > 0) {
+      availablePlayers.forEach(player => {
         updatePlayer(player.id, { includeInDraw: true });
       });
     }
   }, [players, updatePlayer]);
-
-  useEffect(() => {
-    markPlayersForDraw();
-  }, [markPlayersForDraw]);
 
   const calculateTeamStrength = (team: typeof players) => {
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;
   };
 
   const handleGenerateTeams = () => {
-    console.log("Iniciando sorteio com jogadores:", players);
     const availablePlayers = players.filter(p => p.present && p.includeInDraw);
-    console.log("Jogadores disponíveis:", availablePlayers);
     
     if (availablePlayers.length < playersPerTeam * 2) {
       toast({
         title: "Erro no Sorteio",
-        description: `São necessários no mínimo ${playersPerTeam * 2} jogadores selecionados para formar times.`,
+        description: `São necessários no mínimo ${playersPerTeam * 2} jogadores presentes para formar times.`,
         variant: "destructive",
       });
       return;
     }
 
     const result = generateTeams(availablePlayers);
-    console.log("Resultado do sorteio:", result);
     
     if (!result.success) {
       toast({

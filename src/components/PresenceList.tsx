@@ -19,24 +19,24 @@ const PresenceList = () => {
   const { toast } = useToast();
   const isAdmin = true;
 
-  const handleTogglePresence = (id: number) => {
-    const player = players.find((player) => Number(player.id) === id);
+  const handleTogglePresence = (id: string) => {
+    const player = players.find(p => p.id === id);
     if (player) {
-      updatePlayer(id.toString(), { present: !player.present });
+      updatePlayer(id, { present: !player.present });
       toast({
-        title: "Presença atualizada",
-        description: "Status de presença foi atualizado com sucesso.",
+        title: player.present ? "Presença Removida" : "Presença Confirmada",
+        description: `${player.name} foi marcado como ${player.present ? "ausente" : "presente"}.`
       });
     }
   };
 
-  const handleTogglePayment = (id: number) => {
-    const player = players.find((player) => Number(player.id) === id);
+  const handleTogglePayment = (id: string) => {
+    const player = players.find(p => p.id === id);
     if (player) {
-      updatePlayer(id.toString(), { paid: !player.paid });
+      updatePlayer(id, { paid: !player.paid });
       toast({
-        title: "Pagamento atualizado",
-        description: "Status de pagamento foi atualizado com sucesso.",
+        title: player.paid ? "Pagamento Pendente" : "Pagamento Confirmado",
+        description: `${player.name} foi marcado como ${player.paid ? "não pago" : "pago"}.`
       });
     }
   };
@@ -63,7 +63,7 @@ const PresenceList = () => {
                   <PresenceListItem
                     key={player.id}
                     player={player}
-                    isAdmin={isAdmin}
+                    isAdmin={true}
                     guestHighlight={guestHighlight}
                     onTogglePresence={handleTogglePresence}
                     onTogglePayment={handleTogglePayment}
