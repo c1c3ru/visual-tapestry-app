@@ -32,16 +32,14 @@ const TeamDraw = () => {
 
   useEffect(() => {
     markPlayersForDraw();
-  }, [markPlayersForDraw]);
+  }, [markPlayersForDraw, players]);
 
   const calculateTeamStrength = (team: typeof players) => {
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;
   };
 
   const handleGenerateTeams = () => {
-    console.log("Iniciando sorteio com jogadores:", players);
     const availablePlayers = players.filter(p => p.present && p.includeInDraw);
-    console.log("Jogadores disponíveis:", availablePlayers);
     
     if (availablePlayers.length < playersPerTeam * 2) {
       toast({
@@ -53,7 +51,6 @@ const TeamDraw = () => {
     }
 
     const result = generateTeams(availablePlayers);
-    console.log("Resultado do sorteio:", result);
     
     if (!result.success) {
       toast({

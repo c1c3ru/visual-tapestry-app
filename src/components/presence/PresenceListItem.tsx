@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Check, DollarSign, UserCheck, X, User } from "lucide-react";
@@ -16,7 +15,7 @@ interface PresenceListItemProps {
   player: Player;
   isAdmin: boolean;
   guestHighlight: string;
-   onTogglePresence: (id: string) => void;
+  onTogglePresence: (id: string) => void;
   onTogglePayment: (id: string) => void;
 }
 
@@ -27,6 +26,14 @@ export const PresenceListItem: React.FC<PresenceListItemProps> = ({
   onTogglePresence,
   onTogglePayment,
 }) => {
+  const handleTogglePresence = () => {
+    onTogglePresence(player.id);
+  };
+
+  const handleTogglePayment = () => {
+    onTogglePayment(player.id);
+  };
+
   const getGuestHighlightClass = (isGuest: boolean) => {
     if (!isGuest) return "";
     
