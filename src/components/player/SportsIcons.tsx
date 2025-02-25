@@ -1,12 +1,13 @@
 
 import { SportEnum } from "@/utils/enums";
-import { 
-  Soccer as Football,
-  Basketball,
-  Volleyball
-} from "lucide-react";
+import { Football, Basketball, Volleyball } from "lucide-react";
+import { SVGProps } from "react";
 
-export const SportsIcons: Record<SportEnum, React.ComponentType> = {
+interface SportsIconProps extends SVGProps<SVGSVGElement> {
+  className?: string;
+}
+
+export const SportsIcons: Record<SportEnum, React.FC<SportsIconProps>> = {
   [SportEnum.FUTSAL]: Football,
   [SportEnum.SOCCER]: Football,
   [SportEnum.VOLLEYBALL]: Volleyball,

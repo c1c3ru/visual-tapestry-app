@@ -1,5 +1,8 @@
-
 import { SportEnum, PositionEnum, RatingEnum, TournamentType, MatchType, MatchStatus } from "./enums";
+
+export { SportEnum, PositionEnum, RatingEnum };
+
+export type Rating = RatingEnum;
 
 export interface ErrorState {
   hasError: boolean;
@@ -11,6 +14,23 @@ export interface PlayerFormErrors {
   isGuest: ErrorState;
   selectedPositions: ErrorState;
   rating: ErrorState;
+}
+
+export interface PlayerState {
+  players: Player[];
+  newPlayer: Omit<Player, 'id' | 'createdAt'>;
+  errors: PlayerFormErrors;
+  editingPlayer: Player | null;
+  editValue: string;
+  setEditValue: (value: string) => void;
+  addPlayer: (player: Player) => void;
+  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
+  setErrors: (errors: Partial<PlayerFormErrors>) => void;
+  resetForm: () => void;
+  updatePlayer: (id: string, updatedPlayer: Partial<Player>) => void;
+  removePlayer: (id: string) => void;
+  setPlayers: (players: Player[]) => void;
+  setEditingPlayer: (player: Player | null) => void;
 }
 
 export interface Player {
@@ -45,6 +65,13 @@ export interface Team {
     goalsAgainst: number;
   };
   rating?: number;
+}
+
+export interface TeamDrawState {
+  teams: Team[];
+  playersPerTeam: number;
+  setTeams: (teams: Team[]) => void;
+  setPlayersPerTeam: (count: number) => void;
 }
 
 export interface Match {
@@ -127,4 +154,24 @@ export interface StatisticsState {
   }[];
   updateStatistic: (id: string, data: any) => void;
   removeStatistic: (id: string) => void;
+}
+
+export interface TournamentState {
+  tournamentName: string;
+  tournamentType: TournamentType;
+  teams: Team[];
+  matches: Match[];
+  groups: Group[];
+  knockoutMatches: KnockoutMatches | null;
+  generateGroups: (teams: Team[]) => void;
+  generateKnockoutStage: (teams: Team[]) => void;
+  scheduleMatch: (match: Match) => void;
+  updateMatchResult: (matchId: string, score1: number, score2: number) => void;
+}
+
+export interface DashboardState {
+  dashboardTitle: string;
+  isAdmin: boolean;
+  setDashboardTitle: (title: string) => void;
+  setIsAdmin: (isAdmin: boolean) => void;
 }
