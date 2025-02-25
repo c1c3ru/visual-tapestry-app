@@ -22,7 +22,7 @@ export const PlayerSportSelection: React.FC<PlayerSportSelectionProps> = ({
         </SelectTrigger>
         <SelectContent>
           {Object.values(SportEnum).map((sportValue) => {
-            const Icon = getSportIcon(sportValue);
+            const Icon = getSportIcon(sportValue) as unknown as React.ElementType;
             return (
               <SelectItem key={sportValue} value={sportValue}>
                 <div className="flex items-center gap-2">
