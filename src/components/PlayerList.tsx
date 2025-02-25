@@ -71,6 +71,9 @@ const PlayerList = () => {
           editValue={editValue}
           onEditSave={handleEditSave}
           setEditValue={setEditValue}
+          onEditPlayer={handleEdit}
+          onCancelEdit={() => setEditingPlayer(null)}
+          onUpdatePlayer={handleEditSave}
         />
       </div>
     </motion.div>
