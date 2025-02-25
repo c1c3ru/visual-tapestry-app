@@ -1,43 +1,33 @@
-import { SportEnum, PositionEnum, RatingEnum, TournamentType, MatchType, MatchStatus, ErrorMessages } from "./enums";
+
+import { SportEnum, PositionEnum, RatingEnum, TournamentType, MatchType, MatchStatus } from "./enums";
+
+export interface ErrorState {
+  hasError: boolean;
+  message: string;
+}
+
+export interface PlayerFormErrors {
+  name: ErrorState;
+  isGuest: ErrorState;
+  selectedPositions: ErrorState;
+  rating: ErrorState;
+}
 
 export interface Player {
   id: string;
   name: string;
   nickname: string;
-  birthDate: Date;
+  birthDate: string;
   isGuest: boolean;
   sport: SportEnum;
   selectedPositions: PositionEnum[];
   rating: RatingEnum;
   includeInDraw: boolean;
-  createdAt: Date;
+  createdAt: string;
   selected: boolean;
   present: boolean;
   paid: boolean;
   registered: boolean;
-}
-
-export interface PlayerState {
-  players: Player[];
-  newPlayer: Omit<Player, 'id' | 'createdAt'>;
-  errors: {
-    name: { hasError: boolean; message: string };
-    isGuest: { hasError: boolean; message: string };
-    selectedPositions: { hasError: boolean; message: string };
-    rating: { hasError: boolean; message: string };
-  };
-  editingPlayer: Player | null;
-  editValue: string;
-  setEditValue: (value: string) => void;
-  addPlayer: (player: Player) => void;
-  setNewPlayer: (player: Partial<Omit<Player, 'id' | 'createdAt'>>) => void;
-  setErrors: (errors: Partial<PlayerState['errors']>) => void;
-  resetForm: () => void;
-  updatePlayer: (id: string, updatedPlayer: Partial<Player>) => void;
-  removePlayer: (id: string) => void;
-  setPlayers: (players: Player[]) => void;
-  setEditingPlayer: (player: Player | null) => void;
-  
 }
 
 export interface Team {
@@ -54,6 +44,7 @@ export interface Team {
     goalsFor: number;
     goalsAgainst: number;
   };
+  rating?: number;
 }
 
 export interface Match {
@@ -62,7 +53,7 @@ export interface Match {
   team2: Team;
   score1: number;
   score2: number;
-  date: Date;
+  date: string;
   location?: string;
   type: MatchType;
   status: MatchStatus;
@@ -101,10 +92,39 @@ export interface Tournament {
   id: string;
   name: string;
   type: TournamentType;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   teams: Team[];
   matches: Match[];
   groups?: Group[];
   knockoutMatches?: KnockoutMatches;
+}
+
+export interface TournamentBracketProps {
+  groups: Group[];
+  knockoutMatches?: KnockoutMatches;
+  tournamentType: TournamentType;
+}
+
+export interface SettingsState {
+  ratingSystem: string;
+  guestHighlight: string;
+  setRatingSystem: (system: string) => void;
+  setGuestHighlight: (highlight: string) => void;
+}
+
+export interface StatisticsState {
+  data: any[];
+  loading: boolean;
+  error: string | null;
+  statistics: {
+    id: string;
+    name: string;
+    date: string;
+    attendanceCount: number;
+    lastUpdated: string;
+    pointRecords: { points: number; date: string; }[];
+  }[];
+  updateStatistic: (id: string, data: any) => void;
+  removeStatistic: (id: string) => void;
 }
