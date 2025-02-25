@@ -4,6 +4,8 @@ import { SportEnum } from "@/utils/types";
 import { PlayerPositions } from './PlayerPositions';
 import { PlayerSportSelection } from './PlayerSportSelection';
 import { AlertTriangle } from "lucide-react";
+import { ErrorState } from '@/utils/types';
+
 
 const springConfig = {
   type: "spring",
@@ -17,7 +19,7 @@ interface PlayerSportInfoProps {
   onSportChange: (value: string) => void;
   onPositionChange: (position: string, checked: boolean) => void;
   errors: {
-    selectedPositions: boolean;
+    selectedPositions: ErrorState;
   };
 }
 

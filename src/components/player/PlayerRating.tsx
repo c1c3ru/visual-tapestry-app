@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { RatingEnum } from "@/utils/types";
 import { RatingInput } from "./RatingInput";
 import { AlertTriangle } from "lucide-react";
+import { ErrorState } from '@/utils/types';
 
 const springConfig = {
   type: "spring",
@@ -13,7 +14,7 @@ interface PlayerRatingProps {
   rating: RatingEnum;
   ratingSystem: string;
   onRatingChange: (rating: RatingEnum) => void;
-  error: boolean;
+  error: ErrorState;
 }
 
 export const PlayerRating: React.FC<PlayerRatingProps> = ({

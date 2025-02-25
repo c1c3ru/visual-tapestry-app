@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertTriangle } from 'lucide-react';
+import { ErrorState } from '@/utils/types';
 
 const springConfig = {
   type: "spring",
@@ -18,8 +19,8 @@ interface PlayerBasicInfoProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onGuestChange: (checked: boolean) => void;
   errors: {
-    name: boolean;
-    isGuest: boolean;
+    name: ErrorState;
+    isGuest: ErrorState;
   };
 }
 
