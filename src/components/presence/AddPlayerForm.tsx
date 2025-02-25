@@ -61,7 +61,7 @@ export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, playe
         nickname: "",
         birthDate: new Date().toISOString(),
         isGuest: false,
-        sport: SportEnum.FOOTBALL,
+        sport: SportEnum.SOCCER,
         selectedPositions: [],
         rating: RatingEnum.ONE,
         includeInDraw: false,

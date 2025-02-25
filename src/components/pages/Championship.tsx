@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTournamentStore } from "../../stores/useTournamentStore";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { TournamentType } from "@/utils/enums";
 
 const springConfig = {
   type: "spring",
@@ -82,6 +82,15 @@ const Championship = () => {
       id: Date.now().toString(),
       name: teamName.trim(),
       responsible: responsible.trim(),
+      players: [],
+      ranking: 0,
+      stats: {
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
+      }
     };
 
     addTeam(newTeam);
@@ -266,7 +275,8 @@ const Championship = () => {
                 >
                   <TournamentBracket 
                     groups={groups} 
-                    knockoutMatches={knockoutMatches} 
+                    knockoutMatches={knockoutMatches}
+                    tournamentType={TournamentType.LEAGUE} 
                   />
                 </motion.div>
               )}

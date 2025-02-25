@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddPlayerForm } from '../presence/AddPlayerForm';
 import { useToast } from '@/hooks/use-toast';
-import { Player } from '@/utils/types';
+import { Player, SportEnum } from '@/utils/types';
 
 // Mock do useToast
 jest.mock('@/hooks/use-toast', () => ({
@@ -15,12 +15,12 @@ describe('AddPlayerForm', () => {
   const mockOnAddPlayer = jest.fn();
   const existingPlayers: Player[] = [
     {
-      id: 1,
+      id: '1',
       name: "João",
       nickname: "",
       birthDate: "",
       isGuest: false,
-      sport: "futebol",
+      sport: SportEnum.SOCCER,
       selectedPositions: [],
       rating: 1,
       includeInDraw: false,

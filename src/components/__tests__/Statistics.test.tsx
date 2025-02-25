@@ -33,7 +33,7 @@ describe('Statistics', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (mockUseStatisticsStore as unknown as jest.Mock).mockReturnValue(mockStore as StatisticsState);
+    (mockUseStatisticsStore as unknown as jest.Mock).mockReturnValue(mockStore as unknown as StatisticsState);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -50,7 +50,7 @@ describe('Statistics', () => {
     (mockUseStatisticsStore as unknown as jest.Mock).mockReturnValue({
       ...mockStore,
       updateStatistic: mockUpdateStatistic,
-    } as StatisticsState);
+    } as unknown as StatisticsState);
 
     render(<Statistics />);
     
@@ -74,7 +74,7 @@ describe('Statistics', () => {
     (mockUseStatisticsStore as unknown as jest.Mock).mockReturnValue({
       ...mockStore,
       removeStatistic: mockRemoveStatistic,
-    } as StatisticsState);
+    } as unknown as StatisticsState);
 
     render(<Statistics />);
     

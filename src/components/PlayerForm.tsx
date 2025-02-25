@@ -52,7 +52,7 @@ const PlayerForm = () => {
       name: { hasError: !newPlayer.name.trim(), message: "Nome é obrigatório" },
       isGuest: { hasError: newPlayer.isGuest === null, message: "Status de convidado é obrigatório" },
       selectedPositions: { hasError: !newPlayer.selectedPositions.length, message: "Selecione pelo menos uma posição" },
-      rating: { hasError: newPlayer.rating === 0 as Rating, message: "Avaliação é obrigatória" }
+      rating: { hasError: newPlayer.rating === 0 as RatingEnum, message: "Avaliação é obrigatória" }
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some(error => error.hasError);
@@ -98,7 +98,7 @@ const PlayerForm = () => {
           <PlayerBasicInfo
             name={newPlayer.name}
             nickname={newPlayer.nickname}
-            birthDate={newPlayer.birthDate}
+            birthDate={newPlayer.birthDate.toISOString().split('T')[0]}
             isGuest={newPlayer.isGuest}
             onChange={handleChange}
             onGuestChange={(checked) => setNewPlayer({ isGuest: checked })}

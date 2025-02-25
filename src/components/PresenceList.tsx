@@ -8,9 +8,13 @@ import { useSettingsStore } from "@/stores/useSettingsStore";
 import { PresenceHeader } from "./presence/PresenceHeader";
 import { AddPlayerForm } from "./presence/AddPlayerForm";
 import { PresenceListItem } from "./presence/PresenceListItem";
+import { Player } from "@/utils/types";
 
 const PresenceList = () => {
-  const { players, addPlayer, updatePlayer } = usePlayerStore();
+  const { players, updatePlayer } = usePlayerStore();
+  const addPlayer = async (player: Player): Promise<void> => {
+    usePlayerStore.getState().addPlayer(player);
+  };
   const { guestHighlight } = useSettingsStore();
   const { toast } = useToast();
   const isAdmin = true;

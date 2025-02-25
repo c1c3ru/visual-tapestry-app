@@ -1,12 +1,11 @@
-
 import { SportEnum } from "@/utils/enums";
-import { 
-  Dumbbell,
-  User,
-  Baseball,
-  CircleDot,
-  Headphones
-} from "lucide-react";
+import {
+  SportsSoccer as SoccerIcon,
+  SportsVolleyball as VolleyballIcon,
+  SportsBasketball as BasketballIcon,
+  SportsHandball as HandballIcon,
+  Sports as GenericSportIcon // Fallback icon
+} from "@mui/icons-material";
 
 interface IconProps {
   className?: string;
@@ -14,11 +13,11 @@ interface IconProps {
 }
 
 export const SportsIcons: Record<SportEnum, React.FC<IconProps>> = {
-  [SportEnum.FUTSAL]: (props) => <Baseball {...props} />,
-  [SportEnum.SOCCER]: (props) => <CircleDot {...props} />,
-  [SportEnum.VOLLEYBALL]: (props) => <User {...props} />,
-  [SportEnum.BASKETBALL]: (props) => <Dumbbell {...props} />,
-  [SportEnum.HANDBALL]: (props) => <Headphones {...props} />
+  [SportEnum.FUTSAL]: (props) => <SoccerIcon {...props} />,
+  [SportEnum.SOCCER]: (props) => <SoccerIcon {...props} />,
+  [SportEnum.VOLLEYBALL]: (props) => <VolleyballIcon {...props} />,
+  [SportEnum.BASKETBALL]: (props) => <BasketballIcon {...props} />,
+  [SportEnum.HANDBALL]: (props) => <HandballIcon {...props} />
 };
 
 export default SportsIcons;

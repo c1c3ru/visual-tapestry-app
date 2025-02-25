@@ -4,9 +4,8 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import Championship from '../pages/Championship';
-import { useTournamentStore } from '@/stores/useTournamentStore';
+import { useTournamentStore, TournamentState } from '@/stores/useTournamentStore';
 import { useToast } from '@/hooks/use-toast';
-import { TournamentState } from '@/utils/types';
 import { createMockTeam } from './test-utils';
 
 jest.mock('@/stores/useTournamentStore');
@@ -28,7 +27,7 @@ describe('Championship', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (useTournamentStore as jest.Mock).mockReturnValue(mockStore);
+    (useTournamentStore as unknown as jest.Mock).mockReturnValue(mockStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -41,7 +40,7 @@ describe('Championship', () => {
 
   test('adds team successfully', async () => {
     const addTeam = jest.fn();
-    (useTournamentStore as jest.Mock).mockReturnValue({
+    (useTournamentStore as unknown as jest.Mock).mockReturnValue({
       ...mockStore,
       addTeam,
     });

@@ -15,7 +15,7 @@ const SportsIcon: React.FC<SportsIconProps> = ({ sport, className }) => {
   }
 
   // Renderiza o ícone com a classe passada
-  return <IconComponent className={className} />;
+  return <span className={className}><IconComponent /></span>;
 };
 
 export default SportsIcon;

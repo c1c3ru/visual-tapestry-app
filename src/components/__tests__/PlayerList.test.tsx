@@ -35,8 +35,8 @@ describe('PlayerList', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (usePlayerStore as jest.Mock).mockReturnValue(mockPlayerStore);
-    (useSettingsStore as jest.Mock).mockReturnValue(mockSettingsStore);
+    (usePlayerStore as unknown as jest.Mock).mockReturnValue(mockPlayerStore);
+    (useSettingsStore as unknown as jest.Mock).mockReturnValue(mockSettingsStore);
     (useToast as jest.Mock).mockReturnValue({
       toast: jest.fn(),
     });
@@ -49,7 +49,7 @@ describe('PlayerList', () => {
 
   test('handles player edit', async () => {
     const setEditingPlayer = jest.fn();
-    (usePlayerStore as jest.Mock).mockReturnValue({
+    (usePlayerStore as unknown as jest.Mock).mockReturnValue({
       ...mockPlayerStore,
       setEditingPlayer,
     });

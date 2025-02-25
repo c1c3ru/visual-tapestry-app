@@ -37,7 +37,7 @@ export interface Player {
   id: string;
   name: string;
   nickname: string;
-  birthDate: string;
+  birthDate: Date | string;
   isGuest: boolean;
   sport: SportEnum;
   selectedPositions: PositionEnum[];
@@ -80,7 +80,7 @@ export interface Match {
   team2: Team;
   score1: number;
   score2: number;
-  date: string;
+  date: Date | string;
   location?: string;
   type: MatchType;
   status: MatchStatus;
@@ -141,7 +141,7 @@ export interface SettingsState {
 }
 
 export interface StatisticsState {
-  data: any[];
+  data: Date | string;
   loading: boolean;
   error: string | null;
   statistics: {
@@ -152,7 +152,7 @@ export interface StatisticsState {
     lastUpdated: string;
     pointRecords: { points: number; date: string; }[];
   }[];
-  updateStatistic: (id: string, data: any) => void;
+  updateStatistic: (id: string, data: Date | string) => void;
   removeStatistic: (id: string) => void;
 }
 
@@ -167,6 +167,16 @@ export interface TournamentState {
   generateKnockoutStage: (teams: Team[]) => void;
   scheduleMatch: (match: Match) => void;
   updateMatchResult: (matchId: string, score1: number, score2: number) => void;
+  updateMatchStatus: (matchId: string, status: MatchStatus) => void;
+  setTournamentName: (name: string) => void;
+  setTournamentType: (type: TournamentType) => void;
+  addTeam: (team: Team) => void;
+  removeTeam: (id: string) => void;
+  generateMatches: () => void;
+  setTeams: (teams: Team[]) => void;
+  setMatches: (matches: Match[]) => void;
+  setGroups: (groups: Group[]) => void;
+  setKnockoutMatches: (matches: KnockoutMatches) => void;
 }
 
 export interface DashboardState {

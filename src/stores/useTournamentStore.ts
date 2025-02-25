@@ -1,10 +1,10 @@
 
 import { create } from 'zustand';
-import { Team, Group, KnockoutMatches } from '@/utils/types';
+import { Team, Group, KnockoutMatches, Match } from '@/utils/types';
 import { generateTournamentMatches, generateGroups, generateKnockoutMatches } from '@/utils/tournament';
 import { TournamentType } from '@/utils/enums';
 
-interface TournamentState {
+export interface TournamentState {
   tournamentName: string;
   tournamentType: 'league' | 'worldCup' | 'homeAway';
   teamName: string;
@@ -12,6 +12,7 @@ interface TournamentState {
   teams: Team[];
   groups: Group[];
   knockoutMatches: KnockoutMatches | null;
+  matches: Match[];
   setTournamentName: (name: string) => void;
   setTournamentType: (type: 'league' | 'worldCup' | 'homeAway') => void;
   setTeamName: (name: string) => void;
@@ -19,18 +20,23 @@ interface TournamentState {
   addTeam: (team: Team) => { success: boolean; error?: string };
   removeTeam: (id: string) => void;
   generateMatches: () => { success: boolean; error?: string };
+  generateGroups: (teams: Team[]) => void;
+  generateKnockoutStage: (teams: Team[]) => void;
+  scheduleMatch: (match: Match) => void;
+  updateMatchResult: (match: Match) => void;
 }
 
 export const useTournamentStore = create<TournamentState>((set, get) => ({
   tournamentName: '',
-  tournamentType: 'league',
+  tournamentType: TournamentType.LEAGUE,
   teamName: '',
   responsible: '',
   teams: [],
   groups: [],
   knockoutMatches: null,
+  matches: [],
   setTournamentName: (name) => set({ tournamentName: name }),
-  setTournamentType: (type) => set({ tournamentType: type }),
+  setTournamentType: (type: TournamentType) => set({ tournamentType: type }),
   setTeamName: (name) => set({ teamName: name }),
   setResponsible: (name) => set({ responsible: name }),
   addTeam: (team) => {
@@ -84,5 +90,21 @@ export const useTournamentStore = create<TournamentState>((set, get) => ({
         error: "Erro ao gerar partidas. Tente novamente."
       };
     }
+  },
+  generateGroups: (teams) => {
+    const groups = generateGroups(teams);
+    set({ groups });
+  },
+  generateKnockoutStage: (teams) => {
+    const knockoutMatches = generateKnockoutMatches(teams);
+    set({ knockoutMatches });
+  },
+  scheduleMatch: (match) => {
+    set((state) => ({ matches: [...state.matches, match] }));
+  },
+  updateMatchResult: (match) => {
+    set((state) => ({
+      matches: state.matches.map((m) => (m.id === match.id ? match : m)),
+    }));
   },
 }));
