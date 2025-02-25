@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { Player} from "@/utils/types";
-import { PositionEnum, RatingEnum } from "@/utils/enums";
+import { Player, ErrorState } from "@/utils/types";
+import { SportEnum, PositionEnum, RatingEnum } from "@/utils/enums";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
@@ -48,7 +48,7 @@ const PlayerForm = () => {
   };
 
   const validateForm = () => {
-    const newErrors = {
+    const newErrors: Record<string, ErrorState> = {
       name: { hasError: !newPlayer.name.trim(), message: "Nome é obrigatório" },
       isGuest: { hasError: newPlayer.isGuest === null, message: "Status de convidado é obrigatório" },
       selectedPositions: { hasError: !newPlayer.selectedPositions.length, message: "Selecione pelo menos uma posição" },
@@ -69,9 +69,14 @@ const PlayerForm = () => {
       return;
     }
 
+    const birthDateString = typeof newPlayer.birthDate === 'string' 
+      ? newPlayer.birthDate 
+      : newPlayer.birthDate.toISOString();
+
     const player: Player = {
       ...newPlayer,
       id: String(Date.now()),
+      birthDate: birthDateString,
       createdAt: new Date().toISOString(),
     };
     
@@ -98,7 +103,7 @@ const PlayerForm = () => {
           <PlayerBasicInfo
             name={newPlayer.name}
             nickname={newPlayer.nickname}
-            birthDate={newPlayer.birthDate.toISOString().split('T')[0]}
+            birthDate={typeof newPlayer.birthDate === 'string' ? newPlayer.birthDate : newPlayer.birthDate.toISOString().split('T')[0]}
             isGuest={newPlayer.isGuest}
             onChange={handleChange}
             onGuestChange={(checked) => setNewPlayer({ isGuest: checked })}

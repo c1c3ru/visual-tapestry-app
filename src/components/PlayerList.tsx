@@ -21,7 +21,7 @@ const PlayerList = () => {
   const { guestHighlight } = useSettingsStore();
   const { toast } = useToast();
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     const player = players.find((p) => p.id === id);
     if (player) {
       setEditingPlayer({ id });
@@ -29,7 +29,7 @@ const PlayerList = () => {
     }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     removePlayer(id);
     toast({
       title: "Jogador Removido",
@@ -37,7 +37,7 @@ const PlayerList = () => {
     });
   };
 
-  const handleEditSave = (id: number, newValue: string) => {
+  const handleEditSave = (id: string, newValue: string) => {
     if (newValue.trim()) {
       updatePlayer(id, { name: newValue.trim() });
       setEditingPlayer(null);

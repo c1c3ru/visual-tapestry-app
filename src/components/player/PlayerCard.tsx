@@ -1,30 +1,25 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Edit2, Trash2, Save, X, User, Sword, Star, Calendar, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Player } from "@/utils/types";
+import { SportEnum } from "@/utils/enums";
 import clsx from "clsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
-
 interface PlayerCardProps {
   player: Player;
   guestHighlight: string;
-  onEdit: (id: number) => void;
-  onDelete: (id: number) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
   isEditing: boolean;
   editValue: string;
-  onEditSave: (id: number, value: string) => void;
+  onEditSave: (id: string, value: string) => void;
   setEditValue: (value: string) => void;
 }
 
@@ -144,7 +139,7 @@ export const PlayerCard = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={springConfig}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       <Card className={clsx(getGuestHighlightClass(player.isGuest))}>
         <CardHeader>
