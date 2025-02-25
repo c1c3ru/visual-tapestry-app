@@ -12,11 +12,11 @@ const springConfig = {
 interface PlayerListContainerProps {
   players: Player[];
   guestHighlight: string;
-  onEdit: (id: number) => void;
-  onDelete: (id: number) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
   editingPlayer: Player | null;
   editValue: string;
-  onEditSave: (id: number, newValue: string) => void;
+  onEditSave: (id: string, newValue: string) => void;
   setEditValue: (value: string) => void;
   onEditPlayer: (id: string) => void;
   onCancelEdit: () => void;
@@ -68,11 +68,11 @@ export const PlayerListContainer = ({
               <PlayerCard
                 player={player}
                 guestHighlight={guestHighlight}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                isEditing={editingPlayer?.id === Number(player.id)}
+                onEdit={() => onEdit(player.id.toString())}
+                onDelete={() => onDelete(player.id.toString())}
+                isEditing={editingPlayer?.id === player.id}
                 editValue={editValue}
-                onEditSave={onEditSave}
+                onEditSave={(newValue) => onEditSave(player.id.toString(), newValue)}
                 setEditValue={setEditValue}
               />
             </motion.div>

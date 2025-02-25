@@ -5,8 +5,8 @@ import { Player } from "@/utils/types";
 interface PlayerContextProps {
   players: Player[];
   addPlayer: (player: Player) => void;
-  updatePlayer: (id: number, updatedPlayer: Partial<Player>) => void;
-  removePlayer: (id: number) => void;
+  updatePlayer: (id: string, updatedPlayer: Partial<Player>) => void;
+  removePlayer: (id: string) => void;
 }
 
 const PlayerContext = createContext<PlayerContextProps | undefined>(undefined);
@@ -16,33 +16,30 @@ interface PlayerProviderProps {
 }
 
 export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<Player[]>(() => {
+    // Initialize with proper type casting
+    const savedPlayers = getFromLocalStorage<Player[]>("players");
+    return savedPlayers || [];
+  });
 
   useEffect(() => {
-    const savedPlayers = getFromLocalStorage("players") || [];
-    setPlayers(savedPlayers);
-  }, []);
-
-  const savePlayersToStorage = (updatedPlayers: Player[]) => {
-    saveToLocalStorage("players", updatedPlayers);
-    setPlayers(updatedPlayers);
-  };
+    saveToLocalStorage("players", players);
+  }, [players]);
 
   const addPlayer = (player: Player) => {
-    const updatedPlayers = [...players, player];
-    savePlayersToStorage(updatedPlayers);
+    setPlayers(prev => [...prev, player]);
   };
 
-  const updatePlayer = (id: number, updatedPlayer: Partial<Player>) => {
-    const updatedPlayers = players.map((player) =>
-      player.id === id ? { ...player, ...updatedPlayer } : player
+  const updatePlayer = (id: string, updatedPlayer: Partial<Player>) => {
+    setPlayers(prev => 
+      prev.map(player => 
+        player.id === id ? { ...player, ...updatedPlayer } : player
+      )
     );
-    savePlayersToStorage(updatedPlayers);
   };
 
-  const removePlayer = (id: number) => {
-    const updatedPlayers = players.filter((player) => player.id !== id);
-    savePlayersToStorage(updatedPlayers);
+  const removePlayer = (id: string) => {
+    setPlayers(prev => prev.filter(player => player.id !== id));
   };
 
   return (
