@@ -102,7 +102,7 @@ export const PlayerCard = ({
         />
         <Select
           value={editForm.sport}
-          onValueChange={(value) => setEditForm((prev) => ({ ...prev, sport: value as any }))}
+          onValueChange={(value: SportEnum) => setEditForm((prev) => ({ ...prev, sport: value }))}
         >
           <SelectTrigger>
             <SelectValue placeholder="Esporte" />

@@ -24,7 +24,7 @@ const PlayerList = () => {
   const handleEdit = (id: string) => {
     const player = players.find((p) => p.id === id);
     if (player) {
-      setEditingPlayer({ id });
+      setEditingPlayer(player);
       setEditValue(player.name);
     }
   };
