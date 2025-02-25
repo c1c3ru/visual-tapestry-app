@@ -78,6 +78,14 @@ export const PlayerCard = ({
     onEdit(player.id);
   };
 
+  const handleEdit = () => {
+    onEdit(player.id);
+  };
+
+  const handleDelete = () => {
+    onDelete(player.id);
+  };
+
   if (isEditing) {
     return (
       <motion.div 
@@ -134,7 +142,7 @@ export const PlayerCard = ({
       exit={{ opacity: 0, y: -20 }}
       transition={springConfig}
     >
-      <Card className={clsx(getGuestHighlightClass(player.isGuest), "hover:shadow-lg transition-shadow")}>
+      <Card className={clsx(getGuestHighlightClass(player.isGuest))}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5 text-gray-600" />
@@ -166,33 +174,14 @@ export const PlayerCard = ({
           </div>
 
           <div className="flex gap-2 mt-6">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  onClick={() => onEdit(player.id)}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <Edit2 className="h-4 w-4" />
-                  <span className="sr-only">Editar</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Editar Jogador</TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  onClick={() => onDelete(player.id)} 
-                  variant="destructive"
-                  className="gap-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Remover</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Remover Jogador</TooltipContent>
-            </Tooltip>
+            <Button onClick={handleEdit} variant="outline">
+              <Edit2 className="h-4 w-4" />
+              <span className="sr-only">Editar</span>
+            </Button>
+            <Button onClick={handleDelete} variant="destructive">
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Remover</span>
+            </Button>
           </div>
         </CardContent>
       </Card>

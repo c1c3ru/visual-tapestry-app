@@ -1,6 +1,6 @@
 
 import { Team, Player, Match, Group } from '@/utils/types';
-import { SportEnum, PositionEnum, RatingEnum } from '@/utils/enums';
+import { SportEnum, PositionEnum, RatingEnum, MatchType, MatchStatus } from '@/utils/enums';
 
 export const createMockTeam = (overrides = {}): Team => ({
   id: "1",
@@ -26,8 +26,8 @@ export const createMockMatch = (overrides = {}): Match => ({
   score1: 0,
   score2: 0,
   date: "2024-01-01",
-  type: "group",
-  status: "scheduled",
+  type: MatchType.GROUP_STAGE,
+  status: MatchStatus.SCHEDULED,
   isHomeGame: true,
   ...overrides
 });
