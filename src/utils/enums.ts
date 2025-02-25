@@ -55,3 +55,10 @@ export enum MatchStatus {
   IN_PROGRESS = "in_progress",
   COMPLETED = "completed"
 }
+
+export enum ErrorMessages {
+  MIN_TEAMS_REQUIRED = "Minimum number of teams required is not met",
+  INVALID_TEAMS_NUMBER = "Invalid number of teams",
+  INVALID_TOURNAMENT_TYPE = "Invalid tournament type",
+  INVALID_MATCH_TYPE = "Invalid match type"
+}
