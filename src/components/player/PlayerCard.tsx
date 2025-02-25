@@ -8,9 +8,7 @@ import { Player } from "@/utils/types";
 import { SportEnum } from "@/utils/enums";
 import clsx from "clsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface PlayerCardProps {
   player: Player;

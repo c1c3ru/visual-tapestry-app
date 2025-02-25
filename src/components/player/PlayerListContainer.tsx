@@ -14,10 +14,13 @@ interface PlayerListContainerProps {
   guestHighlight: string;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
-  editingPlayer: { id: number } | null;
+  editingPlayer: Player | null;
   editValue: string;
   onEditSave: (id: number, newValue: string) => void;
   setEditValue: (value: string) => void;
+  onEditPlayer: (id: string) => void;
+  onCancelEdit: () => void;
+  onUpdatePlayer: (id: string, newValue: string) => void;
 }
 
 export const PlayerListContainer = ({ 

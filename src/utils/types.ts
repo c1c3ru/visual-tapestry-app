@@ -9,12 +9,12 @@ export interface ErrorState {
   message: string;
 }
 
-export interface PlayerFormErrors {
-  name: ErrorState;
-  isGuest: ErrorState;
-  selectedPositions: ErrorState;
-  rating: ErrorState;
-}
+export type PlayerFormErrors = {
+  name: boolean;
+  isGuest: boolean;
+  selectedPositions: boolean;
+  rating: boolean;
+};
 
 export interface PlayerState {
   players: Player[];

@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { Player, ErrorState } from "@/utils/types";
-import { SportEnum, PositionEnum, RatingEnum } from "@/utils/enums";
+import { Player} from "@/utils/types";
+import { PositionEnum, RatingEnum } from "@/utils/enums";
 import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
 import { PlayerRating } from "./player/PlayerRating";
+import { SportEnum } from "@/utils/enums";
 
 const PlayerForm = () => {
   const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm } = usePlayerStore();
@@ -48,14 +49,14 @@ const PlayerForm = () => {
   };
 
   const validateForm = () => {
-    const newErrors: Record<string, ErrorState> = {
-      name: { hasError: !newPlayer.name.trim(), message: "Nome é obrigatório" },
-      isGuest: { hasError: newPlayer.isGuest === null, message: "Status de convidado é obrigatório" },
-      selectedPositions: { hasError: !newPlayer.selectedPositions.length, message: "Selecione pelo menos uma posição" },
-      rating: { hasError: newPlayer.rating === 0 as RatingEnum, message: "Avaliação é obrigatória" }
+    const newErrors = {
+      name: !newPlayer.name.trim(),
+      isGuest: newPlayer.isGuest === null,
+      selectedPositions: !newPlayer.selectedPositions.length,
+      rating: newPlayer.rating === RatingEnum.NONE
     };
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error.hasError);
+    return !Object.values(newErrors).some(error => error);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -69,14 +70,9 @@ const PlayerForm = () => {
       return;
     }
 
-    const birthDateString = typeof newPlayer.birthDate === 'string' 
-      ? newPlayer.birthDate 
-      : newPlayer.birthDate.toISOString();
-
     const player: Player = {
       ...newPlayer,
       id: String(Date.now()),
-      birthDate: birthDateString,
       createdAt: new Date().toISOString(),
     };
     
@@ -103,7 +99,7 @@ const PlayerForm = () => {
           <PlayerBasicInfo
             name={newPlayer.name}
             nickname={newPlayer.nickname}
-            birthDate={typeof newPlayer.birthDate === 'string' ? newPlayer.birthDate : newPlayer.birthDate.toISOString().split('T')[0]}
+            birthDate={newPlayer.birthDate instanceof Date ? newPlayer.birthDate.toISOString().split('T')[0] : newPlayer.birthDate}
             isGuest={newPlayer.isGuest}
             onChange={handleChange}
             onGuestChange={(checked) => setNewPlayer({ isGuest: checked })}
@@ -122,7 +118,7 @@ const PlayerForm = () => {
             rating={newPlayer.rating}
             ratingSystem={ratingSystem}
             onRatingChange={(rating) => setNewPlayer({ rating })}
-            error={errors.rating.hasError}
+            error={errors.rating}
           />
 
           <Button 
