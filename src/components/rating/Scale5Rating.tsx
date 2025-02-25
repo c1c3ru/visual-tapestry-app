@@ -1,8 +1,8 @@
 
 import { motion } from 'framer-motion';
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 
 const springConfig = {
   type: "spring",
@@ -22,9 +22,8 @@ const Scale5Rating: React.FC<Scale5RatingProps> = ({ rating, onRatingChange }) =
     return 'text-blue-500';
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 5);
-    onRatingChange(value);
+  const handleChange = (value: number[]) => {
+    onRatingChange(value[0]);
   };
 
   const colorClass = getColorClass(rating);
@@ -45,18 +44,15 @@ const Scale5Rating: React.FC<Scale5RatingProps> = ({ rating, onRatingChange }) =
               </span>
             </Label>
 
-            <motion.div whileHover={{ scale: 1.05 }} className="relative">
-              <Input
-                id="rating"
-                type="number"
-                value={rating}
+            <motion.div whileHover={{ scale: 1.05 }} className="relative px-2">
+              <Slider
+                value={[rating]}
                 min={1}
                 max={5}
-                onChange={handleChange}
-                className={`text-2xl font-bold ${colorClass} pr-16`}
-                aria-label="Classificação de 1 a 5"
+                step={1}
+                onValueChange={handleChange}
+                className={colorClass}
               />
-              <span className="absolute right-4 top-3 text-gray-400">/ 5</span>
             </motion.div>
 
             <div className="w-full bg-gray-200 rounded-full overflow-hidden h-2">

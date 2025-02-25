@@ -12,6 +12,7 @@ import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
 import { PlayerRating } from "./player/PlayerRating";
 import { SportEnum } from "@/utils/enums";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const PlayerForm = () => {
   const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm, players } = usePlayerStore();
@@ -109,7 +110,7 @@ const PlayerForm = () => {
       transition={{ duration: 0.5, type: "spring" }}
       className="min-h-screen bg-gray-50 p-6"
     >
-      <PlayerHeader />
+      <PageHeader pageName="player" />
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <PlayerBasicInfo

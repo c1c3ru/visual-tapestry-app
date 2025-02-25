@@ -10,6 +10,7 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 import BackToDashboard from "./BackToDashboard";
 import { PositionEnum } from "../utils/enums";
 import clsx from "clsx";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const TeamDraw = () => {
   const { players, updatePlayer } = usePlayerStore();
@@ -67,9 +68,10 @@ const TeamDraw = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.5, type: "spring" }}
       className="min-h-screen bg-gray-50 p-6"
     >
+      <PageHeader pageName="draw" />
       <BackToDashboard />
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow">

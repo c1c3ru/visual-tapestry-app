@@ -9,6 +9,7 @@ import { PresenceHeader } from "./presence/PresenceHeader";
 import { AddPlayerForm } from "./presence/AddPlayerForm";
 import { PresenceListItem } from "./presence/PresenceListItem";
 import { Player } from "@/utils/types";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const PresenceList = () => {
   const { players, updatePlayer } = usePlayerStore();
@@ -46,8 +47,9 @@ const PresenceList = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, type: "spring" }}
-      className="min-h-screen bg-background p-6"
+      className="min-h-screen bg-gray-50 p-6"
     >
+      <PageHeader pageName="presence" />
       <div className="max-w-4xl mx-auto">
         <PresenceHeader />
         
