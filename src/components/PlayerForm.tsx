@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -14,7 +15,7 @@ import { PlayerRating } from "./player/PlayerRating";
 import { SportEnum } from "@/utils/enums";
 
 const PlayerForm = () => {
-  const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm, players } = usePlayerStore();
+  const { addPlayer, newPlayer, setNewPlayer, errors, setErrors, resetForm } = usePlayerStore();
   const { ratingSystem } = useSettingsStore();
   const { toast } = useToast();
 
@@ -49,29 +50,13 @@ const PlayerForm = () => {
 
   const validateForm = () => {
     const newErrors = {
-      name: { 
-        hasError: !newPlayer.name.trim() || 
-                 players.some(p => p.name.toLowerCase() === newPlayer.name.toLowerCase()),
-        message: !newPlayer.name.trim() 
-                ? "Nome é obrigatório" 
-                : "Já existe um jogador com este nome"
-      },
-      isGuest: { 
-        hasError: newPlayer.isGuest === null, 
-        message: "Status de convidado é obrigatório" 
-      },
-      selectedPositions: { 
-        hasError: !newPlayer.selectedPositions.length,
-        message: "Selecione pelo menos uma posição"
-      },
-      rating: { 
-        hasError: newPlayer.rating === RatingEnum.NONE,
-        message: "Avaliação é obrigatória"
-      }
+      name: !newPlayer.name.trim(),
+      isGuest: newPlayer.isGuest === null,
+      selectedPositions: !newPlayer.selectedPositions.length,
+      rating: newPlayer.rating === RatingEnum.NONE
     };
-    
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error.hasError);
+    return !Object.values(newErrors).some(error => error);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
