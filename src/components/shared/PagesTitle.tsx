@@ -13,16 +13,7 @@ export const PagesTitle = () => {
 
   return (
     <div className="mb-6 space-y-4">
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={springConfig}
-        >
-          <BackToDashboard />
-        </motion.div>
-      </AnimatePresence>
-
+      
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
