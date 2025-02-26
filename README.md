@@ -1,82 +1,135 @@
+
+# Sistema de Gerenciamento de Times e Jogadores 🏆
+
+## Sobre o Projeto
+
+Este sistema é uma aplicação web desenvolvida com React e TypeScript para gerenciar times, jogadores e competições esportivas. Com funcionalidades como sorteio automático de times equilibrados, gestão de presença e avaliação de jogadores.
+
+## Funcionalidades Principais
+
+### 📝 Gerenciamento de Jogadores
+- Cadastro completo de jogadores com informações detalhadas
+- Sistema de avaliação flexível (estrelas, números ou escala de 1-5)
+- Identificação de jogadores convidados
+- Gestão de posições por esporte
+
+### 🎲 Sorteio de Times
+- Algoritmo de balanceamento automático
+- Consideração de habilidades e posições
+- Times equilibrados baseados nas avaliações
+
+### ✓ Lista de Presença
+- Controle de presença em tempo real
+- Marcação de pagamento
+- Filtros e estatísticas de participação
+
+### 📊 Estatísticas
+- Histórico de participação
+- Desempenho dos jogadores
+- Métricas de times
+
+### 🏆 Campeonatos
+- Criação de torneios personalizados
+- Diferentes formatos (Liga, Copa, Mata-mata)
+- Acompanhamento de resultados
+
+## Tecnologias Utilizadas
+
+- **React** - Framework JavaScript para construção de interfaces
+- **TypeScript** - Superset JavaScript com tipagem estática
+- **Tailwind CSS** - Framework CSS utilitário
+- **Framer Motion** - Biblioteca para animações
+- **Shadcn UI** - Componentes de interface reutilizáveis
+- **Zustand** - Gerenciamento de estado
+- **React Router** - Navegação entre páginas
+
+## Configurações do Sistema
+
+### Sistema de Avaliação
+O sistema oferece três opções de avaliação de jogadores:
+- ⭐ Estrelas (1-5)
+- 🔢 Numérico (1-100)
+- 📊 Escala (1-5)
+
+### Destaques
+- Opção para destacar jogadores convidados
+- Personalização de interface
+- Animações suaves em transições
+
 ## Estrutura do Projeto
-## Telas Principais
-
-## Login (/login)
-Lista de Jogadores (/players)
-Cadastro de Jogadores (/player/new)
-Sorteio de Times (/teams/draw)
-Lista de Presença (/attendance)
-Estatísticas (/statistics)
-Componentes Reutilizáveis
-
-## Botões, entradas de texto, modais, ícones e toasts.
-Animações suaves utilizando Framer Motion.
-Componentes de design, como Card, Header, e Footer.
-Gerenciamento de Estado
-
-## React Context para autenticação e dados globais (usuários, jogadores, etc.).
-Zustand ou Redux para controle de estados mais complexos, como times balanceados.
-Estilo
-
-## Tailwind CSS para uma estilização consistente e rápida.
-Configuração de cores suaves baseadas nos tons de verde: #10B981 e tons complementares.
-API Simulada
-
-## Simulação de uma API REST usando o json-server ou Mock Service Worker (MSW) para desenvolvimento local.
 
 ```
 src/
 ├── components/
-│   ├── Header.tsx
-│   ├── PlayerForm.tsx
-│   ├── PlayerList.tsx
-│   ├── TeamDraw.tsx
-│   ├── PresenceList.tsx
-│   └── Statistics.tsx
-├── pages/
-│   ├── Login.tsx
-│   ├── Dashboard.tsx
-├── App.tsx
-├── main.tsx
-└── styles/
-    └── global.css
-```    
+│   ├── menu/
+│   │   ├── Menu.tsx
+│   │   ├── MenuItem.tsx
+│   │   └── MenuSettings.tsx
+│   ├── player/
+│   │   ├── PlayerForm.tsx
+│   │   ├── PlayerList.tsx
+│   │   └── PlayerCard.tsx
+│   ├── tournament/
+│   │   ├── TournamentForm.tsx
+│   │   └── TournamentBracket.tsx
+│   └── shared/
+├── stores/
+│   ├── usePlayerStore.ts
+│   ├── useSettingsStore.ts
+│   └── useTeamStore.ts
+├── utils/
+│   ├── types.ts
+│   ├── enums.ts
+│   └── animations.ts
+└── App.tsx
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Iniciando o Projeto
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Pré-requisitos
+- Node.js (versão 16 ou superior)
+- npm ou yarn
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Instalação
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+# Clone o repositório
+git clone <URL_DO_REPOSITORIO>
+
+# Entre no diretório
+cd nome-do-projeto
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Rotas da Aplicação
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `/menu` - Menu principal
+- `/player/new` - Cadastro de jogadores
+- `/players` - Lista de jogadores
+- `/teams/draw` - Sorteio de times
+- `/presence` - Lista de presença
+- `/statistics` - Estatísticas
+- `/championship` - Gestão de campeonatos
 
-**Use GitHub Codespaces**
+## Contribuindo
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Faça um Fork do projeto
+2. Crie uma Branch para sua Feature (`git checkout -b feature/AmazingFeature`)
+3. Faça commit das suas alterações (`git commit -m 'Add some AmazingFeature'`)
+4. Faça Push para a Branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-## What technologies are used for this project?
+## Licença
 
-This project is built with .
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Contato
 
+Seu Nome - [@seutwitter](https://twitter.com/seutwitter) - email@exemplo.com
+
+Link do Projeto: [https://github.com/seu-usuario/seu-repositorio](https://github.com/seu-usuario/seu-repositorio)
