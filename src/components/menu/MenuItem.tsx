@@ -1,8 +1,8 @@
 
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card } from "@/components/ui/card";
-import { springConfig } from '../../utils/animations';
+import { springConfig } from '@/utils/animations';
 
 interface MenuItem {
   title: string;
@@ -10,7 +10,6 @@ interface MenuItem {
   icon: string;
   description: string;
 }
-
 
 const MenuCard = ({ item, index }: { item: MenuItem; index: number }) => (
   <motion.div
@@ -31,27 +30,27 @@ const MenuCard = ({ item, index }: { item: MenuItem; index: number }) => (
           className="p-6 hover:shadow-lg transition-all duration-200 bg-white/90 backdrop-blur
                      group hover:border-teal-100 relative overflow-hidden"
         >
-        <div className="flex items-start gap-4">
-          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-50
-                          group-hover:bg-teal-100 transition-colors duration-200">
-            <span className="text-2xl">{item.icon}</span>
+          <div className="flex items-start gap-4">
+            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-50
+                            group-hover:bg-teal-100 transition-colors duration-200">
+              <span className="text-2xl">{item.icon}</span>
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold text-gray-800 mb-1.5">
+                {item.title}
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {item.description}
+              </p>
+            </div>
           </div>
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-800 mb-1.5">
-              {item.title}
-            </h2>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              {item.description}
-            </p>
-          </div>
-        </div>
         </Card>
       </motion.div>
     </Link>
   </motion.div>
 );
 
-export const Menu = () => {
+export const MenuItems = () => {
   const menuItems: MenuItem[] = [
     { 
       title: 'Cadastrar Jogador', 
