@@ -6,13 +6,11 @@ import { MenuItems } from './MenuItem';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useMenuStore } from '@/stores/useMenuStore';
 import { springConfig } from '@/utils/animations';
-import {PagesTitle} from '../shared/PagesTitle'; // Adjust the import path as necessary
 
 const Menu = () => {
   const { 
     menuTitle, 
     isAdmin, 
-  
   } = useMenuStore();
 
   const { 
@@ -36,17 +34,6 @@ const Menu = () => {
       aria-label="Menu principal"
     >
       <div className="max-w-6xl mx-auto space-y-8">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key="header"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={springConfig}
-          >
-            <PagesTitle />
-          </motion.div>
-        </AnimatePresence>
-
         <AnimatePresence mode="wait">
           <motion.div
             key="settings"
