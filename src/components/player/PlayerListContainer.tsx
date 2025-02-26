@@ -2,12 +2,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PlayerCard } from "./PlayerCard";
 import { Player } from "@/utils/types";
 import { AlertCircle } from "lucide-react";
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 interface PlayerListContainerProps {
   players: Player[];

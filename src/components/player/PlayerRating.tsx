@@ -3,12 +3,8 @@ import { RatingEnum } from "@/utils/types";
 import { RatingInput } from "./RatingInput";
 import { AlertTriangle } from "lucide-react";
 import { ErrorState } from '@/utils/types';
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 interface PlayerRatingProps {
   rating: RatingEnum;

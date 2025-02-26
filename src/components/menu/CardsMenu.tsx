@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { springConfig } from '../../utils/animations';
 
 const menuItems = [
   { path: '/player/new', label: 'Cadastrar Jogador', icon: '👤' },
@@ -13,11 +14,7 @@ const menuItems = [
 
 const MotionLink = motion(Link);
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
+
 
 const MenuCard = ({ item, index }) => (
   <MotionLink

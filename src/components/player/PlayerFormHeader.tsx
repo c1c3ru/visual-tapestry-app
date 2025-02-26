@@ -1,12 +1,8 @@
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from 'lucide-react';
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 interface PlayerFormHeaderProps {
   title: string;

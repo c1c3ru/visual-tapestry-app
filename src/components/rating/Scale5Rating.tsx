@@ -3,12 +3,8 @@ import { motion } from 'framer-motion';
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 interface Scale5RatingProps {
   rating: number;

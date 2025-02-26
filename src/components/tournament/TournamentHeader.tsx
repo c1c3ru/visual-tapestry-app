@@ -1,11 +1,7 @@
 import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 const TournamentHeader = () => {
   return (

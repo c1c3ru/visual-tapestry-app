@@ -4,12 +4,9 @@ import BackToDashboard from "@/components/BackToDashboard";
 import { User } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import pageNames from "@/utils/pagesname";
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
+
 
 export const PagesTitle = () => {
   const location = useLocation();

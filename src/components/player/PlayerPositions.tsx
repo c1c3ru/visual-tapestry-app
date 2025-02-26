@@ -2,15 +2,9 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { SportEnum, PositionEnum } from "@/utils/enums";
-import { SportsIcons } from "@/utils/sportsIcons";
-
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20,
-};
+import { springConfig } from "../../utils/animations";
 
 // Mapeamento de posições por esporte
 const positions: Record<SportEnum, PositionEnum[]> = {
@@ -62,9 +56,6 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
     onPositionChange(position, checked);
   };
 
-  // Obtém o ícone correspondente ao esporte
-  const SportIcon = SportsIcons[sport];
-
   return (
     <motion.fieldset
       initial={{ opacity: 0 }}
@@ -108,7 +99,6 @@ export const PlayerPositions: React.FC<PlayerPositionsProps> = ({
                   )}
                 />
                 <div style={{ display: "flex", gap: "16px" }}>
-                  <SportIcon /> {/* Renderiza o ícone do esporte */}
                   <span className="text-sm font-medium text-gray-700">
                     {position}
                   </span>

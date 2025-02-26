@@ -4,12 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertTriangle } from 'lucide-react';
 import { ErrorState } from '@/utils/types';
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 interface PlayerBasicInfoProps {
   name: string;

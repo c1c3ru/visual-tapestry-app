@@ -4,12 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import BackToDashboard from "@/components/BackToDashboard";
 import { User, ListChecks, Shuffle, Trophy, BarChart2 } from "lucide-react";
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
+
 
 interface PageHeaderProps {
   pageName: "player" | "presence" | "draw" | "statistics" | "championship";

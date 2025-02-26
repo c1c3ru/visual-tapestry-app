@@ -5,12 +5,8 @@ import { Check, DollarSign, UserCheck, X, User } from "lucide-react";
 import { Player } from "@/utils/types";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 interface PresenceListItemProps {
   player: Player;

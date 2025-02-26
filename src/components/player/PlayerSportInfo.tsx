@@ -5,13 +5,8 @@ import { PlayerPositions } from './PlayerPositions';
 import { PlayerSportSelection } from './PlayerSportSelection';
 import { AlertTriangle } from "lucide-react";
 import { ErrorState } from '@/utils/types';
+import { springConfig } from '../../utils/animations';
 
-
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 interface PlayerSportInfoProps {
   sport: SportEnum;

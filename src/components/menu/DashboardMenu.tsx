@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from "@/components/ui/card";
+import { springConfig } from '../../utils/animations';
 
 interface MenuItem {
   title: string;
@@ -9,11 +10,6 @@ interface MenuItem {
   description: string;
 }
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 const MenuCard = ({ item, index }: { item: MenuItem; index: number }) => (
   <motion.div

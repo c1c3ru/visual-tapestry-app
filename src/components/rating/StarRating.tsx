@@ -2,12 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { Rating } from '@/utils/types';
-
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
+import { springConfig } from '../../utils/animations';
 
 interface StarRatingProps {
   rating: number;

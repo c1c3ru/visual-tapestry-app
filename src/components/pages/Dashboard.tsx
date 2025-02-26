@@ -5,12 +5,9 @@ import { DashboardSettings } from '../dashboard/DashboardSettings';
 import { DashboardMenu } from '../dashboard/DashboardMenu';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useDashboardStore } from '@/stores/useDashboardStore';
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
+
 
 const Dashboard = () => {
   const { 

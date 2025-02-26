@@ -4,7 +4,6 @@ import {
   SportsVolleyball as VolleyballIcon,
   SportsBasketball as BasketballIcon,
   SportsHandball as HandballIcon,
-  Sports as GenericSportIcon // Fallback icon
 } from "@mui/icons-material";
 
 interface IconProps {

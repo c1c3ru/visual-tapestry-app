@@ -15,12 +15,9 @@ import { useTournamentStore } from "../../stores/useTournamentStore";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TournamentType } from "@/utils/enums";
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
+
 
 const Championship = () => {
   const { toast } = useToast();

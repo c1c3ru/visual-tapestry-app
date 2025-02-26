@@ -3,6 +3,7 @@ import { Edit2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { springConfig } from '../../utils/animations';
 
 interface DashboardHeaderProps {
   isAdmin: boolean;
@@ -10,11 +11,6 @@ interface DashboardHeaderProps {
   setDashboardTitle: (title: string) => void;
 }
 
-const springTransition = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 export const DashboardHeader = ({ 
   isAdmin, 

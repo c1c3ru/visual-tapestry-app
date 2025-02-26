@@ -5,12 +5,8 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { AlertTriangle, Loader2, LogIn } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { springConfig } from '../../utils/animations';
 
-const springConfig = {
-  type: "spring",
-  stiffness: 300,
-  damping: 20
-};
 
 const Login = () => {
   const { isLoading, error, setLoading, setError } = useAuthStore();
