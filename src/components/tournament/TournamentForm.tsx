@@ -11,9 +11,9 @@ import { springConfig } from '../../utils/animations';
 
 interface TournamentFormProps {
   tournamentName: string;
-  tournamentType: 'league' | 'worldCup' | 'homeAway';
+  tournamentType: 'Liga' | 'Copa' | 'Mata-mata';
   onTournamentNameChange: (value: string) => void;
-  onTournamentTypeChange: (value: 'league' | 'worldCup' | 'homeAway') => void;
+  onTournamentTypeChange: (value: 'Liga' | 'Copa' | 'Mata-mata') => void;
 }
 
 export const TournamentForm: React.FC<TournamentFormProps> = ({
@@ -24,19 +24,19 @@ export const TournamentForm: React.FC<TournamentFormProps> = ({
 }) => {
   const tournamentTypes = [
     {
-      value: 'league',
+      value: 'Liga',
       label: 'Pontos Corridos',
       icon: <ListTree className="h-5 w-5" />,
       description: 'Todos jogam contra todos em turno único'
     },
     {
-      value: 'worldCup',
-      label: 'Copa do Mundo',
+      value: 'Copa',
+      label: 'Estilo copa do Mundo',
       icon: <CupSoda className="h-5 w-5" />,
       description: 'Fase de grupos seguida de mata-mata'
     },
     {
-      value: 'homeAway',
+      value: 'Mata-mata',
       label: 'Mata-mata Duplo',
       icon: <Home className="h-5 w-5" />,
       description: 'Confrontos de ida e volta'
