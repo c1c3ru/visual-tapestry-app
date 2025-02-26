@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { saveToLocalStorage, getFromLocalStorage } from "@/utils/localStorage";
 import { Player } from "@/utils/types";
@@ -17,9 +18,9 @@ interface PlayerProviderProps {
 
 export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
   const [players, setPlayers] = useState<Player[]>(() => {
-    // Initialize with proper type casting
-    const savedPlayers = getFromLocalStorage<Player[]>("players");
-    return savedPlayers || [];
+    // Initialize with proper type casting and key
+    const savedPlayers = getFromLocalStorage<Player[]>("players", []);
+    return savedPlayers;
   });
 
   useEffect(() => {
