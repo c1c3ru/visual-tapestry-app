@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MenuHeader } from './MenuHeader';
 import { MenuSettings } from './MenuSettings';
-import { MenuItems } from './MenuItems';
+import { MenuItems } from './MenuItem';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useMenuStore } from '@/stores/useMenuStore';
 import { springConfig } from '@/utils/animations';
