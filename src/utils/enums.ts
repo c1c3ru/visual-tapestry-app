@@ -1,10 +1,10 @@
 
 export enum SportEnum {
-  FUTSAL = "futsal",
-  SOCCER = "soccer",
-  VOLLEYBALL = "volleyball",
-  BASKETBALL = "basketball",
-  HANDBALL = "handball"
+  FUTSAL = "Futsal",
+  SOCCER = "Futebol",
+  VOLLEYBALL = "Voley",
+  BASKETBALL = "Basquete",
+  HANDBALL = "Handbol"
 }
 
 export enum PositionEnum {
@@ -40,26 +40,32 @@ export enum RatingEnum {
 }
 
 export enum TournamentType {
-  LEAGUE = "league",
-  WORLD_CUP = "worldCup",
-  HOME_AWAY = "homeAway"
+  LEAGUE = "Liga",
+  WORLD_CUP = "Copa",
+  HOME_AWAY = "Mata-mata",
 }
 
 export enum MatchType {
-  GROUP_STAGE = "group",
-  KNOCKOUT = "knockout",
-  FINAL = "final"
+  GROUP_STAGE = "Grupo",
+  KNOCKOUT = "Mata-mata",
+  FINAL = "Final"
 }
 
 export enum MatchStatus {
-  SCHEDULED = "scheduled",
-  IN_PROGRESS = "in_progress",
-  COMPLETED = "completed"
+  SCHEDULED = "Marcada",
+  IN_PROGRESS = "Ocorrendo",
+  COMPLETED = "Finalizada"
 }
 
 export enum ErrorMessages {
-  MIN_TEAMS_REQUIRED = "Minimum number of teams required is not met",
-  INVALID_TEAMS_NUMBER = "Invalid number of teams",
-  INVALID_TOURNAMENT_TYPE = "Invalid tournament type",
-  INVALID_MATCH_TYPE = "Invalid match type"
+  MIN_TEAMS_REQUIRED = "Um numero minimo de times é necessário",
+  INVALID_TEAMS_NUMBER = "Numero de times invalido",
+  INVALID_TOURNAMENT_TYPE = "Tipo de torneio invalido",
+  INVALID_MATCH_TYPE = "Tipo de partida invalido",
+  INVALID_MATCH_STATUS = "Status de partida invalido",
+  INVALID_MATCH_RESULT = "Resultado de partida invalido",
+  INVALID_MATCH_DATE = "Data de partida invalida",
+  INVALID_MATCH_TIME = "Horario de partida invalido",
+  INVALID_MATCH_TEAMS = "Times de partida invalidos",
+  INVALID_MATCH_SCORE = "Placar de partida invalido",
 }
