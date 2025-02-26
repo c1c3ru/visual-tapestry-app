@@ -1,0 +1,93 @@
+
+import { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MenuHeader } from './MenuHeader';
+import { MenuSettings } from './MenuSettings';
+import { MenuItems } from './MenuItems';
+import { useSettingsStore } from '@/stores/useSettingsStore';
+import { useMenuStore } from '@/stores/useMenuStore';
+import { springConfig } from '@/utils/animations';
+
+const Menu = () => {
+  const { 
+    menuTitle, 
+    isAdmin, 
+    setMenuTitle, 
+    setIsAdmin 
+  } = useMenuStore();
+
+  const { 
+    ratingSystem, 
+    guestHighlight, 
+    setRatingSystem, 
+    setGuestHighlight 
+  } = useSettingsStore();
+
+  useEffect(() => {
+    try {
+      const storedTitle = localStorage.getItem('menuTitle');
+      if (storedTitle) {
+        setMenuTitle(storedTitle);
+      }
+    } catch (error) {
+      console.error("Error accessing localStorage:", error);
+    }
+  }, [setMenuTitle]);
+
+  return (
+    <motion.main 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={springConfig}
+      className="min-h-screen bg-gradient-to-br from-teal-50/80 via-blue-50/80 to-white p-6 font-sans backdrop-blur-sm"
+      role="main"
+      aria-label="Menu principal"
+    >
+      <div className="max-w-6xl mx-auto space-y-8">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="header"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={springConfig}
+          >
+            <MenuHeader
+              menuTitle={menuTitle}
+              isAdmin={isAdmin}
+              setMenuTitle={setMenuTitle}
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="settings"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ ...springConfig, delay: 0.1 }}
+          >
+            <MenuSettings
+              selectedRatingSystem={ratingSystem}
+              setSelectedRatingSystem={setRatingSystem}
+              guestHighlight={guestHighlight}
+              setGuestHighlight={setGuestHighlight}
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        <AnimatePresence>
+          <motion.div
+            key="menu-items"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...springConfig, delay: 0.2 }}
+          >
+            <MenuItems />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.main>
+  );
+};
+
+export default Menu;
