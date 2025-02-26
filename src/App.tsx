@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Login from './components/pages/Login';
@@ -16,29 +15,31 @@ const App = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={springConfig}
-      >
-        <Routes location={location}>
-          <Route path="/" element={<Navigate to="/menu" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/player/new" element={<PlayerForm />} />
-          <Route path="/players" element={<PlayerList />} />
-          <Route path="/teams/draw" element={<TeamDraw />} />
-          <Route path="/presence" element={<PresenceList />} />
-          <Route path="/statistics" element={<Statistics />} />
-          <Route path="/championship" element={<Championship />} />
-          <Route path="*" element={<Navigate to="/menu" replace />} />
-        </Routes>
-        <PagesTitle />
-      </motion.div>
-    </AnimatePresence>
+    <>
+      <PagesTitle />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={springConfig}
+        >
+          <Routes location={location}>
+            <Route path="/" element={<Navigate to="/menu" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/menu" element={<Menu />} />
+            <Route path="/player/new" element={<PlayerForm />} />
+            <Route path="/players" element={<PlayerList />} />
+            <Route path="/teams/draw" element={<TeamDraw />} />
+            <Route path="/presence" element={<PresenceList />} />
+            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/championship" element={<Championship />} />
+            <Route path="*" element={<Navigate to="/menu" replace />} />
+          </Routes>
+        </motion.div>
+      </AnimatePresence>
+    </>
   );
 };
 

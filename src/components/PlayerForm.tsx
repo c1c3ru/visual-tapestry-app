@@ -7,7 +7,6 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { Player} from "@/utils/types";
 import { PositionEnum, RatingEnum } from "@/utils/enums";
-import { PlayerHeader } from "./player/PlayerHeader";
 import { PlayerBasicInfo } from "./player/PlayerBasicInfo";
 import { PlayerSportInfo } from "./player/PlayerSportInfo";
 import { PlayerRating } from "./player/PlayerRating";
