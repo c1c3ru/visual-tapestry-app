@@ -1,19 +1,18 @@
 
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MenuHeader } from './MenuHeader';
 import { MenuSettings } from './MenuSettings';
 import { MenuItems } from './MenuItem';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useMenuStore } from '@/stores/useMenuStore';
 import { springConfig } from '@/utils/animations';
+import {PagesTitle} from '../shared/PagesTitle'; // Adjust the import path as necessary
 
 const Menu = () => {
   const { 
     menuTitle, 
     isAdmin, 
-    setMenuTitle, 
-    setIsAdmin 
+  
   } = useMenuStore();
 
   const { 
@@ -24,15 +23,8 @@ const Menu = () => {
   } = useSettingsStore();
 
   useEffect(() => {
-    try {
-      const storedTitle = localStorage.getItem('menuTitle');
-      if (storedTitle) {
-        setMenuTitle(storedTitle);
-      }
-    } catch (error) {
-      console.error("Error accessing localStorage:", error);
-    }
-  }, [setMenuTitle]);
+    document.title = menuTitle;
+  }, [menuTitle]);
 
   return (
     <motion.main 
@@ -51,11 +43,7 @@ const Menu = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={springConfig}
           >
-            <MenuHeader
-              menuTitle={menuTitle}
-              isAdmin={isAdmin}
-              setMenuTitle={setMenuTitle}
-            />
+            <PagesTitle />
           </motion.div>
         </AnimatePresence>
 

@@ -50,7 +50,7 @@ const MenuCard = ({ item, index }: { item: MenuItem; index: number }) => (
   </motion.div>
 );
 
-export const DashboardMenu = () => {
+export const Menu = () => {
   const menuItems: MenuItem[] = [
     { 
       title: 'Cadastrar Jogador', 
