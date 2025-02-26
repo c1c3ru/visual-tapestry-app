@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DynamicTitle } from '../DynamicTitle';
+import { DynamicTitle } from '../shared/PagesTitle';
 import BackToDashboard from '../BackToDashboard';
 
 export const PresenceHeader = () => {

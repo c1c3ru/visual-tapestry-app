@@ -3,7 +3,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import BackToDashboard from "@/components/BackToDashboard";
-import { User, ListChecks, Shuffle, Trophy } from "lucide-react";
+import { User, ListChecks, Shuffle, Trophy, BarChart2 } from "lucide-react";
 
 const springConfig = {
   type: "spring",
@@ -12,7 +12,7 @@ const springConfig = {
 };
 
 interface PageHeaderProps {
-  pageName: "player" | "presence" | "draw" | "championship";
+  pageName: "player" | "presence" | "draw" | "statistics" | "championship";
 }
 
 const pageConfigs = {
@@ -41,6 +41,17 @@ const pageConfigs = {
   draw: {
     title: "Sorteio de Times",
     icon: Shuffle,
+    colors: {
+      gradient: "from-green-50 to-blue-50",
+      border: "border-green-500",
+      icon: "text-green-600",
+      iconBg: "bg-green-100",
+      textGradient: "from-green-600 to-blue-600"
+    }
+  },
+  statistics: {
+    title: "Estatisticas dos jogadores",
+    icon: BarChart2,
     colors: {
       gradient: "from-green-50 to-blue-50",
       border: "border-green-500",

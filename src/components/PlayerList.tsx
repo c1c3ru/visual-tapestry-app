@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import BackToDashboard from "./BackToDashboard";
-import { DynamicTitle } from "./DynamicTitle";
+import { PagesTitle } from "./shared/PagesTitle";
 import { useToast } from "@/hooks/use-toast";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
@@ -59,7 +59,7 @@ const PlayerList = () => {
       <BackToDashboard />
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
-          <DynamicTitle />
+          <PagesTitle />
         </div>
 
         <PlayerListContainer

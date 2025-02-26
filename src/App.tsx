@@ -1,7 +1,5 @@
-
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
 import Login from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
 import PlayerForm from './components/PlayerForm';
@@ -10,6 +8,7 @@ import TeamDraw from './components/TeamDraw';
 import PresenceList from './components/PresenceList';
 import Statistics from './components/Statistics';
 import Championship from './components/pages/Championship';
+import { PagesTitle } from './components/shared/PagesTitle';
 
 const App = () => {
   const location = useLocation();
@@ -35,6 +34,7 @@ const App = () => {
           <Route path="/championship" element={<Championship />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        <PagesTitle />
       </motion.div>
     </AnimatePresence>
   );
