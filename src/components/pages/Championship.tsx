@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Save, Trophy, Users, AlertTriangle, Loader, Edit, Trash2 } from "lucide-react";
+import { Save, Trophy, AlertTriangle, Loader, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TournamentBracket } from "../TournamentBracket";
 import { TournamentForm } from "../tournament/TournamentForm";
 import TeamList from "../tournament/TeamList";
-import BackToDashboard from "../BackToDashboard";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTournamentStore } from "../../stores/useTournamentStore";
@@ -16,8 +16,6 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TournamentType } from "@/utils/enums";
 import { springConfig } from '../../utils/animations';
-
-
 
 const Championship = () => {
   const { toast } = useToast();
@@ -40,9 +38,8 @@ const Championship = () => {
 
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [editTeamId, setEditTeamId] = useState<string | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (teams.length < 4) {
       setValidationError("Mínimo de 4 times necessário");
     } else if (teams.length > 64) {
@@ -125,14 +122,13 @@ const Championship = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <BackToDashboard />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={springConfig}
-        className="max-w-4xl mx-auto space-y-6"
-      >
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={springConfig}
+      className="min-h-screen"
+    >
+      <div className="max-w-4xl mx-auto space-y-6">
         <Card className="hover:shadow-lg transition-shadow duration-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
@@ -280,8 +276,8 @@ const Championship = () => {
             </AnimatePresence>
           </CardContent>
         </Card>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
 

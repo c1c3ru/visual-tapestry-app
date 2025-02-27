@@ -1,5 +1,5 @@
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -10,6 +10,7 @@ import { useTeamDrawStore } from "@/stores/useTeamDrawStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { PositionEnum } from "../utils/enums";
 import clsx from "clsx";
+import { springConfig } from '../utils/animations';
 
 const TeamDraw = () => {
   const { players, updatePlayer } = usePlayerStore();
@@ -67,8 +68,8 @@ const TeamDraw = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, type: "spring" }}
-      className="min-h-screen bg-gray-50"
+      transition={springConfig}
+      className="min-h-screen"
     >
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow">

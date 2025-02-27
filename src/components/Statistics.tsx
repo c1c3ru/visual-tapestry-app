@@ -1,127 +1,205 @@
 
-import React, { useState } from 'react';
-import BackToDashboard from './BackToDashboard';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { useToast } from "@/hooks/use-toast";
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Edit2, Save, Trash2 } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStatisticsStore } from "@/stores/useStatisticsStore";
+import { usePlayerStore } from "@/stores/usePlayerStore";
+import {
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+} from "recharts";
+import { springConfig } from '../utils/animations';
 
 const Statistics = () => {
-  const { statistics, updateStatistic, removeStatistic } = useStatisticsStore();
+  const { generatePlayerStats, generatePositionStats, generateRatingStats } =
+    useStatisticsStore();
+  const { players } = usePlayerStore();
 
-  const [editingRecord, setEditingRecord] = useState<{index: number, recordIndex: number} | null>(null);
-  const [editValue, setEditValue] = useState<string>('');
-  const { toast } = useToast();
+  // Generate statistics
+  const playerStats = generatePlayerStats(players);
+  const positionStats = generatePositionStats(players);
+  const ratingStats = generateRatingStats(players);
 
-  const handleEdit = (index: number, recordIndex: number, currentPoints?: number) => {
-    setEditingRecord({ index, recordIndex });
-    setEditValue(currentPoints?.toString() || statistics[index].pointRecords[recordIndex].points.toString());
-  };
-
-  const handleSave = () => {
-    if (editingRecord !== null) {
-      const { index, recordIndex } = editingRecord;
-      const updatedPointRecords = [...statistics[index].pointRecords];
-      updatedPointRecords[recordIndex].points = parseInt(editValue, 10);
-      
-      const updatedStatistic = {
-        ...statistics[index],
-        pointRecords: updatedPointRecords,
-        lastUpdated: new Date().toISOString()
-      };
-
-      updateStatistic(index, updatedStatistic);
-      setEditingRecord(null);
-      setEditValue('');
-      
-      toast({
-        title: "Registro atualizado",
-        description: "O registro de pontos foi atualizado com sucesso.",
-      });
-    }
-  };
-
-  const handleDelete = (index: number, recordIndex?: number) => {
-    if (typeof recordIndex === 'undefined') {
-      // Delete entire statistic
-      removeStatistic(index);
-      toast({
-        title: "Estatística removida",
-        description: "A estatística foi removida com sucesso.",
-      });
-    } else {
-      // Delete specific record
-      const updatedStatistic = { ...statistics[index] };
-      updatedStatistic.pointRecords.splice(recordIndex, 1);
-      updatedStatistic.lastUpdated = new Date().toISOString();
-      
-      updateStatistic(index, updatedStatistic);
-      toast({
-        title: "Registro Excluído",
-        description: "O registro foi excluído com sucesso.",
-      });
-    }
-  };
+  // Custom colors for charts
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#8884D8",
+    "#82CA9D",
+    "#FF6B6B",
+    "#6B66FF",
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <BackToDashboard />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Estatísticas</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={springConfig}
+      className="min-h-screen"
+    >
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Top Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Total de Jogadores</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-4xl font-bold">{players.length}</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Jogadores Fixos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-4xl font-bold">
+                {players.filter((p) => !p.isGuest).length}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Convidados</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-4xl font-bold">
+                {players.filter((p) => p.isGuest).length}
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="space-y-4">
-          {statistics.map((stat, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle>{stat.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>Data: {stat.date}</p>
-                <p>Presenças: {stat.attendanceCount}</p>
-                <p>Última atualização: {stat.lastUpdated}</p>
-                <div className="space-y-2">
-                  {stat.pointRecords.map((record, recordIndex) => (
-                    <div key={recordIndex} className="flex items-center gap-4">
-                      {editingRecord?.index === index && editingRecord.recordIndex === recordIndex ? (
-                        <>
-                          <Input
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="flex-1"
-                          />
-                          <Button onClick={handleSave}>
-                            <Save className="h-4 w-4" />
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <p>{record.points} pontos em {record.date}</p>
-                          <Button onClick={() => handleEdit(index, recordIndex)}>
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <Button onClick={() => handleDelete(index)} variant="destructive">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Players Presence Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Presença dos Jogadores</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={playerStats}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 60,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    angle={-45}
+                    textAnchor="end"
+                    height={70}
+                  />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="presences" fill="#0088FE" name="Presenças" />
+                  <Bar dataKey="absences" fill="#FF8042" name="Ausências" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Positions & Ratings Charts */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Distribuição por Posição</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={positionStats}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      label={({ name, percent }) =>
+                        `${name}: ${(percent * 100).toFixed(0)}%`
+                      }
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {positionStats.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value, name, props) => [
+                        value,
+                        "Jogadores",
+                      ]}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Distribuição por Avaliação</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={ratingStats}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      label={({ name, percent }) =>
+                        `${name}: ${(percent * 100).toFixed(0)}%`
+                      }
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {ratingStats.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value, name, props) => [
+                        value,
+                        "Jogadores",
+                      ]}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
 
