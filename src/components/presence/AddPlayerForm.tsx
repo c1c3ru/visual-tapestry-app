@@ -5,8 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Player, RatingEnum, SportEnum } from "@/utils/types";
 
 interface AddPlayerFormProps {
-  onAddPlayer: (player: Player) => Promise<void>;
-  players: Player[];
+  onAddPlayer: (name: string) => Promise<void>;
+  onCancel: () => void;
 }
 
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";

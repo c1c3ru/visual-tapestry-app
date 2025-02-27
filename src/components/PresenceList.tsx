@@ -16,6 +16,7 @@ import { pt } from "date-fns/locale";
 import { generatePresencePDF } from "../utils/pdf";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { springConfig } from '../utils/animations';
+import { PositionEnum, SportEnum, RatingEnum } from "@/utils/enums"; // Adjust the import path as necessary
 
 const PresenceList = () => {
   const { players, updatePlayer, addPlayer } = usePlayerStore();
@@ -37,9 +38,8 @@ const PresenceList = () => {
       updatePlayer(id, { present: !player.present });
       toast({
         title: player.present ? "Presença removida" : "Presença registrada",
-        description: `${player.name} marcado como ${
-          player.present ? "ausente" : "presente"
-        }`,
+        description: `${player.name} marcado como ${player.present ? "ausente" : "presente"
+          }`,
       });
     }
   };
@@ -50,9 +50,8 @@ const PresenceList = () => {
       updatePlayer(id, { paid: !player.paid });
       toast({
         title: player.paid ? "Pagamento removido" : "Pagamento registrado",
-        description: `Pagamento de ${player.name} marcado como ${
-          player.paid ? "pendente" : "realizado"
-        }`,
+        description: `Pagamento de ${player.name} marcado como ${player.paid ? "pendente" : "realizado"
+          }`,
       });
     }
   };
@@ -72,12 +71,7 @@ const PresenceList = () => {
 
   const handleGeneratePDF = () => {
     try {
-      generatePresencePDF(
-        filteredPlayers,
-        formattedDate,
-        presentCount,
-        paidCount
-      );
+      generatePresencePDF(formattedDate, filteredPlayers, presentCount, paidCount, isAdmin);
       toast({
         title: "Relatório gerado",
         description: "O PDF foi baixado com sucesso!",
@@ -198,25 +192,27 @@ const PresenceList = () => {
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden mb-6"
                 >
+                  // Trecho corrigido do formulário de adição
                   <AddPlayerForm
-                    onAddPlayer={(name) => {
+                    onAddPlayer={async (name) => {
                       const newPlayer: Player = {
                         id: Date.now().toString(),
                         name,
                         nickname: "",
-                        birthDate: "",
+                        birthDate: new Date().toISOString(),
                         isGuest: true,
-                        rating: 3,
-                        sport: "Futebol",
-                        selectedPositions: ["Atacante"],
+                        rating: RatingEnum.THREE,
+                        sport: SportEnum.SOCCER,
+                        selectedPositions: [PositionEnum.FORWARD],
                         present: true,
                         paid: false,
                         includeInDraw: true,
                         createdAt: new Date().toISOString(),
                         registered: true,
+                        selected: false,
                       };
 
-                      addPlayer(newPlayer);
+                      await Promise.resolve(addPlayer(newPlayer));
                       setShowAddForm(false);
                       toast({
                         title: "Jogador adicionado",

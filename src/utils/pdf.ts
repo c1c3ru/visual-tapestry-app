@@ -2,12 +2,13 @@ import jsPDF from 'jspdf';
 import { Group, KnockoutMatches, Player } from '@/utils/types';
 
 
+export const generatePresencePDF = (formattedDate: string, players: Player[], presentCount: number, paidCount: number, isAdmin: boolean) => {
 
-export const generatePresencePDF = (
   eventName: string,
-  players: Player[],
-  presentCount: number,
-  paidCount: number
+    date: Date,
+      players: Player[],
+        presentCount: number,
+          paidCount: number
 ) => {
   const doc = new jsPDF();
   const margin = 20;
