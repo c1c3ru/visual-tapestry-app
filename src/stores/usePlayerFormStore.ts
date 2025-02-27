@@ -63,6 +63,9 @@ export const usePlayerFormStore = create<PlayerState>((set) => ({
   removePlayer: (id) => set((state) => ({
     players: state.players.filter((player) => player.id !== id),
   })),
+  cancelPlayer: (id) => set((state) => ({
+    players: state.players.filter((player) => player.id !== id),
+  })),
   setPlayers: (players) => set({ players }),
   setEditingPlayer: (editingPlayer) => set({ editingPlayer }),
   setEditValue: (editValue) => set({ editValue }),
