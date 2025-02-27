@@ -1,7 +1,7 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import Login from './components/pages/Login';
+import Login from './pages/Login';
 import Menu from './components/menu/Menu';
 import PlayerForm from './components/PlayerForm';
 import PlayerList from './components/PlayerList';
@@ -10,9 +10,12 @@ import PresenceList from './components/PresenceList';
 import Statistics from './components/Statistics';
 import Championship from './components/pages/Championship';
 import { PagesTitle } from './components/shared/PagesTitle';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { springConfig } from './utils/animations';
 
-const App = () => {
+const queryClient = new QueryClient();
+
+const AppContent = () => {
   const location = useLocation();
   const isMenuPage = location.pathname === '/menu' || location.pathname === '/';
 
@@ -44,6 +47,16 @@ const App = () => {
         </AnimatePresence>
       </div>
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <AppContent />
+      </Router>
+    </QueryClientProvider>
   );
 };
 

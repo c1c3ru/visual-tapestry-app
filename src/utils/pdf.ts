@@ -1,33 +1,32 @@
+
 import jsPDF from 'jspdf';
 import { Group, KnockoutMatches, Player } from '@/utils/types';
 
-
-export const generatePresencePDF = (formattedDate: string, players: Player[], presentCount: number, paidCount: number, isAdmin: boolean) => {
-
-  eventName: string,
-    date: Date,
-      players: Player[],
-        presentCount: number,
-          paidCount: number
+export const generatePresencePDF = (
+  players: Player[],
+  formattedDate: string,
+  presentCount: number,
+  paidCount: number
 ) => {
   const doc = new jsPDF();
   const margin = 20;
   const lineSpacing = 10;
 
-  doc.text(`Evento: ${eventName}`, margin, margin + lineSpacing);
-  doc.text(`Total de Presentes: ${presentCount}`, margin, margin + (2 * lineSpacing));
-  doc.text(`Total de Pagamentos: ${paidCount}`, margin, margin + (3 * lineSpacing));
+  doc.text(`Evento: Lista de Presença`, margin, margin + lineSpacing);
+  doc.text(`Data: ${formattedDate}`, margin, margin + (2 * lineSpacing));
+  doc.text(`Total de Presentes: ${presentCount}`, margin, margin + (3 * lineSpacing));
+  doc.text(`Total de Pagamentos: ${paidCount}`, margin, margin + (4 * lineSpacing));
 
-  let yPosition = margin + (5 * lineSpacing);
+  let yPosition = margin + (6 * lineSpacing);
   players.forEach((player) => {
     const presenceText = player.present ? 'Presente' : 'Ausente';
-    doc.text(`${player.name}: ${presenceText}`, margin, yPosition);
+    const paymentText = player.paid ? 'Pago' : 'Não pago';
+    doc.text(`${player.name}: ${presenceText} - ${paymentText}`, margin, yPosition);
     yPosition += lineSpacing;
   });
 
-  doc.save(`${eventName}presenca.pdf`);
+  doc.save(`lista_presenca_${new Date().toISOString().slice(0,10)}.pdf`);
 };
-
 
 export const generateTournamentPDF = (
   tournamentName: string,
@@ -46,7 +45,7 @@ export const generateTournamentPDF = (
     yPosition += lineSpacing;
 
     group.matches.forEach((match) => {
-      doc.text(`${match.team1} vs ${match.team2}`, margin + lineSpacing, yPosition);
+      doc.text(`${match.team1.name} vs ${match.team2.name}`, margin + lineSpacing, yPosition);
       yPosition += lineSpacing;
     });
 
@@ -61,7 +60,7 @@ export const generateTournamentPDF = (
       doc.text(`${round.charAt(0).toUpperCase() + round.slice(1)}`, margin, yPosition);
       yPosition += lineSpacing;
       knockoutMatches[round].forEach((match) => {
-        doc.text(`${match.team1} vs ${match.team2}`, margin + lineSpacing, yPosition);
+        doc.text(`${match.team1.name} vs ${match.team2.name}`, margin + lineSpacing, yPosition);
         yPosition += lineSpacing;
       });
     });

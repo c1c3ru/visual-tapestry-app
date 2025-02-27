@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlayerCard } from "@/components/player/PlayerCard";
@@ -6,14 +7,16 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 import { PlayerListContainer } from "./player/PlayerListContainer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Filter, Search, Plus } from "lucide-react";
+import { Filter, Search, Plus, Edit, Trash } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { springConfig } from '../utils/animations';
+import { useToast } from "@/hooks/use-toast";
 
 const PlayerList = () => {
-  const { players } = usePlayerStore();
+  const { players, updatePlayer, removePlayer, setEditingPlayer, editingPlayer, editValue, setEditValue } = usePlayerStore();
   const { ratingSystem, guestHighlight } = useSettingsStore();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filterGuests, setFilterGuests] = useState<boolean | null>(null);
@@ -24,6 +27,31 @@ const PlayerList = () => {
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
+  };
+
+  const handleEdit = (id: string) => {
+    const player = players.find(p => p.id === id);
+    if (player) {
+      setEditingPlayer(player);
+      setEditValue(player.name);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    removePlayer(id);
+    toast({
+      title: "Jogador removido",
+      description: "O jogador foi removido com sucesso."
+    });
+  };
+
+  const handleEditSave = (id: string, newValue: string) => {
+    updatePlayer(id, { name: newValue });
+    setEditingPlayer(null);
+    toast({
+      title: "Jogador atualizado",
+      description: "O nome do jogador foi atualizado com sucesso."
+    });
   };
 
   const filteredPlayers = players.filter((player) => {
@@ -116,17 +144,17 @@ const PlayerList = () => {
         </div>
 
         <div className="min-h-[600px]">
-          <PlayerListContainer>
-            {filteredPlayers.length > 0 ? (
-              filteredPlayers.map((player) => (
-                <PlayerCard
-                  key={player.id}
-                  player={player}
-                  ratingSystem={ratingSystem}
-                  guestHighlight={guestHighlight}
-                />
-              ))
-            ) : (
+          <PlayerListContainer 
+            players={filteredPlayers}
+            guestHighlight={guestHighlight}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            editingPlayer={editingPlayer}
+            editValue={editValue}
+            onEditSave={handleEditSave}
+            setEditValue={setEditValue}
+          >
+            {filteredPlayers.length === 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

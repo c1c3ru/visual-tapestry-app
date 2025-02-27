@@ -1,13 +1,9 @@
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Player, RatingEnum, SportEnum } from "@/utils/types";
-
-interface AddPlayerFormProps {
-  onAddPlayer: (name: string) => Promise<void>;
-  onCancel: () => void;
-}
+import { Player } from "@/utils/types";
 
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -27,7 +23,13 @@ const springConfig = {
   damping: 20
 };
 
-export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, players }) => {
+interface AddPlayerFormProps {
+  onAddPlayer: (name: string) => Promise<void>;
+  onCancel: () => void;
+  players: Player[];
+}
+
+export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, onCancel, players }) => {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -55,24 +57,7 @@ export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, playe
         return;
       }
 
-      const newPlayer: Player = {
-        id: Date.now().toString(),
-        name: values.playerName,
-        nickname: "",
-        birthDate: new Date().toISOString(),
-        isGuest: false,
-        sport: SportEnum.SOCCER,
-        selectedPositions: [],
-        rating: RatingEnum.ONE,
-        includeInDraw: false,
-        createdAt: new Date().toISOString(),
-        present: false,
-        paid: false,
-        registered: true,
-        selected: false,
-      };
-
-      await onAddPlayer(newPlayer);
+      await onAddPlayer(newPlayerName);
       form.reset();
       
       toast({
@@ -138,24 +123,41 @@ export const AddPlayerForm: React.FC<AddPlayerFormProps> = ({ onAddPlayer, playe
             )}
           />
 
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={springConfig}
-          >
-            <Button 
-              type="submit" 
-              className="w-full gap-2"
-              disabled={isLoading}
+          <div className="flex gap-2">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={springConfig}
+              className="w-full"
             >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <UserPlus className="h-4 w-4" />
-              )}
-              {isLoading ? "Adicionando..." : "Cadastrar Jogador"}
-            </Button>
-          </motion.div>
+              <Button 
+                type="submit" 
+                className="w-full gap-2"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <UserPlus className="h-4 w-4" />
+                )}
+                {isLoading ? "Adicionando..." : "Cadastrar Jogador"}
+              </Button>
+            </motion.div>
+            
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={springConfig}
+            >
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onCancel}
+              >
+                Cancelar
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </motion.form>
     </Form>

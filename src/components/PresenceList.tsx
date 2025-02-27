@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,7 @@ import { pt } from "date-fns/locale";
 import { generatePresencePDF } from "../utils/pdf";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { springConfig } from '../utils/animations';
-import { PositionEnum, SportEnum, RatingEnum } from "@/utils/enums"; // Adjust the import path as necessary
+import { SportEnum, PositionEnum, RatingEnum } from "@/utils/enums";
 
 const PresenceList = () => {
   const { players, updatePlayer, addPlayer } = usePlayerStore();
@@ -71,7 +71,7 @@ const PresenceList = () => {
 
   const handleGeneratePDF = () => {
     try {
-      generatePresencePDF(formattedDate, filteredPlayers, presentCount, paidCount, isAdmin);
+      generatePresencePDF(filteredPlayers, formattedDate, presentCount, paidCount);
       toast({
         title: "Relatório gerado",
         description: "O PDF foi baixado com sucesso!",
@@ -92,6 +92,34 @@ const PresenceList = () => {
     // Then sort alphabetically
     return a.name.localeCompare(b.name);
   });
+
+  const handleAddPlayer = async (name: string): Promise<void> => {
+    const newPlayer: Player = {
+      id: Date.now().toString(),
+      name,
+      nickname: "",
+      birthDate: new Date().toISOString(),
+      isGuest: true,
+      sport: SportEnum.SOCCER,
+      selectedPositions: [PositionEnum.FORWARD],
+      rating: RatingEnum.THREE,
+      includeInDraw: true,
+      present: true,
+      paid: false,
+      createdAt: new Date().toISOString(),
+      registered: true,
+      selected: false,
+    };
+
+    addPlayer(newPlayer);
+    setShowAddForm(false);
+    toast({
+      title: "Jogador adicionado",
+      description: `${name} foi adicionado como presente`,
+    });
+    
+    return Promise.resolve();
+  };
 
   return (
     <motion.div
@@ -192,34 +220,10 @@ const PresenceList = () => {
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden mb-6"
                 >
-                  // Trecho corrigido do formulário de adição
                   <AddPlayerForm
-                    onAddPlayer={async (name) => {
-                      const newPlayer: Player = {
-                        id: Date.now().toString(),
-                        name,
-                        nickname: "",
-                        birthDate: new Date().toISOString(),
-                        isGuest: true,
-                        rating: RatingEnum.THREE,
-                        sport: SportEnum.SOCCER,
-                        selectedPositions: [PositionEnum.FORWARD],
-                        present: true,
-                        paid: false,
-                        includeInDraw: true,
-                        createdAt: new Date().toISOString(),
-                        registered: true,
-                        selected: false,
-                      };
-
-                      await Promise.resolve(addPlayer(newPlayer));
-                      setShowAddForm(false);
-                      toast({
-                        title: "Jogador adicionado",
-                        description: `${name} foi adicionado como presente`,
-                      });
-                    }}
+                    onAddPlayer={handleAddPlayer}
                     onCancel={() => setShowAddForm(false)}
+                    players={players}
                   />
                 </motion.div>
               )}
