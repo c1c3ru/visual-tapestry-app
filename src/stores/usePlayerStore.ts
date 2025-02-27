@@ -1,7 +1,7 @@
-
 import { create } from 'zustand';
 import { PlayerState } from '@/utils/types';
 import { SportEnum, RatingEnum } from '@/utils/enums';
+
 
 const initialErrors = {
   name: { hasError: false, message: '' },
@@ -63,6 +63,10 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       ),
     })),
   removePlayer: (id) =>
+    set((state) => ({
+      players: state.players.filter((player) => player.id !== id),
+    })),
+  cancelPlayer: (id) =>
     set((state) => ({
       players: state.players.filter((player) => player.id !== id),
     })),

@@ -29,6 +29,7 @@ export interface PlayerState {
   resetForm: () => void;
   updatePlayer: (id: string, updatedPlayer: Partial<Player>) => void;
   removePlayer: (id: string) => void;
+  cancelPlayer: (id: string) => void;
   setPlayers: (players: Player[]) => void;
   setEditingPlayer: (player: Player | null) => void;
 }

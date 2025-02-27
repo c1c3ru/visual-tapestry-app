@@ -1,5 +1,32 @@
 import jsPDF from 'jspdf';
-import { Group, KnockoutMatches } from '@/utils/types';
+import { Group, KnockoutMatches, Player } from '@/utils/types';
+
+
+
+export const generatePresencePDF = (
+  eventName: string,
+  players: Player[],
+  presentCount: number,
+  paidCount: number
+) => {
+  const doc = new jsPDF();
+  const margin = 20;
+  const lineSpacing = 10;
+
+  doc.text(`Evento: ${eventName}`, margin, margin + lineSpacing);
+  doc.text(`Total de Presentes: ${presentCount}`, margin, margin + (2 * lineSpacing));
+  doc.text(`Total de Pagamentos: ${paidCount}`, margin, margin + (3 * lineSpacing));
+
+  let yPosition = margin + (5 * lineSpacing);
+  players.forEach((player) => {
+    const presenceText = player.present ? 'Presente' : 'Ausente';
+    doc.text(`${player.name}: ${presenceText}`, margin, yPosition);
+    yPosition += lineSpacing;
+  });
+
+  doc.save(`${eventName}presenca.pdf`);
+};
+
 
 export const generateTournamentPDF = (
   tournamentName: string,
