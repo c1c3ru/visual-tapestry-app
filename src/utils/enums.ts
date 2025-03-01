@@ -42,7 +42,7 @@ export enum RatingEnum {
 export enum TournamentType {
   LEAGUE = "Liga",
   WORLD_CUP = "Copa",
-  HOME_AWAY = "Mata-mata",
+  HOME_AWAY = "Mata-mata"
 }
 
 export enum MatchType {

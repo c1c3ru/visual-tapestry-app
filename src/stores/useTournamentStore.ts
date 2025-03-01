@@ -4,9 +4,9 @@ import { Team, Group, KnockoutMatches, Match } from '@/utils/types';
 import { generateTournamentMatches, generateGroups, generateKnockoutMatches } from '@/utils/tournament';
 import { TournamentType } from '@/utils/enums';
 
-export interface TournamentState {
+interface TournamentState {
   tournamentName: string;
-  tournamentType: 'Liga' | 'Copa' | 'Mata-mata';
+  tournamentType: TournamentType; // Usar a enum aqui
   teamName: string;
   responsible: string;
   teams: Team[];
@@ -14,7 +14,7 @@ export interface TournamentState {
   knockoutMatches: KnockoutMatches | null;
   matches: Match[];
   setTournamentName: (name: string) => void;
-  setTournamentType: (type: 'Liga' | 'Copa' | 'Mata-mata') => void;
+  setTournamentType: (type: TournamentType) => void; // Tipo corrigido
   setTeamName: (name: string) => void;
   setResponsible: (name: string) => void;
   addTeam: (team: Team) => { success: boolean; error?: string };
@@ -72,17 +72,16 @@ export const useTournamentStore = create<TournamentState>((set, get) => ({
     }
 
     try {
-      if (tournamentType === 'Copa') {
+      if (tournamentType === TournamentType.WORLD_CUP) {
         const groups = generateGroups(teams);
         set({ groups, knockoutMatches: null });
-      } else if (tournamentType === 'Mata-mata') {
+      } else if (tournamentType === TournamentType.HOME_AWAY) {
         const knockoutMatches = generateKnockoutMatches(teams);
         set({ groups: [], knockoutMatches });
       } else {
         const matches = generateTournamentMatches(teams, TournamentType.LEAGUE);
         set({ groups: [{ id: 'Liga', name: 'Liga', matches, teams }], knockoutMatches: null });
       }
-
       return { success: true };
     } catch (error) {
       return {
