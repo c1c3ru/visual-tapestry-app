@@ -56,11 +56,11 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
     console.log(`Number of teams: ${numTeams}`);
     
     // Verificar se há goleiros suficientes - só se houver goleiros no jogo
+    // MODIFICAÇÃO: Se há pelo menos um goleiro, vamos permitir que os times não tenham goleiros
+    // em vez de exigir que todos os times tenham goleiro
     if (goalkeepers.length > 0 && goalkeepers.length < numTeams) {
-      return {
-        success: false,
-        error: `São necessários pelo menos ${numTeams} goleiros para formar ${numTeams} times.`
-      };
+      console.log(`Warning: Not enough goalkeepers (${goalkeepers.length}) for ${numTeams} teams. Some teams may not have a goalkeeper.`);
+      // Não retornamos erro, apenas continuamos com os goleiros que temos
     }
 
     // Ordenar jogadores por rating para distribuição equilibrada
@@ -82,6 +82,9 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
       shuffledGoalkeepers.forEach((goalkeeper, index) => {
         if (index < numTeams) {
           newTeams[index].push(goalkeeper);
+        } else {
+          // Adicionar goleiros extras como jogadores de linha
+          sortedFieldPlayers.push(goalkeeper);
         }
       });
     }

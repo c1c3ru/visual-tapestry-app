@@ -21,7 +21,6 @@ const TeamDraw = () => {
     playersPerTeam,
     setPlayersPerTeam,
     teams,
-    setTeams,
     generateTeams
   } = useTeamDrawStore();
 
@@ -47,18 +46,9 @@ const TeamDraw = () => {
     try {
       const availablePlayers = players.filter(p => p.includeInDraw && p.present);
       console.log("Available players for draw:", availablePlayers);
+      console.log("Current playersPerTeam:", playersPerTeam);
       
-      // Verificar se há jogadores suficientes
-      if (availablePlayers.length < playersPerTeam * 2) {
-        toast({
-          title: "Jogadores Insuficientes",
-          description: `São necessários pelo menos ${playersPerTeam * 2} jogadores para formar ${2} times.`,
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // Corrigindo a chamada para generateTeams
+      // Call generateTeams with the current selected playersPerTeam
       const result = generateTeams(availablePlayers, playersPerTeam);
       console.log("Generate teams result:", result);
 
