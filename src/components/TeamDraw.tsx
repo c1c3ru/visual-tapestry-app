@@ -25,8 +25,9 @@ const TeamDraw = () => {
     generateTeams
   } = useTeamDrawStore();
 
-  // Inicializar jogadores para sorteio quando a página carregar
+  // Initialize players for draw when the page loads
   useEffect(() => {
+    console.log("Players in useEffect:", players);
     const presentPlayers = players.filter(p => p.present);
     
     presentPlayers.forEach(player => {
@@ -45,6 +46,16 @@ const TeamDraw = () => {
     setIsGenerating(true);
     try {
       const availablePlayers = players.filter(p => p.includeInDraw && p.present);
+      console.log("Available players for draw:", availablePlayers);
+      
+      if (availablePlayers.length < playersPerTeam * 2) {
+        toast({
+          title: "Jogadores Insuficientes",
+          description: `São necessários pelo menos ${playersPerTeam * 2} jogadores para formar ${2} times.`,
+          variant: "destructive",
+        });
+        return;
+      }
       
       const result = generateTeams(availablePlayers);
 
@@ -65,6 +76,9 @@ const TeamDraw = () => {
       setIsGenerating(false);
     }
   };
+
+  console.log("Current teams:", teams);
+  console.log("Current players in store:", players);
 
   return (
     <motion.div
@@ -103,43 +117,58 @@ const TeamDraw = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle className="flex justify-between">
-                  Time {index + 1}
-                  <span className="text-sm">
-                    Força: {calculateTeamStrength(team).toFixed(1)}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {team.map((player) => (
-                    <div
-                      key={player.id}
-                      className={clsx(
-                        "p-3 rounded-lg",
-                        player.selectedPositions.includes(PositionEnum.GOALKEEPER)
-                          ? "bg-blue-50"
-                          : "bg-gray-50"
-                      )}
-                    >
-                      <div className="font-medium">{player.name}</div>
-                      <div className="text-sm text-gray-600">
-                        {player.selectedPositions.join(", ")}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Rating: {player.rating}
-                      </div>
+        {players.length === 0 ? (
+          <div className="bg-white p-8 rounded-lg shadow text-center">
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">Nenhum jogador disponível</h2>
+            <p className="text-gray-500">
+              Adicione jogadores na página de Presença e marque-os como presentes para incluí-los no sorteio.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {teams.length > 0 ? (
+              teams.map((team, index) => (
+                <Card key={index}>
+                  <CardHeader>
+                    <CardTitle className="flex justify-between">
+                      Time {index + 1}
+                      <span className="text-sm">
+                        Força: {calculateTeamStrength(team).toFixed(1)}
+                      </span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {team.map((player) => (
+                        <div
+                          key={player.id}
+                          className={clsx(
+                            "p-3 rounded-lg",
+                            player.selectedPositions.includes(PositionEnum.GOALKEEPER)
+                              ? "bg-blue-50"
+                              : "bg-gray-50"
+                          )}
+                        >
+                          <div className="font-medium">{player.name}</div>
+                          <div className="text-sm text-gray-600">
+                            {player.selectedPositions.join(", ")}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Rating: {player.rating}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="lg:col-span-3 text-center p-6 bg-white rounded-lg shadow">
+                <p className="text-gray-500">Clique em "Sortear Times" para gerar os times</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   );

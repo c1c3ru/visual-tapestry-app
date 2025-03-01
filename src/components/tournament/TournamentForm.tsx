@@ -1,132 +1,79 @@
-import { motion, AnimatePresence } from 'framer-motion';
+
+import React from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Trophy, CupSoda, ListTree, Home } from 'lucide-react';
-import clsx from "clsx";
-import { springConfig } from '../../utils/animations';
+import { Button } from "@/components/ui/button";
 
-
-interface TournamentFormProps {
-  tournamentName: string;
-  tournamentType: 'Liga' | 'Copa' | 'Mata-mata';
-  onTournamentNameChange: (value: string) => void;
-  onTournamentTypeChange: (value: 'Liga' | 'Copa' | 'Mata-mata') => void;
+export interface TournamentFormProps {
+  teamName: string;
+  responsible: string;
+  ranking: number;
+  onTeamNameChange: (name: string) => void;
+  onResponsibleChange: (responsible: string) => void;
+  onRankingChange: (ranking: number) => void;
+  onSubmit: () => void;
 }
 
-export const TournamentForm: React.FC<TournamentFormProps> = ({
-  tournamentName,
-  tournamentType,
-  onTournamentNameChange,
-  onTournamentTypeChange,
-}) => {
-  const tournamentTypes = [
-    {
-      value: 'Liga',
-      label: 'Pontos Corridos',
-      icon: <ListTree className="h-5 w-5" />,
-      description: 'Todos jogam contra todos em turno único'
-    },
-    {
-      value: 'Copa',
-      label: 'Estilo copa do Mundo',
-      icon: <CupSoda className="h-5 w-5" />,
-      description: 'Fase de grupos seguida de mata-mata'
-    },
-    {
-      value: 'Mata-mata',
-      label: 'Mata-mata Duplo',
-      icon: <Home className="h-5 w-5" />,
-      description: 'Confrontos de ida e volta'
-    }
-  ];
+export const TournamentForm = ({
+  teamName,
+  responsible,
+  ranking,
+  onTeamNameChange,
+  onResponsibleChange,
+  onRankingChange,
+  onSubmit,
+}: TournamentFormProps) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit();
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={springConfig}
-    >
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader className="border-b">
-          <CardTitle className="flex items-center gap-3">
-            <Trophy className="h-6 w-6 text-primary" />
-            <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              Configurações do Torneio
-            </span>
-          </CardTitle>
-        </CardHeader>
-        
-        <CardContent className="space-y-6 pt-6">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ ...springConfig, delay: 0.1 }}
-          >
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Nome do Torneio</Label>
-              <Input
-                value={tournamentName}
-                onChange={(e) => onTournamentNameChange(e.target.value)}
-                placeholder="Ex: Campeonato Brasileiro 2024"
-                className="focus:ring-2 focus:ring-primary"
-              />
-            </div>
-          </motion.div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label htmlFor="teamName" className="block text-sm font-medium mb-1">
+          Nome do Time
+        </label>
+        <Input
+          id="teamName"
+          value={teamName}
+          onChange={(e) => onTeamNameChange(e.target.value)}
+          placeholder="Digite o nome do time"
+          required
+        />
+      </div>
 
-          <Separator className="my-4" />
+      <div>
+        <label htmlFor="responsible" className="block text-sm font-medium mb-1">
+          Responsável
+        </label>
+        <Input
+          id="responsible"
+          value={responsible}
+          onChange={(e) => onResponsibleChange(e.target.value)}
+          placeholder="Digite o nome do responsável"
+        />
+      </div>
 
-          <motion.fieldset
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ ...springConfig, delay: 0.2 }}
-            className="space-y-4"
-          >
-            <legend className="text-sm font-medium mb-4">Tipo de Torneio</legend>
-            
-            <RadioGroup
-              value={tournamentType}
-              onValueChange={onTournamentTypeChange}
-              className="grid gap-4"
-            >
-              {tournamentTypes.map((type, index) => (
-                <motion.div
-                  key={type.value}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...springConfig, delay: index * 0.1 }}
-                >
-                  <Label
-                    htmlFor={type.value}
-                    className={clsx(
-                      "flex items-start p-4 border rounded-lg cursor-pointer transition-all",
-                      "hover:border-primary hover:bg-accent",
-                      tournamentType === type.value && "border-primary bg-accent"
-                    )}
-                  >
-                    <RadioGroupItem
-                      value={type.value}
-                      id={type.value}
-                      className="mt-1 mr-4"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-primary">{type.icon}</span>
-                        <span className="font-medium">{type.label}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {type.description}
-                      </p>
-                    </div>
-                  </Label>
-                </motion.div>
-              ))}
-            </RadioGroup>
-          </motion.fieldset>
-        </CardContent>
-      </Card>
-    </motion.div>
+      <div>
+        <label htmlFor="ranking" className="block text-sm font-medium mb-1">
+          Ranking
+        </label>
+        <Input
+          id="ranking"
+          type="number"
+          value={ranking}
+          onChange={(e) => onRankingChange(Number(e.target.value))}
+          placeholder="Digite o ranking do time"
+          min="0"
+          max="100"
+        />
+      </div>
+
+      <Button type="submit" className="w-full">
+        Adicionar Time
+      </Button>
+    </form>
   );
 };
+
+export default TournamentForm;

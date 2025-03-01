@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TournamentHeader } from "../tournament/TournamentHeader";
-import { TeamList } from "../tournament/TeamList";
+import TournamentHeader from "../tournament/TournamentHeader";
+import TeamList from "../tournament/TeamList";
 import { TournamentForm } from "../tournament/TournamentForm";
 import { TournamentBracket } from "../TournamentBracket";
 import { useTournamentStore } from "@/stores/useTournamentStore";
 import { TournamentType } from "@/utils/enums";
 import { Team } from "@/utils/types";
+import BackToDashboard from "../BackToDashboard";
 
 const Championship = () => {
   const {
@@ -50,8 +51,10 @@ const Championship = () => {
       },
     };
 
-    addTeam(team);
-    setNewTeam({ name: "", responsible: "", ranking: 0 });
+    const result = addTeam(team);
+    if (result && result.success) {
+      setNewTeam({ name: "", responsible: "", ranking: 0 });
+    }
   };
 
   const handleGenerateGroups = () => {
@@ -70,6 +73,8 @@ const Championship = () => {
       className="min-h-screen"
     >
       <div className="max-w-7xl mx-auto space-y-6">
+        <BackToDashboard />
+        
         <TournamentHeader
           title={tournamentName}
           onTitleChange={setTournamentName}
@@ -85,8 +90,12 @@ const Championship = () => {
               </CardHeader>
               <CardContent>
                 <TournamentForm
-                  team={newTeam}
-                  onChange={setNewTeam}
+                  teamName={newTeam.name}
+                  responsible={newTeam.responsible}
+                  ranking={newTeam.ranking}
+                  onTeamNameChange={(name) => setNewTeam({...newTeam, name})}
+                  onResponsibleChange={(responsible) => setNewTeam({...newTeam, responsible})}
+                  onRankingChange={(ranking) => setNewTeam({...newTeam, ranking})}
                   onSubmit={handleAddTeam}
                 />
               </CardContent>
