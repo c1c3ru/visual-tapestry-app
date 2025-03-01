@@ -11,6 +11,7 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 import { PositionEnum } from "../utils/enums";
 import clsx from "clsx";
 import { springConfig } from '../utils/animations';
+import BackToDashboard from './BackToDashboard';
 
 const TeamDraw = () => {
   const { players, updatePlayer } = usePlayerStore();
@@ -22,6 +23,7 @@ const TeamDraw = () => {
     generateTeams 
   } = useTeamDrawStore();
 
+  // Inicializar jogadores para sorteio quando a página carregar
   useEffect(() => {
     const availablePlayers = players.filter(p => p.present);
     if (availablePlayers.length > 0) {
@@ -32,6 +34,7 @@ const TeamDraw = () => {
   }, [players, updatePlayer]);
 
   const calculateTeamStrength = (team: typeof players) => {
+    if (!team || team.length === 0) return 0;
     return team.reduce((acc, player) => acc + player.rating, 0) / team.length;
   };
 
@@ -71,6 +74,7 @@ const TeamDraw = () => {
       transition={springConfig}
       className="min-h-screen"
     >
+      <BackToDashboard />
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow">
           <h1 className="text-2xl font-bold">Sorteio de Times</h1>

@@ -13,7 +13,7 @@ import { PagesTitle } from './components/shared/PagesTitle';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { springConfig } from './utils/animations';
 
-//const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
@@ -51,7 +51,11 @@ const AppContent = () => {
 };
 
 const App = () => {
-  return <AppContent />; 
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+    </QueryClientProvider>
+  );
 };
 
 export default App;

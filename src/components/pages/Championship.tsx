@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Save, Trophy, Users, AlertTriangle } from "lucide-react";
@@ -9,11 +10,11 @@ import { TournamentBracket } from '../TournamentBracket';
 import { TournamentType } from '@/utils/enums';
 import { TournamentForm } from '../tournament/TournamentForm';
 import TeamList from '../tournament/TeamList';
-import BackToDashboard from '../BackToDashboard';
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTournamentStore } from '@/stores/useTournamentStore';
 import { Separator } from "@/components/ui/separator";
+import BackToDashboard from '../BackToDashboard';
 
 const Championship = () => {
   const { toast } = useToast();
@@ -93,7 +94,17 @@ const Championship = () => {
       }
     };
 
-    addTeam(newTeam);
+    const result = addTeam(newTeam);
+    
+    if (!result.success) {
+      toast({
+        title: "Erro ao adicionar time",
+        description: result.error || "Erro desconhecido",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setTeamName('');
     setResponsible('');
     
