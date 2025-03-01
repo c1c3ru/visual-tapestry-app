@@ -70,6 +70,8 @@ export interface Team {
 
 export interface TeamDrawState {
   teams: Team[];
+  success: boolean;
+  error?: string;
   playersPerTeam: number;
   setTeams: (teams: Team[]) => void;
   setPlayersPerTeam: (count: number) => void;

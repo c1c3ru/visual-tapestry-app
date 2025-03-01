@@ -13,6 +13,9 @@ import { useSettingsStore } from "@/stores/useSettingsStore";
 import { springConfig } from '../utils/animations';
 import { useToast } from "@/hooks/use-toast";
 
+
+
+
 const PlayerList = () => {
   const { players, updatePlayer, removePlayer, setEditingPlayer, editingPlayer, editValue, setEditValue } = usePlayerStore();
   const { ratingSystem, guestHighlight } = useSettingsStore();
@@ -62,6 +65,12 @@ const PlayerList = () => {
 
     return matchesSearch && matchesGuestFilter;
   });
+
+  const queryClient = queryClient();
+  
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['players'] });
+  }, [queryClient]);   
 
   return (
     <motion.div
