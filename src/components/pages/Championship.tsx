@@ -1,230 +1,194 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Save, Trophy, Users, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TournamentBracket } from '../TournamentBracket';
-import { TournamentType } from '@/utils/enums';
-import { TournamentForm } from '../tournament/TournamentForm';
-import TeamList from '../tournament/TeamList';
-import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useTournamentStore } from '@/stores/useTournamentStore';
-import { Separator } from "@/components/ui/separator";
-import BackToDashboard from '../BackToDashboard';
+import { TournamentHeader } from "../tournament/TournamentHeader";
+import { TeamList } from "../tournament/TeamList";
+import { TournamentForm } from "../tournament/TournamentForm";
+import { TournamentBracket } from "../TournamentBracket";
+import { useTournamentStore } from "@/stores/useTournamentStore";
+import { TournamentType } from "@/utils/enums";
+import { Team } from "@/utils/types";
 
 const Championship = () => {
-  const { toast } = useToast();
   const {
     tournamentName,
     tournamentType,
-    teamName,
-    responsible,
     teams,
+    matches,
     groups,
     knockoutMatches,
     setTournamentName,
     setTournamentType,
-    setTeamName,
-    setResponsible,
     addTeam,
     removeTeam,
+    generateGroups,
     generateMatches,
   } = useTournamentStore();
 
-  const [validationError, setValidationError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (teams.length < 4) {
-      setValidationError("Mínimo de 4 times necessário");
-    } else if (teams.length > 64) {
-      setValidationError("Máximo de 64 times permitido");
-    } else {
-      setValidationError(null);
-    }
-  }, [teams]);
+  const [newTeam, setNewTeam] = useState<Omit<Team, "id" | "players" | "stats">>({
+    name: "",
+    responsible: "",
+    ranking: 0,
+  });
 
   const handleAddTeam = () => {
-    if (!teamName || !responsible) {
-      toast({
-        title: "Erro ao adicionar time",
-        description: "Preencha todos os campos obrigatórios.",
-        variant: "destructive"
-      });
-      return;
-    }
+    if (!newTeam.name) return;
 
-    if (teams.length >= 64) {
-      toast({
-        title: "Limite excedido",
-        description: "Máximo de 64 times permitido.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const teamExists = teams.some(team => 
-      team.name.toLowerCase() === teamName.toLowerCase()
-    );
-
-    if (teamExists) {
-      toast({
-        title: "Time duplicado",
-        description: "Já existe um time com este nome.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newTeam = {
+    const team: Team = {
       id: Date.now().toString(),
-      name: teamName.trim(),
-      responsible: responsible.trim(),
+      name: newTeam.name,
+      responsible: newTeam.responsible,
+      ranking: newTeam.ranking,
       players: [],
-      ranking: 0,
       stats: {
         wins: 0,
         draws: 0,
         losses: 0,
         goalsFor: 0,
-        goalsAgainst: 0
-      }
+        goalsAgainst: 0,
+      },
     };
 
-    const result = addTeam(newTeam);
-    
-    if (!result.success) {
-      toast({
-        title: "Erro ao adicionar time",
-        description: result.error || "Erro desconhecido",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    setTeamName('');
-    setResponsible('');
-    
-    toast({
-      title: "Time adicionado",
-      description: `${newTeam.name} foi registrado com sucesso`,
-    });
+    addTeam(team);
+    setNewTeam({ name: "", responsible: "", ranking: 0 });
+  };
+
+  const handleGenerateGroups = () => {
+    generateGroups(teams);
   };
 
   const handleGenerateMatches = () => {
-    if (teams.length < 4) {
-      toast({
-        title: "Erro",
-        description: "Mínimo de 4 times necessário para gerar partidas.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const result = generateMatches();
-    
-    if (!result.success) {
-      toast({
-        title: "Erro",
-        description: result.error || "Erro ao gerar partidas.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Sucesso",
-      description: "Partidas geradas com sucesso!",
-    });
+    generateMatches();
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <BackToDashboard />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto space-y-6"
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-6 w-6 text-primary" />
-              Campeonato
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {validationError && (
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Atenção</AlertTitle>
-                <AlertDescription>{validationError}</AlertDescription>
-              </Alert>
-            )}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="min-h-screen"
+    >
+      <div className="max-w-7xl mx-auto space-y-6">
+        <TournamentHeader
+          title={tournamentName}
+          onTitleChange={setTournamentName}
+          type={tournamentType}
+          onTypeChange={setTournamentType}
+        />
 
-            <TournamentForm
-              tournamentName={tournamentName}
-              tournamentType={tournamentType}
-              onTournamentNameChange={setTournamentName}
-              onTournamentTypeChange={setTournamentType}
-            />
-
-            <Separator className="my-4" />
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="teamName">Nome do Time</Label>
-                <Input
-                  id="teamName"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="Digite o nome do time"
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Adicionar Time</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TournamentForm
+                  team={newTeam}
+                  onChange={setNewTeam}
+                  onSubmit={handleAddTeam}
                 />
-              </div>
-              <div>
-                <Label htmlFor="responsible">Responsável</Label>
-                <Input
-                  id="responsible"
-                  value={responsible}
-                  onChange={(e) => setResponsible(e.target.value)}
-                  placeholder="Digite o nome do responsável"
-                />
-              </div>
-              <Button 
-                onClick={handleAddTeam}
-                disabled={teams.length >= 64}
-                className="w-full"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                Adicionar Time
-              </Button>
-            </div>
+              </CardContent>
+            </Card>
 
-            <Separator className="my-4" />
-            <TeamList teams={teams} onRemoveTeam={removeTeam} />
-            
-            <Button 
-              onClick={handleGenerateMatches}
-              disabled={teams.length < 4}
-              className="w-full"
-              variant="secondary"
-            >
-              <Trophy className="mr-2 h-4 w-4" />
-              Gerar Partidas
-            </Button>
+            <Card>
+              <CardHeader>
+                <CardTitle>Times</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TeamList teams={teams} onRemove={removeTeam} />
+              </CardContent>
+            </Card>
+          </div>
 
-            {groups.length > 0 && (
-              <div className="mt-8">
-                <TournamentBracket groups={groups} knockoutMatches={knockoutMatches} tournamentType={TournamentType.LEAGUE} />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </motion.div>
-    </div>
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tabela do Campeonato</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {tournamentType === TournamentType.LEAGUE && teams.length > 0 ? (
+                  <div>
+                    {groups.length === 0 ? (
+                      <div className="text-center py-10">
+                        <p className="text-gray-500 mb-4">
+                          Nenhum grupo gerado ainda. Adicione times e clique em
+                          Gerar Grupos.
+                        </p>
+                        <button
+                          onClick={handleGenerateGroups}
+                          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                          Gerar Grupos
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        {matches.length === 0 ? (
+                          <div className="text-center py-10">
+                            <p className="text-gray-500 mb-4">
+                              Grupos gerados. Clique em Gerar Partidas para
+                              continuar.
+                            </p>
+                            <button
+                              onClick={handleGenerateMatches}
+                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                              Gerar Partidas
+                            </button>
+                          </div>
+                        ) : (
+                          <div>
+                            <TournamentBracket
+                              groups={groups}
+                              knockoutMatches={knockoutMatches}
+                              tournamentType={tournamentType}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : tournamentType === TournamentType.KNOCKOUT &&
+                  teams.length > 0 ? (
+                  <div>
+                    {knockoutMatches === null ? (
+                      <div className="text-center py-10">
+                        <p className="text-gray-500 mb-4">
+                          Nenhuma partida gerada ainda. Adicione times e clique
+                          em Gerar Partidas.
+                        </p>
+                        <button
+                          onClick={handleGenerateMatches}
+                          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                          Gerar Partidas
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <TournamentBracket
+                          groups={[]}
+                          knockoutMatches={knockoutMatches}
+                          tournamentType={tournamentType}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-10">
+                    <p className="text-gray-500">
+                      Adicione times para começar o campeonato
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 

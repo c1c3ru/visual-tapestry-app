@@ -1,20 +1,15 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { PlayerCard } from "@/components/player/PlayerCard";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { PlayerListContainer } from "./player/PlayerListContainer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Filter, Search, Plus, Edit, Trash } from "lucide-react";
+import { Filter, Search, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { springConfig } from '../utils/animations';
 import { useToast } from "@/hooks/use-toast";
-
-
-
 
 const PlayerList = () => {
   const { players, updatePlayer, removePlayer, setEditingPlayer, editingPlayer, editValue, setEditValue } = usePlayerStore();
@@ -65,12 +60,6 @@ const PlayerList = () => {
 
     return matchesSearch && matchesGuestFilter;
   });
-
-  const queryClient = queryClient();
-  
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['players'] });
-  }, [queryClient]);   
 
   return (
     <motion.div
