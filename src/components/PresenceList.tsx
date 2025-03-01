@@ -71,7 +71,13 @@ const PresenceList = () => {
 
   const handleGeneratePDF = () => {
     try {
-      generatePresencePDF(filteredPlayers, formattedDate, presentCount, paidCount);
+      generatePresencePDF(
+        "Relatório de Presença", // Event name
+        formattedDate,           // Date 
+        filteredPlayers,         // Players
+        presentCount,            // Present count
+        paidCount                // Paid count
+      );
       toast({
         title: "Relatório gerado",
         description: "O PDF foi baixado com sucesso!",
