@@ -48,6 +48,7 @@ const TeamDraw = () => {
       const availablePlayers = players.filter(p => p.includeInDraw && p.present);
       console.log("Available players for draw:", availablePlayers);
       
+      // Verificar se há jogadores suficientes
       if (availablePlayers.length < playersPerTeam * 2) {
         toast({
           title: "Jogadores Insuficientes",
@@ -57,7 +58,9 @@ const TeamDraw = () => {
         return;
       }
       
-      const result = generateTeams(availablePlayers);
+      // Corrigindo a chamada para generateTeams
+      const result = generateTeams(availablePlayers, playersPerTeam);
+      console.log("Generate teams result:", result);
 
       if (!result.success) {
         toast({
@@ -72,6 +75,13 @@ const TeamDraw = () => {
         title: "Times Gerados",
         description: "Times foram sorteados com sucesso!",
       });
+    } catch (error) {
+      console.error("Error generating teams:", error);
+      toast({
+        title: "Erro no Sorteio",
+        description: "Ocorreu um erro ao sortear os times",
+        variant: "destructive",
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -79,6 +89,7 @@ const TeamDraw = () => {
 
   console.log("Current teams:", teams);
   console.log("Current players in store:", players);
+  console.log("Current playersPerTeam:", playersPerTeam);
 
   return (
     <motion.div

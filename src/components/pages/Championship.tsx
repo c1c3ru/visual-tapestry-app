@@ -2,14 +2,14 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TournamentHeader from "../tournament/TournamentHeader";
-import TeamList from "../tournament/TeamList";
 import { TournamentForm } from "../tournament/TournamentForm";
 import { TournamentBracket } from "../TournamentBracket";
 import { useTournamentStore } from "@/stores/useTournamentStore";
 import { TournamentType } from "@/utils/enums";
 import { Team } from "@/utils/types";
 import BackToDashboard from "../BackToDashboard";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Trophy } from "lucide-react";
 
 const Championship = () => {
   const {
@@ -75,12 +75,37 @@ const Championship = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <BackToDashboard />
         
-        <TournamentHeader
-          title={tournamentName}
-          onTitleChange={setTournamentName}
-          type={tournamentType}
-          onTypeChange={setTournamentType}
-        />
+        <div className="flex items-center gap-3 mb-6 p-4 bg-white/90 backdrop-blur-sm rounded-xl shadow-sm">
+          <div className="p-2 bg-primary/10 rounded-full">
+            <Trophy className="h-8 w-8 text-primary" aria-hidden="true" />
+          </div>
+          
+          <div className="flex-1">
+            <input 
+              type="text"
+              value={tournamentName}
+              onChange={(e) => setTournamentName(e.target.value)}
+              placeholder="Nome do Campeonato"
+              className="bg-transparent text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent outline-none w-full"
+            />
+          </div>
+          
+          <div>
+            <Select
+              value={tournamentType}
+              onValueChange={(value: TournamentType) => setTournamentType(value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Tipo de Campeonato" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={TournamentType.LEAGUE}>Liga</SelectItem>
+                <SelectItem value={TournamentType.WORLD_CUP}>Copa</SelectItem>
+                <SelectItem value={TournamentType.HOME_AWAY}>Mata-mata</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-6">
@@ -106,7 +131,35 @@ const Championship = () => {
                 <CardTitle>Times</CardTitle>
               </CardHeader>
               <CardContent>
-                <TeamList teams={teams} onRemove={removeTeam} />
+                <div className="space-y-4">
+                  {teams.length === 0 ? (
+                    <div className="text-center py-4 text-gray-500">
+                      Nenhum time cadastrado
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {teams.map((team) => (
+                        <div 
+                          key={team.id} 
+                          className="p-3 border rounded-lg flex justify-between items-center"
+                        >
+                          <div>
+                            <div className="font-medium">{team.name}</div>
+                            <div className="text-sm text-gray-500">
+                              Responsável: {team.responsible}
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => removeTeam(team.id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            Remover
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -159,7 +212,7 @@ const Championship = () => {
                       </div>
                     )}
                   </div>
-                ) : tournamentType === TournamentType.KNOCKOUT &&
+                ) : tournamentType === TournamentType.HOME_AWAY &&
                   teams.length > 0 ? (
                   <div>
                     {knockoutMatches === null ? (

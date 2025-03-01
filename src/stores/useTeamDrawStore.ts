@@ -12,7 +12,7 @@ interface TeamDrawState {
   matchups: string[];
   setMatchups: (matchups: string[]) => void;
   clearTeams: () => void;
-  generateTeams: (players: Player[]) => { success: boolean; error?: string };
+  generateTeams: (players: Player[], playersPerTeam?: number) => { success: boolean; error?: string };
 }
 
 export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
@@ -24,16 +24,20 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
   setPlayersPerTeam: (playersPerTeam) => set({ playersPerTeam }),
   setMatchups: (matchups) => set({ matchups }),
   clearTeams: () => set({ teams: [] }),
-  generateTeams: (players) => {
+  generateTeams: (players, playersPerTeamOverride) => {
     const { playersPerTeam } = get();
+    const actualPlayersPerTeam = playersPerTeamOverride || playersPerTeam;
+    
+    console.log(`Generating teams with ${actualPlayersPerTeam} players per team`);
     
     // Filtrar apenas jogadores disponíveis
     const availablePlayers = players.filter(p => p.includeInDraw && p.present);
+    console.log(`Available players: ${availablePlayers.length}`);
     
-    if (availablePlayers.length < playersPerTeam * 2) {
+    if (availablePlayers.length < actualPlayersPerTeam * 2) {
       return {
         success: false,
-        error: `São necessários no mínimo ${playersPerTeam * 2} jogadores para formar times.`
+        error: `São necessários no mínimo ${actualPlayersPerTeam * 2} jogadores para formar times.`
       };
     }
 
@@ -45,9 +49,14 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
       !p.selectedPositions.includes(PositionEnum.GOALKEEPER)
     );
 
-    // Verificar se há goleiros suficientes
-    const numTeams = Math.floor(availablePlayers.length / playersPerTeam);
-    if (goalkeepers.length < numTeams) {
+    console.log(`Goalkeepers: ${goalkeepers.length}, Field Players: ${fieldPlayers.length}`);
+
+    // Calcular número de times
+    const numTeams = Math.floor(availablePlayers.length / actualPlayersPerTeam);
+    console.log(`Number of teams: ${numTeams}`);
+    
+    // Verificar se há goleiros suficientes - só se houver goleiros no jogo
+    if (goalkeepers.length > 0 && goalkeepers.length < numTeams) {
       return {
         success: false,
         error: `São necessários pelo menos ${numTeams} goleiros para formar ${numTeams} times.`
@@ -68,93 +77,60 @@ export const useTeamDrawStore = create<TeamDrawState>((set, get) => ({
     // Inicializar times vazios
     let newTeams: Player[][] = Array(numTeams).fill(null).map(() => []);
 
-    // Distribuir goleiros primeiro
-    shuffledGoalkeepers.forEach((goalkeeper, index) => {
-      if (index < numTeams) {
-        newTeams[index].push(goalkeeper);
-      }
-    });
+    // Distribuir goleiros primeiro (se houver)
+    if (goalkeepers.length > 0) {
+      shuffledGoalkeepers.forEach((goalkeeper, index) => {
+        if (index < numTeams) {
+          newTeams[index].push(goalkeeper);
+        }
+      });
+    }
 
     // Distribuir jogadores de linha usando método "serpentina" para equilibrar os times
     let goingForward = true;
-    sortedFieldPlayers.forEach((player, index) => {
+    let currentIndex = 0;
+    
+    for (const player of sortedFieldPlayers) {
+      // Determinar o índice do time baseado na direção atual
+      let teamIndex;
       if (goingForward) {
-        const teamIndex = index % numTeams;
-        if (newTeams[teamIndex].length < playersPerTeam) {
-          newTeams[teamIndex].push(player);
-        }
+        teamIndex = currentIndex % numTeams;
       } else {
-        const teamIndex = numTeams - 1 - (index % numTeams);
-        if (newTeams[teamIndex].length < playersPerTeam) {
-          newTeams[teamIndex].push(player);
+        teamIndex = numTeams - 1 - (currentIndex % numTeams);
+      }
+      
+      // Adicionar o jogador se o time não estiver completo
+      if (newTeams[teamIndex].length < actualPlayersPerTeam) {
+        newTeams[teamIndex].push(player);
+        
+        // Incrementar o índice
+        currentIndex++;
+        
+        // Alternar direção a cada rodada completa
+        if (currentIndex % numTeams === 0) {
+          goingForward = !goingForward;
         }
       }
-      // Alternar direção a cada rodada completa
-      if ((index + 1) % numTeams === 0) {
-        goingForward = !goingForward;
-      }
-    });
+    }
 
-    // Calcular e verificar equilíbrio dos times
+    // Calcular equilíbrio dos times
     const teamStrengths = newTeams.map(team => ({
       strength: team.reduce((acc, player) => acc + player.rating, 0) / team.length,
       numPlayers: team.length
     }));
 
-    const maxStrength = Math.max(...teamStrengths.map(t => t.strength));
-    const minStrength = Math.min(...teamStrengths.map(t => t.strength));
-    
-    // Se a diferença de força for muito grande, tentar rebalancear
-    if (maxStrength - minStrength > 1) {
-      // Reordenar times para equilibrar forças
-      newTeams = balanceTeams(newTeams);
+    console.log("Team strengths:", teamStrengths);
+
+    // Verificar se todos os times têm o número adequado de jogadores
+    const teamsWithNotEnoughPlayers = newTeams.filter(team => team.length < actualPlayersPerTeam);
+    if (teamsWithNotEnoughPlayers.length > 0) {
+      console.log(`Warning: ${teamsWithNotEnoughPlayers.length} teams have less than ${actualPlayersPerTeam} players`);
     }
 
+    // Atualizar o state
     set({ teams: newTeams });
     return { 
       success: true 
     };
   }
 }));
-
-// Função auxiliar para balancear times
-const balanceTeams = (teams: Player[][]): Player[][] => {
-  const calculateTeamStrength = (team: Player[]) => 
-    team.reduce((acc, player) => acc + player.rating, 0) / team.length;
-
-  // Tentar trocar jogadores entre times para equilibrar
-  for (let i = 0; i < teams.length; i++) {
-    for (let j = i + 1; j < teams.length; j++) {
-      const strengthDiff = Math.abs(
-        calculateTeamStrength(teams[i]) - calculateTeamStrength(teams[j])
-      );
-
-      if (strengthDiff > 1) {
-        // Tentar trocar jogadores não goleiros
-        const team1Players = teams[i].filter(p => !p.selectedPositions.includes(PositionEnum.GOALKEEPER));
-        const team2Players = teams[j].filter(p => !p.selectedPositions.includes(PositionEnum.GOALKEEPER));
-
-        for (const player1 of team1Players) {
-          for (const player2 of team2Players) {
-            // Simular troca
-            const newTeam1 = [...teams[i]].map(p => p.id === player1.id ? player2 : p);
-            const newTeam2 = [...teams[j]].map(p => p.id === player2.id ? player1 : p);
-
-            const newStrengthDiff = Math.abs(
-              calculateTeamStrength(newTeam1) - calculateTeamStrength(newTeam2)
-            );
-
-            // Se a troca melhorar o equilíbrio, aplicar
-            if (newStrengthDiff < strengthDiff) {
-              teams[i] = newTeam1;
-              teams[j] = newTeam2;
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  return teams;
-};
